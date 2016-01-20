@@ -1,0 +1,22 @@
+#!/bin/sh -e
+
+echo 'Waiting for RabbitMQ to become available...'
+while ! rabbitmqctl list_vhosts > /dev/null 2>&1
+do
+    sleep 2
+done
+echo 'The RabbitMQ service is up!'
+
+# KoBoCat uses the default RabbitMQ user, but it's necessary to create a
+# separate user and vhost for KPI
+if rabbitmqctl list_vhosts | grep kpi > /dev/null
+then
+    echo 'RabbitMQ already configured for KPI.'
+else
+    rabbitmqctl add_user kpi kpi || true
+    rabbitmqctl add_vhost kpi || true
+    rabbitmqctl set_permissions -p kpi kpi '.*' '.*' '.*'
+fi
+
+# Don't run forever
+sv stop rabbit-configure > /dev/null

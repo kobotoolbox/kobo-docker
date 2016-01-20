@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+CELERYD_OPTIONS='--loglevel=DEBUG --time-limit=900 --maxtasksperchild=5'
+
+cd /srv/src/kobocat
+
+/sbin/setuser wsgi python manage.py celeryd $CELERYD_OPTIONS

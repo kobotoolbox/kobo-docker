@@ -1,0 +1,68 @@
+#!/bin/sh
+set -e
+
+prefix=$KOBO_PREFIX
+domain=$KOBO_DOMAIN
+ssl_key=$KOBO_SSL_KEY
+ssl_crt=$KOBO_SSL_CRT
+key_file=$KOBO_NGINX_BASE_DIR/ssl.key
+crt_file=$KOBO_NGINX_BASE_DIR/ssl.crt
+
+# construct the key
+if [ ! -f $key_file ]; then
+    echo "File not found. Creating..."
+    echo "-----BEGIN RSA PRIVATE KEY-----" > $key_file
+    for i in $ssl_key; do
+        echo "$i" | sed -e 's/\"//' >> $key_file
+    done
+    echo "-----END RSA PRIVATE KEY-----" >> $key_file
+else
+    echo "File already there. Skipping..."
+fi
+
+# construct the crt
+if [ ! -f $crt_file ]; then
+    echo "File not found. Creating..."
+    echo "-----BEGIN CERTIFICATE-----" > $crt_file
+    for i in $ssl_crt; do
+        echo "$i" | sed -e 's/\"//' >> $crt_file
+        if [ "$(echo $i | wc -m)" -lt "65" ]; then
+            echo "-----END CERTIFICATE-----" >> $crt_file
+            echo "-----BEGIN CERTIFICATE-----" >> $crt_file
+        fi
+    done
+    echo "-----END CERTIFICATE-----" >> $crt_file
+else
+    echo "File already there. Skipping..."
+fi
+
+if [ "$(tail -n 3 $crt_file | grep -c CERTIFICATE)" -eq "3" ]; then
+    # empty cert bug. lets fix it.
+    sed -i '$ d' $crt_file
+    sed -i '$ d' $crt_file
+fi
+
+for template in $(find /etc/nginx -iname '*tpl'); do
+    file=$(echo $template | sed -e 's/\.tpl$//');
+    # dont just mindless overwrite the files...
+    [ ! -f $file ] || continue
+    envsubst < $template > $file;
+    sed -i 's/%/$/g' $file
+done
+
+# fix perms of the ssl key
+status=$(stat $key_file | grep Uid)
+perms=$(echo $status | awk '{ print $2 }' | sed -e 's/^(//; s/\/.*//')
+owner=$(echo $status | awk '{ print $5 }' | sed -e 's/\/.*//')
+if [ "$owner" -ne "0" ]; then
+    echo "Changing owner to root."
+    chown root:root $key_file
+fi
+
+if [ "$perms" -ne "0600" ]; then
+    echo "Changing perms to 0600."
+    chmod 0600 $key_file
+fi
+
+cd /etc/nginx;
+exec /usr/sbin/nginx
