@@ -1,4 +1,4 @@
-FROM teodorescuserban/kobo-base-mongo:latest
+FROM kobotoolbox/base-mongo:latest
 
 MAINTAINER Serban Teodorescu, teodorescu.serban@gmail.com
 

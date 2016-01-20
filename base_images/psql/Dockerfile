@@ -1,4 +1,4 @@
-FROM teodorescuserban/kobo-base-psql:latest
+FROM kobotoolbox/base-psql:latest
 
 MAINTAINER Serban Teodorescu, teodorescu.serban@gmail.com
 

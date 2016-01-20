@@ -1,8 +1,8 @@
 # copyleft 2015 teodorescu.serban@gmail.com
 
 rabbit:
-  image: teodorescuserban/kobo-rabbit:latest
-  # build: ../kobo-dockers/rabbit
+  image: kobotoolbox/rabbit:latest
+  # build: ./base_images/rabbit
   hostname: rabbit
   env_file:
     - ./env_common
@@ -14,8 +14,8 @@ rabbit:
 #    - "${RABBIT_HOST}:${RABBIT_MGMT_PORT}:15672"
 
 psql:
-  image: teodorescuserban/kobo-psql:latest
-  # build: ../kobo-dockers/psql
+  image: kobotoolbox/psql:latest
+  # build: ./base_images/psql
   hostname: psql
   env_file:
     - ./env_common
@@ -26,8 +26,8 @@ psql:
     - "${VOL_DB}/db:/srv/db"
 
 mongo:
-  image: teodorescuserban/kobo-mongo:latest
-  # build: ../kobo-dockers/mongo
+  image: kobotoolbox/mongo:latest
+  # build: ./base_images/mongo
   hostname: mongo
   env_file:
     - ./env_common
@@ -39,8 +39,8 @@ mongo:
     - "${VOL_DB}/mongo:/srv/db"
 
 kobocat:
-  image: teodorescuserban/kobo-kobocat:latest # still WIP
-  # build: ../kobo-dockers/kobocat
+  image: kobotoolbox/kobocat:latest # still WIP
+  # build: ./base_images/kobocat
   hostname: kobocat
   env_file:
     - ./env_common
@@ -57,8 +57,8 @@ kobocat:
     - "${VOL_WB}/static/kobocat:/srv/static"
 
 dkobo:
-  image: teodorescuserban/kobo-dkobo:latest # still WIP
-  # build: ../kobo-dockers/dkobo
+  image: kobotoolbox/dkobo:latest # still WIP
+  # build: ./base_images/dkobo
   hostname: dkobo
   env_file:
     - ./env_common
@@ -94,8 +94,8 @@ kpi:
     - "${VOL_DB}/whoosh:/srv/whoosh"
 
 web:
-  image: teodorescuserban/kobo-nginx:latest # still WIP
-  # build: ../kobo-dockers/nginx
+  image: kobotoolbox/nginx:latest # still WIP
+  # build: ./base_images/nginx
   hostname: nginx
   env_file:
     - ./env_common
