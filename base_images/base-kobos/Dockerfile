@@ -18,9 +18,7 @@ RUN apt-get -qq update && \
         nodejs \
         npm \
         postgresql-client-9.3 \
-        python2.7-dev \
-        python-qgis \
-        qgis && \
+        python2.7-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     ln -s /usr/bin/nodejs /usr/bin/node && \
