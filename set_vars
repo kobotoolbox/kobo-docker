@@ -125,9 +125,7 @@ $e KOBOFORM_RAVEN_DSN=
 
 
 # -------------- KPI-only -------------------
-$e KPI_PREFIX=/forms
 $e KOBO_USE_MINIFIED_SCRIPTS=False
-$e DKOBO_PREFIX=/
 $e KOBO_SURVEY_PREVIEW_EXPIRATION=24
 
 # Prepended settings.
@@ -159,6 +157,10 @@ $e KOBOCAT_INTERNAL_URL=http://${KOBOCAT_PUBLIC_ADDR}
 #$e AWS_SES_SECRET_ACCESS_KEY='THISISNOTAREALKEY'
 #$e AWS_SES_REGION_NAME='some-region-name'
 #$e AWS_SES_REGION_ENDPOINT='some-region-endpoint'
+
+# KoBoForm and KPI.
+$e KPI_PREFIX=/forms
+$e DKOBO_PREFIX=/
 
 ###########################################################
 
