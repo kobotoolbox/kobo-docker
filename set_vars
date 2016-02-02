@@ -44,6 +44,12 @@ $e KOBOFORM_SERVER_PORT=8001
 $e KPI_SERVER_ADDR=${KOBO_WB_SERVER_IP}
 $e KPI_SERVER_PORT=8002
 
+# -------------- Enketo Express --------
+export ENKETO_EXPRESS_PUBLIC_SUBDIR=/enketo-express
+export ENKETO_EXPRESS_PUBLIC_ADDR=${KOBOFORM_PUBLIC_ADDR}${ENKETO_EXPRESS_PUBLIC_SUBDIR}
+export ENKETO_EXPRESS_SERVER_ADDR=${KOBO_SERVER_IP}
+export ENKETO_EXPRESS_SERVER_PORT=8005
+
 # -------------- Postgres --------------
 $e PSQL_HOST=${KOBO_DB_SERVER_IP}
 $e PSQL_PORT=5432
@@ -65,8 +71,9 @@ $e NGINX_HTTPS_PORT=443
 
 ##################### PROJECT SETTINGS ######################
 
-$e ENKETO_SERVER_ADDR="https://enketo.kobotoolbox.org"
-ENKETO_VERSION=legacy  # [legacy | express]
+$e ENKETO_URL=http://{ENKETO_EXPRESS_PUBLIC_ADDR}
+$e ENKETO_VERSION=legacy  # [legacy | express]
+$e ENKETO_API_TOKEN='enketorules'
 $e KOBO_PSQL_DB_NAME=kobotoolbox
 $e KOBO_PSQL_DB_USER=kobo
 $e KOBO_PSQL_DB_PASS=kobo
@@ -87,18 +94,10 @@ $e KOBOCAT_MEDIA_URL=http://${KOBOCAT_PUBLIC_ADDR}/media/
 #$e AWS_S3_STORAGE_BUCKET_NAME='kobostatic'
 #$e DEFAULT_FILE_STORAGE='storages.backends.s3boto.S3BotoStorage'
 
-$e ENKETO_URL=${ENKETO_SERVER_ADDR}
 # this is the protocol enketo will try to use to reach our server!
 # use http on bm staging, https otherwise
 $e ENKETO_PROTOCOL="http"
-$e ENKETO_API_TOKEN='enketorules'
-if [ $ENKETO_VERSION == 'express' ]; then
-    $e ENKETO_API_ROOT='/api/v2'
-    $e ENKETO_OFFLINE_SURVEYS='True'
-else
-    $e ENKETO_API_ROOT='/api_v1'
-    $e ENKETO_OFFLINE_SURVEYS='False'
-fi
+
 # Prepended settings.
 $e KOBOCAT_DJANGO_DEBUG=False
 $e KOBOCAT_DJANGO_SETTINGS_MODULE="onadata.settings.kc_environ"
@@ -142,13 +141,6 @@ $e DATABASE_URL=postgis://${KOBO_PSQL_DB_USER}:${KOBO_PSQL_DB_PASS}@${PSQL_HOST}
 $e CSRF_COOKIE_DOMAIN=.${KOBO_DOMAIN}
 $e DJANGO_SECRET_KEY=sooooooooooooosecreeeeeeeeeeeeeet
 $e DJANGO_ALLOWED_HOSTS=".${KOBO_DOMAIN} .${KOBO_DOMAIN}."
-if [ $ENKETO_VERSION == 'express' ]; then
-    $e ENKETO_API_ENDPOINT_PREVIEW='/preview'
-else
-    $e ENKETO_API_ENDPOINT_PREVIEW='/webform/preview'
-fi
-$e ENKETO_SERVER=${ENKETO_SERVER_ADDR}
-$e ENKETO_PREVIEW_URI=${ENKETO_API_ENDPOINT_PREVIEW}
 $e KOBOCAT_URL=http://${KOBOCAT_PUBLIC_ADDR}
 $e KOBOCAT_INTERNAL_URL=http://${KOBOCAT_PUBLIC_ADDR}
 #$e EMAIL_BACKEND='django_ses.SESBackend'
