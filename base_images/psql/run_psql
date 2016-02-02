@@ -32,4 +32,9 @@ $PSQL_SINGLE <<< "CREATE DATABASE $PSQL_DB OWNER $PSQL_USER" > /dev/null
 
 # TEMPLATE $PSQL_TEMPLATE ENCODING=UTF-8;
 
+# Initialize PostGIS.
+pg_ctlcluster 9.3 main start
+sudo -u postgres psql ${KOBO_PSQL_DB_NAME} -c "create extension postgis; create extension postgis_topology"
+pg_ctlcluster 9.3 main stop
+
 exec /sbin/setuser postgres $PSQL_BIN --config-file=$PSQL_CONFIG_FILE
