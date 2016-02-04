@@ -1,3 +1,0 @@
-#!/bin/bash
-set -e
-/sbin/setuser wsgi /usr/local/bin/uwsgi --ini /srv/src/kobocat.ini
