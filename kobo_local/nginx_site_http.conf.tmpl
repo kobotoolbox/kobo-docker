@@ -1,0 +1,115 @@
+# Context: http
+
+charset     utf-8;
+
+# KoBoCAT
+server {
+    listen       ${KOBOCAT_PUBLIC_PORT};
+
+    access_log  /var/log/nginx/kobocat.access.log;
+    error_log   /var/log/nginx/kobocat.error.log;
+
+    # max upload size
+    client_max_body_size 75M;
+
+    # Serve locations containing 'submission' or 'formList' via HTTP without
+    # further ado, since ODK Collect makes requests containing those terms and
+    # does not support any kind of redirection.
+    location ~ (submission|formList) {
+       uwsgi_read_timeout 130;
+       uwsgi_send_timeout 130;
+       uwsgi_pass kobocat:8000;
+       include /etc/nginx/uwsgi_params;
+    }
+
+    location /static {
+        alias /srv/www/kobocat;
+    }
+
+    location / {
+        uwsgi_read_timeout 130;
+        uwsgi_send_timeout 130;
+        uwsgi_pass kobocat:8000;
+        include /etc/nginx/uwsgi_params;
+    }
+}
+
+
+# dkobo
+server {
+    listen ${KOBOFORM_PUBLIC_PORT};
+
+    access_log  /var/log/nginx/koboform.access.log;
+    error_log   /var/log/nginx/koboform.error.log;
+
+    location /static {
+        alias /srv/www/koboform;
+    }
+
+    error_page 418 = /static/html/Offline.html;
+
+    location / {
+        uwsgi_read_timeout 130;
+        uwsgi_send_timeout 130;
+        uwsgi_pass dkobo:8000;
+        include /etc/nginx/uwsgi_params;
+    }
+}
+
+# kpi
+server {
+    listen ${KPI_PUBLIC_PORT};
+
+    access_log  /var/log/nginx/kpi.access.log;
+    error_log   /var/log/nginx/kpi.error.log;
+
+    location /static {
+        alias /srv/www/kpi;
+
+        # gzip configs from here
+        # http://stackoverflow.com/a/12644530/3088435
+        gzip on;
+        gzip_disable "msie6";
+        gzip_comp_level 6;
+        gzip_min_length 1100;
+        gzip_buffers 16 8k;
+        gzip_proxied any;
+        gzip_types
+            text/plain
+            text/css
+            text/js
+            text/xml
+            text/javascript
+            application/javascript
+            application/x-javascript
+            application/json
+            application/xml
+            application/xml+rss;
+    }
+
+    error_page 418 = /static/html/Offline.html;
+
+    location / {
+        uwsgi_read_timeout 130;
+        uwsgi_send_timeout 130;
+        uwsgi_pass kpi:8000;
+        include /etc/nginx/uwsgi_params;
+    }
+}
+
+# Enketo Express
+server {
+    listen ${ENKETO_EXPRESS_PUBLIC_PORT};
+
+    access_log  /var/log/nginx/enketo_express.access.log;
+    error_log   /var/log/nginx/enketo_express.error.log;
+
+    location / {
+        proxy_pass  http://enketo_express:8005/;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr ;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for ;
+        proxy_set_header X-Forwarded-Proto https ;
+    }
+}
