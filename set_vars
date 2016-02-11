@@ -137,6 +137,15 @@ $e KPI_DJANGO_DEBUG=False
 $e KPI_RAVEN_DSN=
 $e KPI_DJANGO_LIVE_RELOAD=False
 
+# email configurations 
+#$e EMAIL_HOST='smtp.gmail.com'
+#$e EMAIL_HOST_USER='EMAIL'
+#$e EMAIL_HOST_PASSWORD='PWD'
+#$e EMAIL_PORT=587
+#$e EMAIL_USE_TLS=True
+#$e EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+
+
 # -------------- Common ----------------
 $e DATABASE_URL=postgis://${KOBO_PSQL_DB_USER}:${KOBO_PSQL_DB_PASS}@${PSQL_HOST}:${PSQL_PORT}/${KOBO_PSQL_DB_NAME}
 # localhost is not a valid CSRF_COOKIE_DOMAIN in chrome
