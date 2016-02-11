@@ -19,8 +19,6 @@ mongo:
   image: kobotoolbox/mongo:latest
   # build: ./base_images/mongo
   hostname: mongo
-  env_file:
-    - ./env_common
   environment:
     - MONGO_DATA=/srv/db
   volumes:
