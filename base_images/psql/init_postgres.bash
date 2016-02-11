@@ -23,6 +23,7 @@ $PSQL_SINGLE <<< "ALTER USER $KOBO_PSQL_DB_USER WITH PASSWORD '$KOBO_PSQL_DB_PAS
 $PSQL_SINGLE <<< "CREATE DATABASE $KOBO_PSQL_DB_NAME OWNER $KOBO_PSQL_DB_USER" > /dev/null
 
 echo 'Initializing PostGIS.'
-pg_ctlcluster 9.3 main start
-sudo -u postgres psql ${KOBO_PSQL_DB_NAME} -c "create extension postgis; create extension postgis_topology"
+pg_ctlcluster 9.3 main start -o '-c listen_addresses=""' # Temporarily start Postgres for local connections only.
+sudo -u postgres psql ${KOBO_PSQL_DB_NAME} -c "create extension postgis; create extension postgis_topology" \
+    || true # FIXME: Workaround so this script doesn't exit if PostGIS has already been initialized.
 pg_ctlcluster 9.3 main stop

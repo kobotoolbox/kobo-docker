@@ -18,7 +18,8 @@ RUN apt-get -qq update && \
         nodejs \
         npm \
         postgresql-client-9.3 \
-        python2.7-dev && \
+        python2.7-dev \
+        wget && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     ln -s /usr/bin/nodejs /usr/bin/node && \
@@ -35,3 +36,7 @@ RUN apt-get -qq update && \
         bower \
         karma \
         grunt-cli
+
+# Install Dockerize.
+RUN wget https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize-linux-amd64-v0.2.0.tar.gz -P /tmp
+RUN tar -C /usr/local/bin -xzvf /tmp/dockerize-linux-amd64-v0.2.0.tar.gz

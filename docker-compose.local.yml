@@ -47,8 +47,6 @@ kobocat:
     - DATABASE_URL=postgis://kobo:kobo@psql:5432/kobotoolbox
     - KOBO_PSQL_DB_NAME=kobotoolbox
     - KOBO_PSQL_DB_USER=kobo
-    - PSQL_HOST=psql
-    - PSQL_PORT=5432
     #- KOBOCAT_TEMPLATES_PATH=/srv/src/kobocat-template
   restart: always
 
