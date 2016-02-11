@@ -27,7 +27,7 @@ mongo:
 
 kobocat:
   image: kobotoolbox/kobocat:latest
-  # build: ./base_images/kobocat
+  # build: ../kobocat
   hostname: kobocat
   env_file:
     - ./kobo_local/envfile.txt
@@ -54,6 +54,7 @@ kobocat:
 
 kpi:
   image: kobotoolbox/kpi:latest
+  # build: ../kpi
   hostname: kpi
   env_file:
     - ./kobo_local/envfile.txt
@@ -125,7 +126,7 @@ redis_cache:
 
 dkobo:
   image: kobotoolbox/dkobo:latest
-  # build: ./base_images/dkobo
+  # build: ../dkobo
   hostname: dkobo
   env_file:
     - ./kobo_local/envfile.txt
