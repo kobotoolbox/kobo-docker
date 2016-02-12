@@ -1,5 +1,5 @@
 rabbit:
-  image: kobotoolbox/rabbit:latest
+  image: kobotoolbox/rabbit:docker_local
   # build: ./base_images/rabbit
   hostname: rabbit
   environment:
@@ -8,7 +8,7 @@ rabbit:
   restart: always
 
 psql:
-  image: kobotoolbox/psql:latest
+  image: kobotoolbox/psql:docker_local
   # build: ./base_images/psql
   hostname: psql
   volumes:
@@ -16,7 +16,7 @@ psql:
   restart: always
 
 mongo:
-  image: kobotoolbox/mongo:latest
+  image: kobotoolbox/mongo:docker_local
   # build: ./base_images/mongo
   hostname: mongo
   environment:
@@ -26,7 +26,7 @@ mongo:
   restart: always
 
 kobocat:
-  image: kobotoolbox/kobocat:latest
+  image: kobotoolbox/kobocat:docker_local
   # build: ../kobocat
   hostname: kobocat
   env_file:
@@ -55,7 +55,7 @@ kobocat:
   # - 'ee-local.kobotoolbox.org:10.0.0.156'
 
 kpi:
-  image: kobotoolbox/kpi:latest
+  image: kobotoolbox/kpi:docker_local
   # build: ../kpi
   hostname: kpi
   env_file:
@@ -79,7 +79,7 @@ kpi:
   # - 'kc-local.kobotoolbox.org:10.0.0.156'
 
 nginx:
-  image: kobotoolbox/nginx:latest
+  image: kobotoolbox/nginx:docker_local
   # build: ./base_images/nginx
   hostname: nginx
   env_file:
@@ -134,7 +134,7 @@ redis_cache:
   restart: always
 
 dkobo:
-  image: kobotoolbox/dkobo:latest
+  image: kobotoolbox/dkobo:docker_local
   # build: ../dkobo
   hostname: dkobo
   env_file:
