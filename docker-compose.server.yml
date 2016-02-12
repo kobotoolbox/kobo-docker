@@ -1,0 +1,154 @@
+rabbit:
+  image: kobotoolbox/rabbit:latest
+  # build: ./base_images/rabbit
+  hostname: rabbit
+  environment:
+    - RABBITMQ_LOGS=-
+    - RABBITMQ_SASL_LOGS=-
+  restart: always
+
+psql:
+  image: kobotoolbox/psql:latest
+  # build: ./base_images/psql
+  hostname: psql
+  volumes:
+    - "./.vols/db:/srv/db"
+  restart: always
+
+mongo:
+  image: kobotoolbox/mongo:latest
+  # build: ./base_images/mongo
+  hostname: mongo
+  environment:
+    - MONGO_DATA=/srv/db
+  volumes:
+    - "./.vols/mongo:/srv/db"
+  restart: always
+
+kobocat:
+  image: kobotoolbox/kobocat:latest
+  # build: ../kobocat
+  hostname: kobocat
+  env_file:
+    - ./envfile.txt
+  links:
+    - rabbit
+    - mongo
+    - psql
+  volumes:
+    - "./.vols/static/kobocat:/srv/static"
+    - ./computed_vars.source.bash:/tmp/computed_vars.source.bash:ro
+  environment:
+    - KOBOCAT_BROKER_URL=amqp://guest:guest@rabbit:5672/
+    - ENKETO_PROTOCOL=http
+    - ENKETO_VERSION=express
+    - DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
+    - DJANGO_DEBUG=False
+    - DATABASE_URL=postgis://kobo:kobo@psql:5432/kobotoolbox
+    - KOBO_PSQL_DB_NAME=kobotoolbox
+    - KOBO_PSQL_DB_USER=kobo
+    #- KOBOCAT_TEMPLATES_PATH=/srv/src/kobocat-template
+  restart: always
+  # # When testing with a manipulated `/etc/hosts` file.
+  # extra_hosts:
+  # - 'kf-local.kobotoolbox.org:10.0.0.156'
+  # - 'ee-local.kobotoolbox.org:10.0.0.156'
+
+kpi:
+  image: kobotoolbox/kpi:latest
+  # build: ../kpi
+  hostname: kpi
+  env_file:
+    - ./envfile.txt
+  volumes:
+    - "./.vols/static/kpi:/srv/static"
+    # The Whoosh search index needs persistent storage
+    - "./.vols/whoosh:/srv/whoosh"
+    - ./computed_vars.source.bash:/tmp/computed_vars.source.bash:ro
+  environment:
+    - ENKETO_VERSION=express
+    - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
+    - DJANGO_DEBUG=False
+    - KPI_PREFIX=/
+  links:
+    - psql
+    - rabbit
+  restart: always
+  # When testing with a manipulated `/etc/hosts` file.
+  # extra_hosts:
+  # - 'kc-local.kobotoolbox.org:10.0.0.156'
+
+nginx:
+  image: kobotoolbox/nginx:latest
+  # build: ./base_images/nginx
+  hostname: nginx
+  env_file:
+    - ./envfile.txt
+  ports:
+    - 80:80
+    - 443:443
+  volumes:
+      - "./.vols/static:/srv/www:ro"
+      # get the logs out of glusterfs!
+      - "./.vols/../log/nginx:/var/log/nginx"
+      - ./nginx_site_https.conf.tmpl:/tmp/nginx_site_https.conf.tmpl:ro
+      - ./nginx_command.bash:/etc/service/nginx/run:ro
+      - ./secrets/:/tmp/kobo_toolbox_secrets/:ro
+  links:
+    - kobocat
+    - dkobo
+    - kpi
+    - enketo_express
+  restart: always
+
+# Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
+enketo_express:
+  image: kobotoolbox/enketo_express
+  # build: ../enketo-express/
+  env_file:
+    - ./envfile.txt
+  links:
+    - redis_main
+    - redis_cache
+  restart: always
+  # When testing with a manipulated `/etc/hosts` file.
+  # extra_hosts:
+  # - 'kf-local.kobotoolbox.org:10.0.0.156'
+  # - 'kc-local.kobotoolbox.org:10.0.0.156'
+
+# Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
+redis_main:
+  image: redis:2.6
+  # Map our "main" Redis config into the container.
+  volumes:
+    - ./redis-enketo-main.conf:/etc/redis/redis.conf
+    - "./.vols/redis_main_data/:/data/"
+  restart: always
+
+# Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
+redis_cache:
+  image: redis:2.6
+  # Map our "cache" Redis config into the container.
+  volumes:
+    - ./redis-enketo-cache.conf:/etc/redis/redis.conf
+  restart: always
+
+dkobo:
+  image: kobotoolbox/dkobo:latest
+  # build: ../dkobo
+  hostname: dkobo
+  env_file:
+    - ./envfile.txt
+  volumes:
+    - "./.vols/static/koboform:/srv/static"
+    - ./computed_vars.source.bash:/tmp/computed_vars.source.bash:ro
+    - ./kobo_local/dkobo_command.bash:/tmp/dkobo_command.bash:ro
+  environment:
+    - ENKETO_VERSION=express
+    - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
+    - DJANGO_SETTINGS_MODULE=dkobo.settings
+    - DJANGO_DEBUG=False
+  links:
+    - psql
+  restart: always
+  command: bash /tmp/dkobo_command.bash
