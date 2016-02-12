@@ -1,3 +1,5 @@
+# For public, HTTPS servers.
+
 rabbit:
   image: kobotoolbox/rabbit:docker_local
   # build: ./base_images/rabbit
@@ -37,7 +39,10 @@ kobocat:
     - psql
   volumes:
     - "./.vols/static/kobocat:/srv/static"
-    - ./computed_vars.source.bash:/tmp/computed_vars.source.bash:ro
+    - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/00_wait_for_rabbit.bash
+    - ./scripts/wait_for_mongo.bash:/etc/my_init.d/01_wait_for_mongo.bash
+    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash
+    - ./computed_vars.source.bash:/etc/profile:ro
   environment:
     - KOBOCAT_BROKER_URL=amqp://guest:guest@rabbit:5672/
     - ENKETO_PROTOCOL=http
@@ -60,19 +65,21 @@ kpi:
   hostname: kpi
   env_file:
     - ./envfile.txt
+  links:
+    - psql
+    - rabbit
   volumes:
     - "./.vols/static/kpi:/srv/static"
     # The Whoosh search index needs persistent storage
     - "./.vols/whoosh:/srv/whoosh"
+    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/00_wait_for_postgres.bash
+    - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash
     - ./computed_vars.source.bash:/tmp/computed_vars.source.bash:ro
   environment:
     - ENKETO_VERSION=express
     - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
     - DJANGO_DEBUG=False
     - KPI_PREFIX=/
-  links:
-    - psql
-    - rabbit
   restart: always
   # When testing with a manipulated `/etc/hosts` file.
   # extra_hosts:
@@ -139,8 +146,11 @@ dkobo:
   hostname: dkobo
   env_file:
     - ./envfile.txt
+  links:
+    - psql
   volumes:
     - "./.vols/static/koboform:/srv/static"
+    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/00_wait_for_postgres.bash
     - ./computed_vars.source.bash:/tmp/computed_vars.source.bash:ro
     - ./kobo_local/dkobo_command.bash:/tmp/dkobo_command.bash:ro
   environment:
@@ -148,7 +158,5 @@ dkobo:
     - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
     - DJANGO_SETTINGS_MODULE=dkobo.settings
     - DJANGO_DEBUG=False
-  links:
-    - psql
   restart: always
   command: bash /tmp/dkobo_command.bash
