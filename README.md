@@ -12,6 +12,8 @@ Future home of KoBo Toolbox's Docker configuration.
 8. Start the server: `docker-compose -f docker-compose.server.yml up` (or with `up -d` to run in background)
 
 # TODO
-. Enketo Express authentication issue.
-. KoBoCAT login redirect (e.g https://kf-local.kobotoolbox.org/accounts/login/?next=/kobocat/ -> https://kf-local.kobotoolbox.org/kobocat/ -> `404`)
-. ...
+* Enketo Express authentication issue.
+* KoBoCAT login redirect (e.g https://kf-local.kobotoolbox.org/accounts/login/?next=/kobocat/ -> https://kf-local.kobotoolbox.org/kobocat/ -> `404`)
+* SMTP e-mail.
+* Media files?
+* Maps?
