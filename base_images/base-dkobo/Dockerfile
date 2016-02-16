@@ -18,3 +18,11 @@ RUN mkdir -p /srv/src && \
     npm --no-color install \
         yuglify && \
     chown -R wsgi /srv/src/koboform
+
+USER wsgi
+
+RUN cd /srv/src/koboform && \
+    bower install --config.interactive=false && \
+    npm --no-color install --save-dev
+
+USER root
