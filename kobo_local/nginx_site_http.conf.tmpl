@@ -17,10 +17,14 @@ server {
     # further ado, since ODK Collect makes requests containing those terms and
     # does not support any kind of redirection.
     location ~ (submission|formList) {
-       uwsgi_read_timeout 130;
-       uwsgi_send_timeout 130;
-       uwsgi_pass kobocat:8000;
-       include /etc/nginx/uwsgi_params;
+        uwsgi_read_timeout 130;
+        uwsgi_send_timeout 130;
+        uwsgi_pass kobocat:8000;
+        include /etc/nginx/uwsgi_params;
+
+        # For testing without uWSGI:
+        # proxy_pass http://kobocat:8000;
+        # proxy_set_header Host $http_host;
     }
 
     location /static {
@@ -54,6 +58,10 @@ server {
         uwsgi_send_timeout 130;
         uwsgi_pass dkobo:8000;
         include /etc/nginx/uwsgi_params;
+
+        # For testing without uWSGI:
+        # proxy_pass http://dkobo:8000;
+        # proxy_set_header Host $http_host;
     }
 }
 
@@ -95,6 +103,10 @@ server {
         uwsgi_send_timeout 130;
         uwsgi_pass kpi:8000;
         include /etc/nginx/uwsgi_params;
+
+        # For testing without uWSGI:
+        # proxy_pass http://kpi:8000;
+        # proxy_set_header Host $http_host;
     }
 }
 
