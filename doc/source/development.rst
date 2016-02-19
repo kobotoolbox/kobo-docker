@@ -17,19 +17,31 @@ Access the Python code and server
 
 The Python code is usually located at /srv/src/.
 
-For Django, it is served using uwsgi. If you wish to use the dev server for debugging, kill uwsgi::
+You can create a superuser the usual way:
+
+.. code-block:: bash
+
+    ./manage.py createsuperuser
+
+For Django, it is served using uwsgi. If you wish to use the dev server for debugging, kill uwsgi:
+
+.. code-block:: bash
 
     sv stop wsgi  # stop the service (to avoid auto restart)
     killall -s INT uwsgi  # kill current instances
 
 Then start the dev server. E.G, for kobocat:
 
+.. code-block:: bash
+
     cd /srv/src/kobocat # go to the project dir
     python ./manage.py runserver 0.0.0.0:8000 # 0.0.0.0 so it listen to all interfaces
 
 But nginx is configured to proxy to uswgi, so you need to enter the nginx docker image, and edit the config file to replace all uwsgi commands by regular proxy_pass.
 
-E.G, for kobocat::
+E.G, for kobocat:
+
+.. code-block:: bash
 
     vi /etc/nginx/conf.d/kobo_site_http.conf
 
@@ -52,15 +64,19 @@ To code looking like::
     proxy_set_header X-Real-IP $remote_addr ;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for ;
 
-And reload nginx conf::
+And reload nginx conf:
+
+.. code-block:: bash
 
     nginx -s reload
 
-You can also edit any *.tpl file in /etc/nginx/ and run sv restart nginx to rebuild /etc/nginx/conf.d/kobo_site_http.conf .
+You can also edit any \*.tpl file in /etc/nginx/ and run sv restart nginx to rebuild /etc/nginx/conf.d/kobo_site_http.conf .
 
 If you do that often, use a script.
 
-E.G, save this code in /tmp/set_conf_to_dev.py::
+E.G, save this code in /tmp/set_conf_to_dev.py:
+
+.. code-block:: python
 
 
     import re, sys, os
@@ -101,7 +117,9 @@ E.G, save this code in /tmp/set_conf_to_dev.py::
     print('ok')
 
 
-Then run::
+Then run:
+
+.. code-block:: bash
 
     python /tmp/set_conf_to_dev.py /etc/nginx/file_you_want_to_edit1 /etc/nginx/file_you_want_to_edit2...
 

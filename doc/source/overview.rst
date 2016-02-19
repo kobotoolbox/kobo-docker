@@ -1,6 +1,9 @@
 Overview
 --------------------------
 
+Key components
+==============
+
 The kobo toolbox is distributed as a group of docker images:
 
 - rabbit: rabbit MQ broken. Used for queuing background tasks.
@@ -15,6 +18,8 @@ The kobo toolbox is distributed as a group of docker images:
 - dkobo: legacy code for building forms.
 
 We use docker compose to orchestrate all images, all configuration going to docker-compose.*.yml files.
+
+A lot of the configuration is tweakable using env variable listed in template files.
 
 .. warning::
    Setuping the whole kobo toolbox can take some time and require an good internet connection as

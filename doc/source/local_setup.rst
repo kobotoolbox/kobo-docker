@@ -1,6 +1,9 @@
 Local setup
 --------------------------
 
+Configuration
+===============
+
 Fill in the mandatory variables and, as needed, the optional variables in envfile.txt.
 
 E.G:
@@ -23,6 +26,9 @@ Make sure you don't have any previously persisted file (logs, database, static f
 
     # BE CAREFUL WITH THIS ONE, check the path twice as you are running rm with sudo
     sudo rm -rf .vols/ log/
+
+Building and running docker images
+===================================
 
 Make sure you don't have container running, then clear previously built containers:
 
@@ -90,5 +96,5 @@ Finally start all images:
 
 Ang go to::
 
-    http://127.0.0.1:8000/
+    http://127.0.0.1:8001/
 

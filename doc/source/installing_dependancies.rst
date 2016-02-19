@@ -1,6 +1,9 @@
 Installing dependancies
 --------------------------
 
+Docker config and images
+========================
+
 To install the entiere Kobo environment, you need git, docker and docker compose.
 
 On Ubuntu 14.04, you can install these dependancies this way:
@@ -33,6 +36,9 @@ Then you must clone the `kobo-docker repository <https://github.com/kobotoolbox/
     git clone https://github.com/kobotoolbox/kobo-docker.git
     cd kobo-docker
     git checkout docker_local
+
+Troubleshoutting
+================
 
 You should check docker is running:
 

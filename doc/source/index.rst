@@ -14,9 +14,9 @@ Contents:
    overview
    installing_dependancies
    local_setup
-   devlopment
+   development
 
-   For server setup, check the README.rst file.
+For server setup, check the README.rst file.
 
 
 
