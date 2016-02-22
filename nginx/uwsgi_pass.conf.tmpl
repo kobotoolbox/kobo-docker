@@ -1,0 +1,7 @@
+# `envsubst` template.
+# Context: location
+
+uwsgi_read_timeout 130;
+uwsgi_send_timeout 130;
+uwsgi_pass ${container_name}:${container_port};
+include /etc/nginx/uwsgi_params;
