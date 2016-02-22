@@ -72,8 +72,8 @@ kpi:
     - "./.vols/static/kpi:/srv/static"
     # The Whoosh search index needs persistent storage
     - "./.vols/whoosh:/srv/whoosh"
-    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/01_wait_for_postgres.bash
-    - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/02_wait_for_rabbit.bash
+    - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash
+    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash
     - ./scripts/computed_vars.server.source.bash:/etc/profile.d/kpi_computed_vars.source.bash.sh:ro
   environment:
     - ENKETO_VERSION=express
