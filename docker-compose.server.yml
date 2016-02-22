@@ -32,7 +32,7 @@ kobocat:
   # build: ../kobocat
   hostname: kobocat
   env_file:
-    - ./envfile.txt
+    - ./envfile.server.txt
   links:
     - rabbit
     - mongo
@@ -42,7 +42,7 @@ kobocat:
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash
     - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash
-    - ./computed_vars.source.bash:/etc/profile.d/kobocat_computed_vars.source.bash.sh:ro
+    - ./scripts/computed_vars.server.source.bash:/etc/profile.d/kobocat_computed_vars.source.bash.sh:ro
   environment:
     - KOBOCAT_BROKER_URL=amqp://guest:guest@rabbit:5672/
     - ENKETO_PROTOCOL=https
@@ -64,7 +64,7 @@ kpi:
   # build: ../kpi
   hostname: kpi
   env_file:
-    - ./envfile.txt
+    - ./envfile.server.txt
   links:
     - psql
     - rabbit
@@ -74,7 +74,7 @@ kpi:
     - "./.vols/whoosh:/srv/whoosh"
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/01_wait_for_postgres.bash
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/02_wait_for_rabbit.bash
-    - ./computed_vars.source.bash:/etc/profile.d/kpi_computed_vars.source.bash.sh:ro
+    - ./scripts/computed_vars.server.source.bash:/etc/profile.d/kpi_computed_vars.source.bash.sh:ro
   environment:
     - ENKETO_VERSION=express
     - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
@@ -90,10 +90,10 @@ nginx:
   # build: ./base_images/nginx
   hostname: nginx
   env_file:
-    - ./envfile.txt
+    - ./envfile.server.txt
   environment:
     - NGINX_CONFIG_FILE_NAME=nginx_site_https.conf
-    - NGINX_DEBUG_kpi=True
+    - NGINX_DEBUG_kpi=False
     - NGINX_DEBUG_dkobo=False
     - NGINX_DEBUG_kobocat=False
     - TEMPLATED_VAR_REFS=$${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
@@ -119,7 +119,7 @@ enketo_express:
   image: kobotoolbox/enketo_express
   # build: ../enketo-express/
   env_file:
-    - ./envfile.txt
+    - ./envfile.server.txt
   links:
     - redis_main
     - redis_cache
@@ -134,7 +134,7 @@ redis_main:
   image: redis:2.6
   # Map our "main" Redis config into the container.
   volumes:
-    - ./redis-enketo-main.conf:/etc/redis/redis.conf
+    - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf
     - "./.vols/redis_main_data/:/data/"
   restart: always
 
@@ -143,7 +143,7 @@ redis_cache:
   image: redis:2.6
   # Map our "cache" Redis config into the container.
   volumes:
-    - ./redis-enketo-cache.conf:/etc/redis/redis.conf
+    - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf
   restart: always
 
 dkobo:
@@ -151,14 +151,14 @@ dkobo:
   # build: ../dkobo
   hostname: dkobo
   env_file:
-    - ./envfile.txt
+    - ./envfile.server.txt
   links:
     - psql
   volumes:
     - "./.vols/static/koboform:/srv/static"
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/01_wait_for_postgres.bash
-    - ./computed_vars.source.bash:/etc/profile.d/dkobo_computed_vars.source.bash.sh:ro
-    - ./kobo_local/dkobo_command.bash:/tmp/dkobo_command.bash:ro
+    - ./scripts/computed_vars.server.source.bash:/etc/profile.d/dkobo_computed_vars.source.bash.sh:ro
+    - ./scripts/dkobo_command.bash:/tmp/dkobo_command.bash:ro
   environment:
     - ENKETO_VERSION=express
     - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
