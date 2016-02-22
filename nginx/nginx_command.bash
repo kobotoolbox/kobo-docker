@@ -1,15 +1,15 @@
 #!/bin/bash
+set -e
 
 ORIGINAL_DIR='/tmp/kobo_nginx'
 TEMPLATES_ENABLED_DIR='/tmp/nginx_templates_activated'
 
 mkdir -p ${TEMPLATES_ENABLED_DIR}
 
-templated_var_refs='${KOBOCAT_PUBLIC_PORT} ${KOBOFORM_PUBLIC_PORT} ${KPI_PUBLIC_PORT} ${ENKETO_EXPRESS_PUBLIC_PORT}'
-
 echo "Clearing out any default configurations."
 rm -rf /etc/nginx/conf.d/*
 
+templated_var_refs="${TEMPLATED_VAR_REFS}"
 declare -A container_ports
 container_ports=( ['kpi']='8000' ['dkobo']='8000' ['kobocat']='8000' )
 for container_name in "${!container_ports[@]}"; do
@@ -47,7 +47,7 @@ for container_name in "${!container_ports[@]}"; do
 done
 
 # Do environment variable substitutions and activate the resulting config. file.
-cat /tmp/nginx_site_http.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/conf.d/kobo_site_http.conf
+cat ${ORIGINAL_DIR}/${NGINX_CONFIG_FILE_NAME}.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/conf.d/${NGINX_CONFIG_FILE_NAME}
 
 # Start Nginx.
 nginx &

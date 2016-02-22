@@ -91,6 +91,12 @@ nginx:
   hostname: nginx
   env_file:
     - ./envfile.txt
+  environment:
+    - NGINX_CONFIG_FILE_NAME=nginx_site_https.conf
+    - NGINX_DEBUG_kpi=True
+    - NGINX_DEBUG_dkobo=False
+    - NGINX_DEBUG_kobocat=False
+    - TEMPLATED_VAR_REFS=$${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
   ports:
     - 80:80
     - 443:443
@@ -98,8 +104,8 @@ nginx:
       - "./.vols/static:/srv/www:ro"
       # get the logs out of glusterfs!
       - "./.vols/../log/nginx:/var/log/nginx"
-      - ./nginx_site_https.conf.tmpl:/tmp/nginx_site_https.conf.tmpl:ro
-      - ./nginx_command.bash:/etc/service/nginx/run:ro
+      - ./nginx/:/tmp/kobo_nginx/:ro
+      - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
       - ./secrets/:/tmp/kobo_toolbox_secrets/:ro
   links:
     - kobocat

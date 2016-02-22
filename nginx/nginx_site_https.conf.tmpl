@@ -22,26 +22,20 @@ server {
     # further ado, since ODK Collect makes requests containing those terms and
     # does not support any kind of redirection.
     location ~ (submission|formList) {
-        uwsgi_read_timeout 130;
-        uwsgi_send_timeout 130;
-        uwsgi_pass kobocat:8000;
-        include /etc/nginx/uwsgi_params;
+        # Proxy through uWSGI.
+        ${kobocat_include_uwsgi_pass}
 
-        # For testing without uWSGI:
-        # proxy_pass http://kobocat:8000;
-        # proxy_set_header Host $http_host;
+        # Debug proxying directly to container.
+        ${kobocat_include_proxy_pass}
     }
 
     # Setting identical to above...
     location / {
-        uwsgi_read_timeout 130;
-        uwsgi_send_timeout 130;
-        uwsgi_pass kobocat:8000;
-        include /etc/nginx/uwsgi_params;
+        # Proxy through uWSGI.
+        ${kobocat_include_uwsgi_pass}
 
-        # For testing without uWSGI:
-        # proxy_pass http://kobocat:8000;
-        # proxy_set_header Host $http_host;
+        # Debug proxying directly to container.
+        ${kobocat_include_proxy_pass}
     }
 
     location /static {
@@ -70,14 +64,11 @@ server {
     error_log   /var/log/nginx/kobocat.error.log;
 
     location / {
-        uwsgi_read_timeout 130;
-        uwsgi_send_timeout 130;
-        uwsgi_pass kobocat:8000;
-        include /etc/nginx/uwsgi_params;
+        # Proxy through uWSGI.
+        ${kobocat_include_uwsgi_pass}
 
-        # For testing without uWSGI:
-        # proxy_pass http://kobocat:8000;
-        # proxy_set_header Host $http_host;
+        # Debug proxying directly to container.
+        ${kobocat_include_proxy_pass}
     }
 
     location /static {
@@ -136,14 +127,11 @@ server {
     error_page 418 = /static/html/Offline.html;
 
     location / {
-        uwsgi_read_timeout 130;
-        uwsgi_send_timeout 130;
-        uwsgi_pass kpi:8000;
-        include /etc/nginx/uwsgi_params;
+        # Proxy through uWSGI.
+        ${kpi_include_uwsgi_pass}
 
-        # For testing without uWSGI:
-        # proxy_pass http://kpi:8000;
-        # proxy_set_header Host $http_host;
+        # Debug proxying directly to container.
+        ${kpi_include_proxy_pass}
     }
 }
 
