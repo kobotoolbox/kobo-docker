@@ -1,20 +1,21 @@
-# kobo-docker
-Future home of KoBo Toolbox's Docker configuration.
-
-# Temporary setup procedure for server installations (e.g. UNHCR)
-1. Fill in the mandatory variables and, as needed, the optional variables in [`envfile.server.txt`](./envfile.server.txt). Make sure the domain and subdomains you specify are valid for your SSL certificate.
-2. If testing on a server that is not associated with the subdomains you've specified in [`envfile.server.txt`](./envfile.server.txt), put an entry in your `/etc/hosts` file for each the three subdomains you entered that points to your server's address (e.g. `192.168.1.1 kf-local.kobotoolbox.org`). Also, uncomment and configure the `extra_hosts` directives in [`docker-compose.server.yml`](./docker-compose.server.yml).
-3. Make a `secrets` directory in the project root and copy the SSL certificate and key files to `secrets/ssl.crt` and `secrets/ssl.key` respectively. The certificate is expected to be a wildcard certificate valid for the domain and subdomains you entered in step 1.
-4. Optionally clear previously persisted files: `sudo rm -rf .vols/ log/`
-5. Optionally clear previously built containers: `docker-compose -f docker-compose.server.yml rm -f`
-6. As a temporary workaround to avoid a race condition, manually initiate `kpi` database sync and migrations (quit with `CTRL+C` once UWSGI has started): `docker-compose -f docker-compose.server.yml run --rm kpi`
-7. As a temporary workaround to avoid a race condition, manually initiate `dkobo` (yes, really) database sync and migrations, and initialize an admin user with credentials `kobo:kobo` (quit with `CTRL+C` once UWSGI has started): `docker-compose -f docker-compose.server.yml run --rm dkobo`
-8. As a temporary workaround to avoid a race condition, manually initiate `kobocat` database sync and migrations (quit with `CTRL+C` once UWSGI has started): `docker-compose -f docker-compose.server.yml run --rm kobocat`
-9. Start the server: `docker-compose -f docker-compose.server.yml up` (or with `up -d` to run in background)
+# Temporary setup procedure
+1. Determine whether you want to create an HTTP-only local instance of KoBo Toolbox, or a HTTPS publicly-accessible server instance (for testing, there are workarounds if your server is not yet publicly accessible).
+2. Create a symlink from either [`docker-compose.local.yml`](./docker-compose.local.yml) or [`docker-compose.server.yml`](./docker-compose.server.yml) to `docker-compose.yml` (e.g. `ln -s docker-compose.local.yml docker-compose.yml`). Otherwise, you'll have to prefix all Docker Compose commands like `docker-compose -f docker-compose.local.yml`.
+3. Pull the latest images from Docker Hub: `docker-compose pull`.
+4. Build any overridden images: `docker-compose build`.
+3. Edit the appropriate environment file, [`envfile.local.txt`](./envfile.local.txt) or [`envfile.server.txt`](./envfile.server.txt), filling in **all** mandatory variables, and optional variables as needed.
+4. Server-specific:
+  1. Make a `secrets` directory in the project root and copy the SSL certificate and key files to `secrets/ssl.crt` and `secrets/ssl.key` respectively. **The certificate are expected to use exactly these names and describe a wildcard or SAN certificate valid for the domain and subdomains named in [`envfile.server.txt`](./envfile.server.txt).**
+  2. If testing on a server that is not publicly accessible at the subdomains you've specified in [`envfile.server.txt`](./envfile.server.txt), put an entry in your `/etc/hosts` file for each the three subdomains you entered that points to your server's address (e.g. `192.168.1.1 kf-local.kobotoolbox.org`). Also, uncomment and configure the `extra_hosts` directives in [`docker-compose.server.yml`](./docker-compose.server.yml).
+5. Optionally clear previously persisted files: `sudo rm -rf .vols/ log/`
+6. Optionally stop and clear previously built `kobo-docker` containers: `docker-compose stop; docker-compose rm -f`
+7. As a temporary workaround to avoid a race condition, manually initiate `kpi` database sync and migrations (quit with `CTRL+C` once UWSGI has started): `docker-compose -f run --rm kpi`
+8. As a temporary workaround to avoid a race condition, manually initiate `dkobo` (yes, really) database sync and migrations, and initialize an admin user with credentials `kobo:kobo` (quit with `CTRL+C` once UWSGI has started): `docker-compose run --rm dkobo`
+9. As a temporary workaround to avoid a race condition, manually initiate `kobocat` database sync and migrations (quit with `CTRL+C` once UWSGI has started): `docker-compose run --rm kobocat`
+10. Start the server: `docker-compose up` (or with `up -d` to run in background)
+11. Logs for an individual container can be viewed by using the container name from your `docker-compose.yml` with e.g. `docker-compose logs enketo_express`.
 
 # TODO
-* Enketo Express authentication issue.
 * KoBoCAT login redirect (e.g https://kf-local.kobotoolbox.org/accounts/login/?next=/kobocat/ -> https://kf-local.kobotoolbox.org/kobocat/ -> `404`)
-* SMTP e-mail.
-* Media files?
+* SMTP e-mail?
 * Maps?
