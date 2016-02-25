@@ -1,0 +1,179 @@
+# `envsubst` template.
+# Context: http
+
+charset     utf-8;
+
+# The ORDER of the servers is important!
+# Dumb, non-SNI clients will receive the certificate
+# for the first HTTPS server listed.
+
+# KoBoCAT HTTP.
+server {
+    listen      80;
+    server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+
+    access_log  /var/log/nginx/kobocat.access.log;
+    error_log   /var/log/nginx/kobocat.error.log;
+
+    # max upload size
+    client_max_body_size 75M;
+
+    # Serve locations containing 'submission' or 'formList' via HTTP without
+    # further ado, since ODK Collect makes requests containing those terms and
+    # does not support any kind of redirection.
+    location ~ (submission|formList) {
+        # Proxy through uWSGI.
+        ${kobocat_include_uwsgi_pass}
+
+        # Debug proxying directly to container.
+        ${kobocat_include_proxy_pass}
+    }
+
+    # Setting identical to above...
+    location / {
+        # Proxy through uWSGI.
+        ${kobocat_include_uwsgi_pass}
+
+        # Debug proxying directly to container.
+        ${kobocat_include_proxy_pass}
+    }
+
+    location /static {
+        alias /srv/www/kobocat;
+    }
+}
+
+# KoBoCAT HTTPS.
+server {
+    listen      443 ssl;
+    server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+    ssl_certificate /tmp/kobo_toolbox_secrets/ssl.crt;
+    ssl_certificate_key /tmp/kobo_toolbox_secrets/ssl.key;
+    
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    # ssl_ciphers prevents Forward Secrecy; requires >ie6/winxp
+    # DHE-RSA-AES128-SHA provides Android 2.3 compatibility. No need
+    # to add it again to the kf.kobotoolbox.org configuration;
+    # old Android doesn't support SNI and would never see it there.
+    ssl_ciphers 'AES256+EECDH:AES256+EDH:DHE-RSA-AES128-SHA';
+
+    # max upload size
+    client_max_body_size 75M;
+
+    access_log  /var/log/nginx/kobocat.access.log;
+    error_log   /var/log/nginx/kobocat.error.log;
+
+    location / {
+        # Proxy through uWSGI.
+        ${kobocat_include_uwsgi_pass}
+
+        # Debug proxying directly to container.
+        ${kobocat_include_proxy_pass}
+    }
+
+    location /static {
+        alias /srv/www/kobocat;
+    }
+}
+
+# KoBoForm HTTP.
+server {
+    listen      80;
+    server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+
+    access_log  /var/log/nginx/kpi.access.log;
+    error_log   /var/log/nginx/kpi.error.log;
+    
+    return 301 https://$server_name$request_uri;
+}
+
+# KoBoForm HTTPS.
+server {
+    listen      443 ssl;
+    server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+    ssl_certificate_key /tmp/kobo_toolbox_secrets/ssl.key;
+    ssl_certificate /tmp/kobo_toolbox_secrets/ssl.crt;
+
+    # max upload size
+    client_max_body_size 75M;
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers   'AES256+EECDH:AES256+EDH';
+
+    location /static {
+        alias /srv/www/kpi;
+
+        # gzip configs from here
+        # http://stackoverflow.com/a/12644530/3088435
+        gzip on;
+        gzip_disable "msie6";
+        gzip_comp_level 6;
+        gzip_min_length 1100;
+        gzip_buffers 16 8k;
+        gzip_proxied any;
+        gzip_types
+            text/plain
+            text/css
+            text/js
+            text/xml
+            text/javascript
+            application/javascript
+            application/x-javascript
+            application/json
+            application/xml
+            application/xml+rss;
+    }
+
+    error_page 418 = /static/html/Offline.html;
+
+    location / {
+        # Proxy through uWSGI.
+        ${kpi_include_uwsgi_pass}
+
+        # Debug proxying directly to container.
+        ${kpi_include_proxy_pass}
+    }
+}
+
+# Enketo Express HTTP.
+server {
+    listen       80;
+    server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+    return 301 https://$http_host$request_uri;
+}
+
+server {
+    listen 443;
+    server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+
+    ssl on;
+    ssl_certificate     /tmp/kobo_toolbox_secrets/ssl.crt;
+    ssl_certificate_key /tmp/kobo_toolbox_secrets/ssl.key;
+
+    ssl_ciphers "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_session_cache shared:SSL:10m;
+
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    resolver 8.8.4.4 8.8.8.8 valid=300s;
+    resolver_timeout 10s;
+
+    ssl_prefer_server_ciphers on;
+    # TODO: Automatically activate this if `dhparam.pem` provided.
+    #ssl_dhparam /etc/nginx/ssl/dhparam.pem;
+
+    add_header Strict-Transport-Security max-age=63072000;
+    #add_header X-Frame-Options DENY; 
+    add_header X-Content-Type-Options nosniff;
+
+    location / {
+        proxy_pass  http://enketo_express:8005/;
+        proxy_redirect off;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr ;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for ;
+        proxy_set_header X-Forwarded-Proto https ;
+    }
+}

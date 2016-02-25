@@ -1,9 +1,10 @@
-FROM kobotoolbox/base-psql:latest
+FROM kobotoolbox/base-psql:docker_local
 
 MAINTAINER Serban Teodorescu, teodorescu.serban@gmail.com
 
 COPY pg_hba.conf postgresql.conf /etc/postgresql/9.3/main/
 COPY run_psql /etc/service/psql/run
+COPY ./init_postgres.bash /etc/my_init.d/init_postgres.bash
 
 #COPY server.crt server.key /srv/
 

@@ -1,0 +1,15 @@
+# Mandatory variables:
+PUBLIC_DOMAIN_NAME=kobotoolbox.org
+KOBOFORM_PUBLIC_SUBDOMAIN=kf-local
+KOBOCAT_PUBLIC_SUBDOMAIN=kc-local
+ENKETO_EXPRESS_PUBLIC_SUBDOMAIN=ee-local
+ENKETO_API_TOKEN=
+DJANGO_SECRET_KEY=
+
+# Optional variables:
+#EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+#EMAIL_HOST=
+#EMAIL_PORT=
+#EMAIL_HOST_USER=
+#EMAIL_HOST_PASSWORD=
+#EMAIL_USE_TLS=

@@ -1,3 +1,0 @@
-#!/bin/bash
-set -e
-exec /usr/local/bin/uwsgi --ini /srv/src/koboform.ini

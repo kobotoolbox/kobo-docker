@@ -1,35 +1,6 @@
 #!/bin/bash
 set -e
 
-PSQL_DB=${KOBO_PSQL_DB_NAME:-"kobotoolbox"}
-PSQL_USER=${KOBO_PSQL_DB_USER:-"kobo"}
-PSQL_PASS=${KOBO_PSQL_DB_PASS:-"kobo"}
-
-#PSQL_TEMPLATE=${POSTGRESQL_TEMPLATE:-"DEFAULT"}
-
 PSQL_BIN=/usr/lib/postgresql/9.3/bin/postgres
 PSQL_CONFIG_FILE=/etc/postgresql/9.3/main/postgresql.conf
-#PSQL_DATA=/var/lib/postgresql/9.3/main
-PSQL_DATA=/srv/db
-
-# prepare data directory and initialize database if necessary
-[ -d $PSQL_DATA ] || mkdir -p $PSQL_DATA
-chown -R postgres:postgres $PSQL_DATA
-[ $(cd $PSQL_DATA && ls -lA | wc -l) -ne 1 ] || \
-    sudo -u postgres /usr/lib/postgresql/9.3/bin/initdb -D /srv/db -E utf-8 --locale=en_US.UTF-8
-
-PSQL_SINGLE="sudo -u postgres $PSQL_BIN --single --config-file=$PSQL_CONFIG_FILE"
-
-$PSQL_SINGLE <<< "CREATE USER $PSQL_USER WITH SUPERUSER;" > /dev/null
-# $PSQL_SINGLE <<< "CREATE USER $PSQL_USER;" > /dev/null
-$PSQL_SINGLE <<< "ALTER USER $PSQL_USER WITH PASSWORD '$PSQL_PASS';" > /dev/null
-$PSQL_SINGLE <<< "CREATE DATABASE $PSQL_DB OWNER $PSQL_USER" > /dev/null
-# extensions cant be created in single mode.
-# we will rely on the client to create the extensions if not exists.
-# $PSQL_SINGLE $PSQL_DB <<< "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;" > /dev/null
-# just run:
-# sudo -u postgres psql $PSQL_DB -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"
-
-# TEMPLATE $PSQL_TEMPLATE ENCODING=UTF-8;
-
 exec /sbin/setuser postgres $PSQL_BIN --config-file=$PSQL_CONFIG_FILE

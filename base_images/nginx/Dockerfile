@@ -1,8 +1,7 @@
-FROM kobotoolbox/base-nginx:latest
+FROM kobotoolbox/base-nginx:docker_local
 
 MAINTAINER Serban Teodorescu, teodorescu.serban@gmail.com
 
-COPY nginx_templates/* run_nginx /srv/
 COPY uwsgi_params /etc/nginx/u_p
 RUN mv /srv/run_nginx /etc/service/nginx/run && \
     chmod +x /etc/service/nginx/run && \
