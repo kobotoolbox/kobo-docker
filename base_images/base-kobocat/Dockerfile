@@ -1,11 +1,9 @@
-FROM kobotoolbox/base-kobos:docker_local
+FROM kobotoolbox/base-kobos:latest
 
 MAINTAINER Serban Teodorescu, teodorescu.serban@gmail.com
 
 # Install `apt` dependencies.
-# FIXME: Use the `ADD` instead of `COPY` once `kobocat`'s `docker_local` branch has been merged.
-# ADD https://github.com/kobotoolbox/kobocat/raw/master/apt_requirements.txt
-COPY ./apt_requirements.txt /tmp/kobocat_apt_requirements.txt
+ADD https://github.com/kobotoolbox/kobocat/raw/master/apt_requirements.txt
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y $(cat /tmp/kobocat_apt_requirements.txt) && \

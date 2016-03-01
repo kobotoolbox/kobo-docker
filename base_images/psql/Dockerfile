@@ -1,4 +1,4 @@
-FROM kobotoolbox/base-psql:docker_local
+FROM kobotoolbox/base-psql:latest
 
 MAINTAINER Serban Teodorescu, teodorescu.serban@gmail.com
 

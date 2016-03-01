@@ -1,4 +1,4 @@
-FROM kobotoolbox/base-kobos:docker_local
+FROM kobotoolbox/base-kobos:latest
 
 MAINTAINER Serban Teodorescu, teodorescu.serban@gmail.com
 

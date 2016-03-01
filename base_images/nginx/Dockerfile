@@ -1,4 +1,4 @@
-FROM kobotoolbox/base-nginx:docker_local
+FROM kobotoolbox/base-nginx:latest
 
 MAINTAINER Serban Teodorescu, teodorescu.serban@gmail.com
 

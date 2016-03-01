@@ -29,13 +29,12 @@ Add yourself to the "docker" group so you don't have to use sudo for every docke
 You need to login and logout for this to take effect.
 
 
-Then you must clone the `kobo-docker repository <https://github.com/kobotoolbox/kobo-docker/tree/docker_local>`_, and currently work on the docker_local branch:
+Then you must clone the `kobo-docker repository <https://github.com/kobotoolbox/kobo-docker>`_:
 
 .. code-block:: bash
 
     git clone https://github.com/kobotoolbox/kobo-docker.git
     cd kobo-docker
-    git checkout docker_local
 
 Troubleshoutting
 ================
