@@ -1,5 +1,5 @@
-# Temporary Linux setup procedure:
-1. [Install Docker Compose](https://docs.docker.com/compose/install/).
+# Temporary setup procedure:
+1. [Install Docker Compose on Linux or OS X](https://docs.docker.com/compose/install/). Windows power users who've installed Python and `pip` can try [this hint from the Docker Compose repository](https://github.com/docker/compose/issues/1085#issuecomment-142491609).
 2. Determine whether you want to create an HTTP-only local instance of KoBo Toolbox, or a HTTPS publicly-accessible server instance (for testing, there are workarounds if your server is not yet publicly accessible).
 2. Create a symlink from either [`docker-compose.local.yml`](./docker-compose.local.yml) or [`docker-compose.server.yml`](./docker-compose.server.yml) to `docker-compose.yml` (e.g. `ln -s docker-compose.local.yml docker-compose.yml`). Otherwise, you'll have to prefix all Docker Compose commands like `docker-compose -f docker-compose.local.yml`.
 3. Pull the latest images from Docker Hub: `docker-compose pull`.
