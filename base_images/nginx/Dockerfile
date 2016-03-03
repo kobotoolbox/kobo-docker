@@ -9,9 +9,7 @@ RUN mv /srv/run_nginx /etc/service/nginx/run && \
     mv /srv/* /etc/nginx/ && \
     mv /etc/nginx/uwsgi_params /etc/nginx/uwsgi_params.bak && \
     mv /etc/nginx/u_p /etc/nginx/uwsgi_params && \
-    rm -rf /etc/nginx/sites-enabled/* && \
-    ln -s /etc/nginx/kobo.conf /etc/nginx/sites-enabled/kobo && \
-    rm -rf /etc/nginx/kobo.conf
+    rm -rf /etc/nginx/sites-enabled/*
 
 EXPOSE 80 443
 
