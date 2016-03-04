@@ -3,7 +3,7 @@ set -e
 
 echo 'Waiting for container `kpi`.'
 dockerize -timeout=20s -wait ${KPI_PORT}
-echo 'Container `psql` up.'
+echo 'Container `kpi` up.'
 
 echo 'Waiting for `kpi` uWSGI service.'
 # Beware the following hardcoded port number...
