@@ -37,29 +37,6 @@ server {
     }
 }
 
-
-# dkobo
-server {
-    listen ${KOBOFORM_PUBLIC_PORT};
-
-    access_log  /var/log/nginx/koboform.access.log;
-    error_log   /var/log/nginx/koboform.error.log;
-
-    location /static {
-        alias /srv/www/koboform;
-    }
-
-    error_page 418 = /static/html/Offline.html;
-
-    location / {
-        # Proxy through uWSGI.
-        ${dkobo_include_uwsgi_pass}
-
-        # Debug proxying directly to container.
-        ${dkobo_include_proxy_pass}
-    }
-}
-
 # kpi
 server {
     listen ${KPI_PUBLIC_PORT};

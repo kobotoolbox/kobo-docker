@@ -85,7 +85,6 @@ nginx:
   environment:
     - NGINX_CONFIG_FILE_NAME=nginx_site_http.conf
     - NGINX_DEBUG_kpi=False
-    - NGINX_DEBUG_dkobo=False
     - NGINX_DEBUG_kobocat=False
     - TEMPLATED_VAR_REFS=$${KOBOCAT_PUBLIC_PORT} $${KOBOFORM_PUBLIC_PORT} $${KPI_PUBLIC_PORT} $${ENKETO_EXPRESS_PUBLIC_PORT}
   ports:
@@ -101,7 +100,6 @@ nginx:
       - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
   links:
     - kobocat
-    - dkobo
     - kpi
     - enketo_express
   restart: always
@@ -133,24 +131,3 @@ redis_cache:
   volumes:
     - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf
   restart: always
-
-dkobo:
-  image: kobotoolbox/dkobo:latest
-  # build: ../dkobo
-  hostname: dkobo
-  env_file:
-    - ./envfile.local.txt
-  links:
-    - psql
-  volumes:
-    - "./.vols/static/koboform:/srv/static"
-    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/01_wait_for_postgres.bash
-    - ./scripts/computed_vars.local.source.bash:/etc/profile.d/dkobo_computed_vars.source.bash.sh:ro
-    - ./scripts/dkobo_command.bash:/tmp/dkobo_command.bash:ro
-  environment:
-    - ENKETO_VERSION=express
-    - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
-    - DJANGO_SETTINGS_MODULE=dkobo.settings
-    - DJANGO_DEBUG=False
-  restart: always
-  command: bash /tmp/dkobo_command.bash

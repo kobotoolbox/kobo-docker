@@ -15,7 +15,6 @@ The kobo toolbox is distributed as a group of docker images:
 - enketo_express: service use to display the forms on various UI.
 - redis_main: enkeko redis.
 - redis_cache: redis used for caching.
-- dkobo: legacy code for building forms.
 
 We use docker compose to orchestrate all images, all configuration going to docker-compose.*.yml files.
 

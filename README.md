@@ -8,15 +8,11 @@
 4. Server-specific:
   1. Make a `secrets` directory in the project root and copy the SSL certificate and key files to `secrets/ssl.crt` and `secrets/ssl.key` respectively. **The certificate and key are expected to use exactly these names and must comprise a wildcard or SAN certificate valid for the domain and subdomains named in [`envfile.server.txt`](./envfile.server.txt).**
   2. If testing on a server that is not publicly accessible at the subdomains you've specified in [`envfile.server.txt`](./envfile.server.txt), put an entry in your host machine's `/etc/hosts` file for each of the three subdomains you entered to reroute such requests to your machine's address (e.g. `192.168.1.1 kf-local.kobotoolbox.org`). Also, uncomment and configure the `extra_hosts` directives in [`docker-compose.server.yml`](./docker-compose.server.yml).
-5. Optionally clear persisted files from previous runs: `sudo rm -rf .vols/ log/`
-6. Optionally stop and clear previously built `kobo-docker` containers: `docker-compose stop; docker-compose rm`
-7. As a temporary workaround to avoid a race condition, manually initiate `kpi` database sync and migrations (quit with `CTRL+C` once UWSGI has started): `docker-compose run --rm kpi`
-8. As a temporary workaround to avoid a race condition, manually initiate `dkobo` (yes, really) database sync and migrations, and initialize an admin user with credentials `kobo:kobo` (quit with `CTRL+C` once UWSGI has started): `docker-compose run --rm dkobo`
-9. As a temporary workaround to avoid a race condition, manually initiate `kobocat` database sync and migrations (quit with `CTRL+C` once UWSGI has started): `docker-compose run --rm kobocat`
-10. Start the server: `docker-compose up` (or with `up -d` to run in background)
+5. Optionally clear persisted files from previous runs: `sudo rm -rf .vols/ log/`.
+6. Optionally stop and clear previously built `kobo-docker` containers: `docker-compose stop; docker-compose rm`.
+10. Start the server: `docker-compose up` (or with `up -d` to run in background).
 11. Logs for an individual container can be viewed by using the container name from your `docker-compose.yml` with e.g. `docker-compose logs enketo_express`.
 
 # TODO
-* KoBoCAT login redirect (e.g https://kf-local.kobotoolbox.org/accounts/login/?next=/kobocat/ -> https://kf-local.kobotoolbox.org/kobocat/ -> `404`)
-* SMTP e-mail?
+* KoBoCAT login redirect (e.g https://kc-local.kobotoolbox.org -> https://kf-local.kobotoolbox.org/accounts/login/?next=/kobocat/ -> https://kf-local.kobotoolbox.org/kobocat/ -> `404`)
 * Maps?

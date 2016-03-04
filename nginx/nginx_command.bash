@@ -11,7 +11,7 @@ rm -rf /etc/nginx/conf.d/*
 
 templated_var_refs="${TEMPLATED_VAR_REFS}"
 declare -A container_ports
-container_ports=( ['kpi']='8000' ['dkobo']='8000' ['kobocat']='8000' )
+container_ports=( ['kpi']='8000' ['kobocat']='8000' )
 for container_name in "${!container_ports[@]}"; do
 
     debug_varname="NGINX_DEBUG_${container_name}"     # E.g. `NGINX_DEBUG_kpi`.
@@ -50,10 +50,4 @@ done
 cat ${ORIGINAL_DIR}/${NGINX_CONFIG_FILE_NAME}.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/conf.d/${NGINX_CONFIG_FILE_NAME}
 
 # Start Nginx.
-nginx &
-nginx_pid=$!
-
-# When quitting, ensure an accurate exit code is reported.
-trap "echo 'SIGTERM recieved. Killing Nginx.' && kill -SIGTERM ${nginx_pid}" SIGTERM
-wait "${nginx_pid}"
-exit $(($? - 128 - 15)) # http://unix.stackexchange.com/questions/10231/when-does-the-system-send-a-sigterm-to-a-process#comment13523_10231
+exec nginx
