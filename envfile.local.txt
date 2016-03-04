@@ -4,6 +4,7 @@ ENKETO_API_TOKEN=
 DJANGO_SECRET_KEY=
 KOBO_SUPERUSER_USERNAME=
 KOBO_SUPERUSER_PASSWORD=
+# NOTE: Any changes to the public ports must also be reflected in the `ports` directives for the `nginx` container in `docker-compose.local.yml`.
 KPI_PUBLIC_PORT=8000
 KOBOCAT_PUBLIC_PORT=8001
 ENKETO_EXPRESS_PUBLIC_PORT=8005

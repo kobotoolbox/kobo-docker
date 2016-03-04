@@ -89,11 +89,11 @@ nginx:
     - NGINX_CONFIG_FILE_NAME=nginx_site_http.conf
     - NGINX_DEBUG_kpi=False
     - NGINX_DEBUG_kobocat=False
-    - TEMPLATED_VAR_REFS=$${KOBOCAT_PUBLIC_PORT} $${KPI_PUBLIC_PORT} $${ENKETO_EXPRESS_PUBLIC_PORT}
   ports:
-    - 8000:8000
-    - 8001:8001
-    - 8005:8005
+    # NOTE: The host ports (left of the ":") must match the values in `envfile.local.txt`. Do not modify the right hand side values (9000+).
+    - 8000:9000 # KPI
+    - 8001:9001 # KoBoCAT
+    - 8005:9005 # Enketo Express
   volumes:
       - "./.vols/static:/srv/www:ro"
       # get the logs out of glusterfs!

@@ -5,7 +5,7 @@ charset     utf-8;
 
 # KoBoCAT
 server {
-    listen       ${KOBOCAT_PUBLIC_PORT};
+    listen 9001;
 
     access_log  /var/log/nginx/kobocat.access.log;
     error_log   /var/log/nginx/kobocat.error.log;
@@ -39,7 +39,7 @@ server {
 
 # kpi
 server {
-    listen ${KPI_PUBLIC_PORT};
+    listen 9000;
 
     access_log  /var/log/nginx/kpi.access.log;
     error_log   /var/log/nginx/kpi.error.log;
@@ -81,7 +81,7 @@ server {
 
 # Enketo Express
 server {
-    listen ${ENKETO_EXPRESS_PUBLIC_PORT};
+    listen 9005;
 
     access_log  /var/log/nginx/enketo_express.access.log;
     error_log   /var/log/nginx/enketo_express.error.log;
