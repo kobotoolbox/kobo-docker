@@ -35,11 +35,13 @@ kobocat:
     - rabbit
     - mongo
     - psql
+    - kpi
   volumes:
     - "./.vols/static/kobocat:/srv/static"
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash
     - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash
+    - ./scripts/wait_for_kpi.bash:/etc/my_init.d/04_wait_for_kpi.bash:ro
     - ./scripts/computed_vars.local.source.bash:/etc/profile.d/kobocat_computed_vars.source.bash.sh:ro
   environment:
     - KOBOCAT_BROKER_URL=amqp://guest:guest@rabbit:5672/
@@ -68,6 +70,7 @@ kpi:
     - "./.vols/whoosh:/srv/whoosh"
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash
+    - ./scripts/create_kobo_superuser.bash://etc/my_init.d/20_create_kobo_superuser.bash:ro
     - ./scripts/computed_vars.local.source.bash:/etc/profile.d/kpi_computed_vars.source.bash.sh:ro
   environment:
     - ENKETO_VERSION=express
@@ -86,11 +89,10 @@ nginx:
     - NGINX_CONFIG_FILE_NAME=nginx_site_http.conf
     - NGINX_DEBUG_kpi=False
     - NGINX_DEBUG_kobocat=False
-    - TEMPLATED_VAR_REFS=$${KOBOCAT_PUBLIC_PORT} $${KOBOFORM_PUBLIC_PORT} $${KPI_PUBLIC_PORT} $${ENKETO_EXPRESS_PUBLIC_PORT}
+    - TEMPLATED_VAR_REFS=$${KOBOCAT_PUBLIC_PORT} $${KPI_PUBLIC_PORT} $${ENKETO_EXPRESS_PUBLIC_PORT}
   ports:
     - 8000:8000
     - 8001:8001
-    - 8002:8002
     - 8005:8005
   volumes:
       - "./.vols/static:/srv/www:ro"
