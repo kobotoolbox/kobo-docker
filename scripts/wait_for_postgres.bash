@@ -6,7 +6,7 @@ dockerize -timeout=20s -wait ${PSQL_PORT}
 echo 'Container `psql` up.'
 
 echo 'Waiting for Postgres service.'
-# FIXME: There must be a way to confirm Postgres is serving without these details.
+# FIXME: There must be a way to confirm Postgres is serving without these details or the resulting "incomplete startup packet" warning from Postgres.
 KOBO_PSQL_DB_NAME=${KOBO_PSQL_DB_NAME:-"kobotoolbox"}
 KOBO_PSQL_DB_USER=${KOBO_PSQL_DB_USER:-"kobo"}
 KOBO_PSQL_DB_PASS=${KOBO_PSQL_DB_PASS:-"kobo"}
