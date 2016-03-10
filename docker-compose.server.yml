@@ -45,6 +45,8 @@ kobocat:
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
     - ./scripts/wait_for_kpi.bash:/etc/my_init.d/04_wait_for_kpi.bash:ro
     - ./scripts/computed_vars.server.source.bash:/etc/profile.d/kobocat_computed_vars.source.bash.sh:ro
+    # Use the live `kobocat` directory from the host machine (for development).
+    # - ../kobocat:/srv/src/kobocat
   environment:
     - KOBOCAT_BROKER_URL=amqp://guest:guest@rabbit:5672/
     - ENKETO_PROTOCOL=https
@@ -54,7 +56,6 @@ kobocat:
     - DATABASE_URL=postgis://kobo:kobo@psql:5432/kobotoolbox
     - KOBO_PSQL_DB_NAME=kobotoolbox
     - KOBO_PSQL_DB_USER=kobo
-    #- KOBOCAT_TEMPLATES_PATH=/srv/src/kobocat-template
   restart: always
   # When testing with a manipulated `/etc/hosts` file.
   # extra_hosts:
