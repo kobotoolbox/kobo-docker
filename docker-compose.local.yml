@@ -38,11 +38,13 @@ kobocat:
     - kpi
   volumes:
     - "./.vols/static/kobocat:/srv/static"
-    - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash
-    - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash
-    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash
+    - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
+    - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
+    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
     - ./scripts/wait_for_kpi.bash:/etc/my_init.d/04_wait_for_kpi.bash:ro
     - ./scripts/computed_vars.local.source.bash:/etc/profile.d/kobocat_computed_vars.source.bash.sh:ro
+    # Dev: Use the live `kobocat` directory from the host machine.
+    # - ../kobocat:/srv/src/kobocat
   environment:
     - KOBOCAT_BROKER_URL=amqp://guest:guest@rabbit:5672/
     - ENKETO_PROTOCOL=http
@@ -52,7 +54,6 @@ kobocat:
     - DATABASE_URL=postgis://kobo:kobo@psql:5432/kobotoolbox
     - KOBO_PSQL_DB_NAME=kobotoolbox
     - KOBO_PSQL_DB_USER=kobo
-    #- KOBOCAT_TEMPLATES_PATH=/srv/src/kobocat-template
   restart: always
 
 kpi:
@@ -68,10 +69,12 @@ kpi:
     - "./.vols/static/kpi:/srv/static"
     # The Whoosh search index needs persistent storage
     - "./.vols/whoosh:/srv/whoosh"
-    - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash
-    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash
+    - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
+    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash:ro
     - ./scripts/create_kobo_superuser.bash://etc/my_init.d/20_create_kobo_superuser.bash:ro
     - ./scripts/computed_vars.local.source.bash:/etc/profile.d/kpi_computed_vars.source.bash.sh:ro
+    # Dev: Use the live `kpi` directory from the host machine.
+    # - ../kpi:/srv/src/kpi
   environment:
     - ENKETO_VERSION=express
     - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
@@ -116,6 +119,10 @@ enketo_express:
     - redis_main
     - redis_cache
   restart: always
+  volumes:
+    - ./scripts/computed_vars.local.source.bash:/etc/profile.d/enketo_express_computed_vars.source.bash.sh:ro
+    - ./enketo_express_config.json:/srv/tmp/enketo_express_config.json:ro
+    - ./scripts/enketo_express_copy_config.bash:/etc/my_init.d/01_enketo_express_copy_config.bash:ro
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 redis_main:

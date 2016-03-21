@@ -10,3 +10,6 @@ export ENKETO_URL="http://${HOST_ADDRESS}:${ENKETO_EXPRESS_PUBLIC_PORT}" # Dupli
 export KOBOCAT_URL="http://${HOST_ADDRESS}:${KOBOCAT_PUBLIC_PORT}" # Duplicate.
 export CSRF_COOKIE_DOMAIN="${CSRF_COOKIE_DOMAIN}" # Duplicate.
 export DJANGO_ALLOWED_HOSTS="${HOST_ADDRESS}" # Duplicate. Necessary?
+
+# Enketo Express.
+export ENKETO_API_KEY="${ENKETO_API_TOKEN}"
