@@ -45,6 +45,8 @@ kobocat:
     - ./scripts/computed_vars.local.source.bash:/etc/profile.d/kobocat_computed_vars.source.bash.sh:ro
     # Dev: Use the live `kobocat` directory from the host machine.
     # - ../kobocat:/srv/src/kobocat
+    # Dev: Share your `.transifexrc` into the container.
+    # - ./.transifexrc:/root/.transifexrc
   environment:
     - KOBOCAT_BROKER_URL=amqp://guest:guest@rabbit:5672/
     - ENKETO_PROTOCOL=http
@@ -75,6 +77,8 @@ kpi:
     - ./scripts/computed_vars.local.source.bash:/etc/profile.d/kpi_computed_vars.source.bash.sh:ro
     # Dev: Use the live `kpi` directory from the host machine.
     # - ../kpi:/srv/src/kpi
+    # Dev: Share your `.transifexrc` into the container.
+    # - ./.transifexrc:/root/.transifexrc
   environment:
     - ENKETO_VERSION=express
     - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
