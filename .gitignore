@@ -3,4 +3,4 @@ log/
 secrets/
 build
 docker-compose.yml
-
+.transifexrc
