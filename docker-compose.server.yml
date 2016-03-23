@@ -7,7 +7,7 @@ rabbit:
   environment:
     - RABBITMQ_LOGS=-
     - RABBITMQ_SASL_LOGS=-
-  restart: always
+  restart: on-failure
 
 psql:
   image: kobotoolbox/psql:latest
@@ -15,7 +15,7 @@ psql:
   hostname: psql
   volumes:
     - "./.vols/db:/srv/db"
-  restart: always
+  restart: on-failure
 
 mongo:
   image: kobotoolbox/mongo:latest
@@ -25,7 +25,7 @@ mongo:
     - MONGO_DATA=/srv/db
   volumes:
     - "./.vols/mongo:/srv/db"
-  restart: always
+  restart: on-failure
 
 kobocat:
   image: kobotoolbox/kobocat:latest
@@ -58,7 +58,7 @@ kobocat:
     - DATABASE_URL=postgis://kobo:kobo@psql:5432/kobotoolbox
     - KOBO_PSQL_DB_NAME=kobotoolbox
     - KOBO_PSQL_DB_USER=kobo
-  restart: always
+  restart: on-failure
   # When testing with a manipulated `/etc/hosts` file.
   # extra_hosts:
   #   - 'kf-local.kobotoolbox.org:172.17.0.1'
@@ -90,7 +90,7 @@ kpi:
     - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
     - DJANGO_DEBUG=False
     - KPI_PREFIX=/
-  restart: always
+  restart: on-failure
   # When testing with a manipulated `/etc/hosts` file.
   # extra_hosts:
   #   - 'kc-local.kobotoolbox.org:172.17.0.1'
@@ -120,7 +120,7 @@ nginx:
     - kobocat
     - kpi
     - enketo_express
-  restart: always
+  restart: on-failure
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 enketo_express:
@@ -131,7 +131,7 @@ enketo_express:
   links:
     - redis_main
     - redis_cache
-  restart: always
+  restart: on-failure
   volumes:
     - ./scripts/computed_vars.server.source.bash:/etc/profile.d/enketo_express_computed_vars.source.bash.sh:ro
     - ./enketo_express_config.json:/srv/tmp/enketo_express_config.json:ro
@@ -148,7 +148,7 @@ redis_main:
   volumes:
     - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf
     - "./.vols/redis_main_data/:/data/"
-  restart: always
+  restart: on-failure
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 redis_cache:
@@ -156,4 +156,4 @@ redis_cache:
   # Map our "cache" Redis config into the container.
   volumes:
     - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf
-  restart: always
+  restart: on-failure
