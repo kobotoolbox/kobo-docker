@@ -12,7 +12,7 @@ KOBOCAT_PUBLIC_SUBDOMAIN=kc-local
 ENKETO_EXPRESS_PUBLIC_SUBDOMAIN=ee-local
 # See "api key" here: https://github.com/kobotoolbox/enketo-express/tree/master/config#linked-form-and-data-server.
 ENKETO_API_TOKEN=
-# Cannonically a 50-character random string. See https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key and https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key.
+# Canonically a 50-character random string. See https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key and https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key.
 DJANGO_SECRET_KEY=
 # The initial superuser's username.
 KOBO_SUPERUSER_USERNAME=
