@@ -86,6 +86,8 @@ server {
     access_log  /var/log/nginx/enketo_express.access.log;
     error_log   /var/log/nginx/enketo_express.error.log;
 
+    client_max_body_size 100M;
+
     location / {
         proxy_pass  http://enketo_express:8005/;
         proxy_set_header Host $http_host;
