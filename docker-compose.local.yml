@@ -125,7 +125,7 @@ enketo_express:
   restart: on-failure
   volumes:
     - ./scripts/computed_vars.local.source.bash:/etc/profile.d/enketo_express_computed_vars.source.bash.sh:ro
-    - ./enketo_express_config.json:/srv/tmp/enketo_express_config.json:ro
+    - ./enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
     - ./scripts/enketo_express_copy_config.bash:/etc/my_init.d/01_enketo_express_copy_config.bash:ro
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
