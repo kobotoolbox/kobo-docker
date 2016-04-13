@@ -139,6 +139,8 @@ enketo_express:
     # Override Enketo Express icons.
     # - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
     # - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
+    # Dev: Use the live `enketo-express` directory from the host machine.
+    # - ../enketo-express:/srv/src/enketo_express
   # When testing with a manipulated `/etc/hosts` file.
   # extra_hosts:
   #   - 'kf-local.kobotoolbox.org:172.17.0.1'
