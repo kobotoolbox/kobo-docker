@@ -3,9 +3,7 @@ FROM kobotoolbox/base-nginx:latest
 MAINTAINER Serban Teodorescu, teodorescu.serban@gmail.com
 
 COPY uwsgi_params /etc/nginx/u_p
-RUN mv /srv/run_nginx /etc/service/nginx/run && \
-    chmod +x /etc/service/nginx/run && \
-    mkdir -p /srv/www/kobocat && \
+RUN mkdir -p /srv/www/kobocat && \
     mv /srv/* /etc/nginx/ && \
     mv /etc/nginx/uwsgi_params /etc/nginx/uwsgi_params.bak && \
     mv /etc/nginx/u_p /etc/nginx/uwsgi_params && \
