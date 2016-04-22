@@ -33,6 +33,7 @@ kobocat:
   hostname: kobocat
   env_file:
     - ./envfile.server.txt
+    - ./envfiles/smtp.txt
   links:
     - rabbit
     - mongo
@@ -70,6 +71,7 @@ kpi:
   hostname: kpi
   env_file:
     - ./envfile.server.txt
+    - ./envfiles/smtp.txt
   links:
     - psql
     - rabbit

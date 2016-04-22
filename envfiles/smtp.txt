@@ -1,0 +1,11 @@
+##################################
+# For sending e-mail using SMTP. #
+##################################
+
+# See https://docs.djangoproject.com/en/1.8/topics/email/#smtp-backend.
+#EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+#EMAIL_HOST=
+#EMAIL_PORT=
+#EMAIL_HOST_USER=
+#EMAIL_HOST_PASSWORD=
+#EMAIL_USE_TLS=

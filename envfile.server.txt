@@ -18,16 +18,3 @@ DJANGO_SECRET_KEY=
 KOBO_SUPERUSER_USERNAME=
 # The initial superuser's password.
 KOBO_SUPERUSER_PASSWORD=
-
-######################
-# Optional variables #
-######################
-
-# FIXME: Move to its own `envfile` (e.g. `envfiles/smtp.txt`).
-# See https://docs.djangoproject.com/en/1.8/topics/email/#smtp-backend.
-#EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-#EMAIL_HOST=
-#EMAIL_PORT=
-#EMAIL_HOST_USER=
-#EMAIL_HOST_PASSWORD=
-#EMAIL_USE_TLS=
