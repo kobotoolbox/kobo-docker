@@ -9,6 +9,28 @@ PSQL_BIN=/usr/lib/postgresql/9.4/bin/postgres
 PSQL_CONFIG_FILE=/etc/postgresql/9.4/main/postgresql.conf
 PSQL_DATA=/srv/db
 
+if [[ "$(cat /srv/db/PG_VERSION)" == '9.3' ]]; then
+    echo 'Existing Postgres 9.3 database detected. Preparing to upgrade it.'
+    echo 'Installing Postgres 9.3 and dependencies.'
+    apt-get -qq update
+    apt-get install -qqy postgresql-9.3-postgis-2.1
+    echo 'Removing automatically-installed 9.3 default database.'
+    pg_dropcluster 9.3 main
+    echo 'Moving old database contents to `/srv/db_9.3/`.'
+    mkdir -p /srv/db_9.3
+    chmod --reference=/srv/db /srv/db_9.3
+    chown --reference=/srv/db /srv/db_9.3
+    mv /srv/db/* /srv/db_9.3/
+    echo 'Setting 9.3 to manage the old database.'
+    mv /etc/postgresql/9.4 /etc/postgresql/9.3
+    sed -i 's/9\.4/9\.3/g' /etc/postgresql/9.3/main/postgresql.conf
+    sed -i 's/\/srv\/db/\/srv\/db_9.3/g' /etc/postgresql/9.3/main/postgresql.conf
+    echo 'Executing database upgrade.'
+    pg_upgradecluster 9.3 main /srv/db
+    pg_ctlcluster 9.4 main stop
+    echo 'Database upgrade complete.'
+fi
+
 # prepare data directory and initialize database if necessary
 [ -d $PSQL_DATA ] || mkdir -p $PSQL_DATA
 chown -R postgres:postgres $PSQL_DATA
