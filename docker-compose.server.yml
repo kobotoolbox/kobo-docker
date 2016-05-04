@@ -15,6 +15,7 @@ psql:
   hostname: psql
   volumes:
     - "./.vols/db:/srv/db"
+    - ./backups/postgres:/srv/backups
   restart: on-failure
 
 mongo:
