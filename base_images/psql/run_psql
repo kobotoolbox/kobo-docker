@@ -1,6 +1,0 @@
-#!/bin/bash
-set -e
-
-PSQL_BIN=/usr/lib/postgresql/9.4/bin/postgres
-PSQL_CONFIG_FILE=/etc/postgresql/9.4/main/postgresql.conf
-exec /sbin/setuser postgres $PSQL_BIN --config-file=$PSQL_CONFIG_FILE

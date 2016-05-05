@@ -9,12 +9,12 @@ rabbit:
     - RABBITMQ_SASL_LOGS=-
   restart: on-failure
 
-psql:
-  image: kobotoolbox/psql:latest
-  # build: ./base_images/psql
-  hostname: psql
+postgres:
+  image: kobotoolbox/postgres:latest
+  # build: ./base_images/postgres
+  hostname: postgres
   volumes:
-    - "./.vols/db:/srv/db"
+    - ./.vols/db:/srv/db
     - ./backups/postgres:/srv/backups
   restart: on-failure
 
@@ -57,9 +57,9 @@ kobocat:
     - ENKETO_VERSION=express
     - DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
     - DJANGO_DEBUG=False
-    - DATABASE_URL=postgis://kobo:kobo@psql:5432/kobotoolbox
-    - KOBO_PSQL_DB_NAME=kobotoolbox
-    - KOBO_PSQL_DB_USER=kobo
+    - DATABASE_URL=postgis://kobo:kobo@postgres:5432/kobotoolbox
+    - KOBO_POSTGRES_DB_NAME=kobotoolbox
+    - KOBO_POSTGRES_USER=kobo
   restart: on-failure
   # When testing with a manipulated `/etc/hosts` file.
   # extra_hosts:
@@ -74,7 +74,7 @@ kpi:
     - ./envfile.server.txt
     - ./envfiles/smtp.txt
   links:
-    - psql
+    - postgres
     - rabbit
   volumes:
     - "./.vols/static/kpi:/srv/static"
@@ -90,7 +90,7 @@ kpi:
     # - ./.transifexrc:/root/.transifexrc
   environment:
     - ENKETO_VERSION=express
-    - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
+    - DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
     - DJANGO_DEBUG=False
     - KPI_PREFIX=/
   restart: on-failure
