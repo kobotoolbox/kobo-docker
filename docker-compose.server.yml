@@ -38,7 +38,7 @@ kobocat:
   links:
     - rabbit
     - mongo
-    - psql
+    - postgres
     - kpi
   volumes:
     - "./.vols/static/kobocat:/srv/static"
