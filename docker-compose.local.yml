@@ -1,5 +1,6 @@
 rabbit:
   image: kobotoolbox/rabbit:latest
+  # Dev: Build the image locally.
   # build: ./base_images/rabbit
   hostname: rabbit
   environment:
@@ -9,24 +10,30 @@ rabbit:
 
 psql:
   image: kobotoolbox/psql:latest
+  # Dev: Build the image locally.
   # build: ./base_images/psql
   hostname: psql
   volumes:
-    - "./.vols/db:/srv/db"
+    - ./.vols/db:/srv/db
   restart: on-failure
 
 mongo:
   image: kobotoolbox/mongo:latest
+  # Dev: Build the image locally.
   # build: ./base_images/mongo
   hostname: mongo
   environment:
     - MONGO_DATA=/srv/db
+  # NOTE: On OS X and Windows, comment out the following `volumes` directive 
+  #   as a workaround to a VirtualBox folder sharing+Mongo incompatibility.
+  #   See the "WARNING" at https://hub.docker.com/_/mongo/
   volumes:
-    - "./.vols/mongo:/srv/db"
+    - ./.vols/mongo:/srv/db
   restart: on-failure
 
 kobocat:
   image: kobotoolbox/kobocat:latest
+  # Dev: Build the image locally.
   # build: ../kobocat
   hostname: kobocat
   env_file:
@@ -37,7 +44,7 @@ kobocat:
     - psql
     - kpi
   volumes:
-    - "./.vols/static/kobocat:/srv/static"
+    - ./.vols/static/kobocat:/srv/static
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
     - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
@@ -88,6 +95,7 @@ kpi:
 
 nginx:
   image: kobotoolbox/nginx:latest
+  # Dev: Build the image locally.
   # build: ./base_images/nginx
   hostname: nginx
   env_file:
@@ -97,14 +105,15 @@ nginx:
     - NGINX_DEBUG_kpi=False
     - NGINX_DEBUG_kobocat=False
   ports:
-    # NOTE: The host ports (left of the ":") must match the values in `envfile.local.txt`. Do not modify the right hand side values (9000+).
+    # NOTE: The host ports (left of the ":") must match the values in 
+    #   `envfile.local.txt`. Do not modify the container ports (right side).
     - 8000:9000 # KPI
     - 8001:9001 # KoBoCAT
     - 8005:9005 # Enketo Express
   volumes:
-      - "./.vols/static:/srv/www:ro"
+      - ./.vols/static:/srv/www:ro
       # get the logs out of glusterfs!
-      - "./.vols/../log/nginx:/var/log/nginx"
+      - ./.vols/../log/nginx:/var/log/nginx
       - ./nginx/:/tmp/kobo_nginx/:ro
       - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
   links:
@@ -116,6 +125,7 @@ nginx:
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 enketo_express:
   image: kobotoolbox/enketo_express
+  # Dev: Build the image locally.
   # build: ../enketo-express/
   env_file:
     - ./envfile.local.txt
@@ -127,14 +137,19 @@ enketo_express:
     - ./scripts/computed_vars.local.source.bash:/etc/profile.d/enketo_express_computed_vars.source.bash.sh:ro
     - ./enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
     - ./scripts/enketo_express_copy_config.bash:/etc/my_init.d/01_enketo_express_copy_config.bash:ro
+    # Override Enketo Express icons.
+    # - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
+    # - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
+    # Dev: Use the live `enketo-express` directory from the host machine.
+    # - ../enketo-express:/srv/src/enketo_express
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 redis_main:
   image: redis:2.6
   # Map our "main" Redis config into the container.
   volumes:
-    - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf
-    - "./.vols/redis_main_data/:/data/"
+    - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf:ro
+    - ./.vols/redis_main_data/:/data/
   restart: on-failure
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
@@ -142,5 +157,5 @@ redis_cache:
   image: redis:2.6
   # Map our "cache" Redis config into the container.
   volumes:
-    - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf
+    - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf:ro
   restart: on-failure
