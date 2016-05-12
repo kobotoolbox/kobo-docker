@@ -52,6 +52,5 @@ $POSTGRES_SINGLE_USER <<< "CREATE DATABASE $KOBO_POSTGRES_DB_NAME OWNER $KOBO_PO
 
 echo 'Initializing PostGIS.'
 pg_ctlcluster 9.4 main start -o '-c listen_addresses=""' # Temporarily start Postgres for local connections only.
-sudo -u postgres psql ${KOBO_POSTGRES_DB_NAME} -c "create extension postgis; create extension postgis_topology" \
-    || true # FIXME: Workaround so this script doesn't exit if PostGIS has already been initialized.
+sudo -u postgres psql ${KOBO_POSTGRES_DB_NAME} -c "create extension if not exists postgis; create extension if not exists postgis_topology" \
 pg_ctlcluster 9.4 main stop
