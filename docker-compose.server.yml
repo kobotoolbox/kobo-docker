@@ -2,6 +2,7 @@
 
 rabbit:
   image: kobotoolbox/rabbit:latest
+  # Dev: Build the image locally.
   # build: ./base_images/rabbit
   hostname: rabbit
   environment:
@@ -20,16 +21,21 @@ postgres:
 
 mongo:
   image: kobotoolbox/mongo:latest
+  # Dev: Build the image locally.
   # build: ./base_images/mongo
   hostname: mongo
   environment:
     - MONGO_DATA=/srv/db
+  # NOTE: On OS X and Windows, comment out the following `volumes` directive 
+  #   as a workaround to a VirtualBox folder sharing+Mongo incompatibility.
+  #   See the "WARNING" at https://hub.docker.com/_/mongo/
   volumes:
-    - "./.vols/mongo:/srv/db"
+    - ./.vols/mongo:/srv/db
   restart: on-failure
 
 kobocat:
   image: kobotoolbox/kobocat:latest
+  # Dev: Build the image locally.
   # build: ../kobocat
   hostname: kobocat
   env_file:
@@ -41,7 +47,7 @@ kobocat:
     - postgres
     - kpi
   volumes:
-    - "./.vols/static/kobocat:/srv/static"
+    - ./.vols/static/kobocat:/srv/static
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
     - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
@@ -61,13 +67,16 @@ kobocat:
     - KOBO_POSTGRES_DB_NAME=kobotoolbox
     - KOBO_POSTGRES_USER=kobo
   restart: on-failure
-  # When testing with a manipulated `/etc/hosts` file.
+  # NOTE: Workaround to force name resolution inside containers. If enabled, 
+  #   customize with your actual subdomains+domain and server IP. Clients 
+  #   might also need similar manipulations to their `hosts` files.
   # extra_hosts:
   #   - 'kf-local.kobotoolbox.org:172.17.0.1'
   #   - 'ee-local.kobotoolbox.org:172.17.0.1'
 
 kpi:
   image: kobotoolbox/kpi:latest
+  # Dev: Build the image locally.
   # build: ../kpi
   hostname: kpi
   env_file:
@@ -77,9 +86,9 @@ kpi:
     - postgres
     - rabbit
   volumes:
-    - "./.vols/static/kpi:/srv/static"
+    - ./.vols/static/kpi:/srv/static
     # The Whoosh search index needs persistent storage
-    - "./.vols/whoosh:/srv/whoosh"
+    - ./.vols/whoosh:/srv/whoosh
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash:ro
     - ./scripts/create_kobo_superuser.bash://etc/my_init.d/20_create_kobo_superuser.bash:ro
@@ -94,12 +103,15 @@ kpi:
     - DJANGO_DEBUG=False
     - KPI_PREFIX=/
   restart: on-failure
-  # When testing with a manipulated `/etc/hosts` file.
+  # NOTE: Workaround to force name resolution inside containers. If enabled, 
+  #   customize with your actual subdomains+domain and server IP. Clients 
+  #   might also need similar manipulations to their `hosts` files.
   # extra_hosts:
   #   - 'kc-local.kobotoolbox.org:172.17.0.1'
 
 nginx:
   image: kobotoolbox/nginx:latest
+  # Dev: Build the image locally.
   # build: ./base_images/nginx
   hostname: nginx
   env_file:
@@ -113,9 +125,9 @@ nginx:
     - 80:80
     - 443:443
   volumes:
-      - "./.vols/static:/srv/www:ro"
+      - ./.vols/static:/srv/www:ro
       # get the logs out of glusterfs!
-      - "./.vols/../log/nginx:/var/log/nginx"
+      - ./.vols/../log/nginx:/var/log/nginx
       - ./nginx/:/tmp/kobo_nginx/:ro
       - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
       - ./secrets/:/tmp/kobo_toolbox_secrets/:ro
@@ -128,6 +140,7 @@ nginx:
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 enketo_express:
   image: kobotoolbox/enketo_express
+  # Dev: Build the image locally.
   # build: ../enketo-express/
   env_file:
     - ./envfile.server.txt
@@ -144,7 +157,9 @@ enketo_express:
     # - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
     # Dev: Use the live `enketo-express` directory from the host machine.
     # - ../enketo-express:/srv/src/enketo_express
-  # When testing with a manipulated `/etc/hosts` file.
+  # NOTE: Workaround to force name resolution inside containers. If enabled, 
+  #   customize with your actual subdomains+domain and server IP. Clients 
+  #   might also need similar manipulations to their `hosts` files.
   # extra_hosts:
   #   - 'kf-local.kobotoolbox.org:172.17.0.1'
   #   - 'kc-local.kobotoolbox.org:172.17.0.1'
@@ -154,8 +169,8 @@ redis_main:
   image: redis:2.6
   # Map our "main" Redis config into the container.
   volumes:
-    - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf
-    - "./.vols/redis_main_data/:/data/"
+    - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf:ro
+    - ./.vols/redis_main_data/:/data/
   restart: on-failure
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
@@ -163,5 +178,5 @@ redis_cache:
   image: redis:2.6
   # Map our "cache" Redis config into the container.
   volumes:
-    - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf
+    - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf:ro
   restart: on-failure
