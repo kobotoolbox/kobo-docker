@@ -2,7 +2,7 @@
 set -e
 
 echo 'Waiting for container `psql`.'
-dockerize -timeout=20s -wait ${PSQL_PORT}
+dockerize -timeout=60s -wait ${PSQL_PORT}
 echo 'Container `psql` up.'
 
 echo 'Waiting for Postgres service.'
