@@ -1,4 +1,8 @@
 #!/bin/bash
 set -e
 
+# Prepare RabbitMQ's log directory.
+mkdir -p /var/log/rabbitmq
+chown rabbitmq:rabbitmq /var/log/rabbitmq
+
 exec /sbin/setuser rabbitmq /usr/sbin/rabbitmq-server
