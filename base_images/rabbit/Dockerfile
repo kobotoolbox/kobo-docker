@@ -1,7 +1,5 @@
 FROM kobotoolbox/base-rabbit:latest
 
-MAINTAINER Serban Teodorescu, teodorescu.serban@gmail.com
-
 COPY run_rabbit /etc/service/rabbit/run
 COPY run_rabbit-configure /etc/service/rabbit-configure/run
 RUN chmod +x /etc/service/rabbit/run && \

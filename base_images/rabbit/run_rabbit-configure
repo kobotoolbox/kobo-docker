@@ -1,11 +1,5 @@
 #!/bin/sh -e
 
-# FIXME: Remove pending upgrade to RabbitMQ 3.4+.
-# Apparently zealously watching pre-3.4 RabbitMQ's startup causes it to get 
-#   nervous and fail, so try waiting arbitrarily? See:
-#   https://groups.google.com/d/msg/rabbitmq-users/hJme_Fgo2VQ/kLVFfgsySrgJ
-sleep 10
-
 echo 'Waiting for RabbitMQ to become available...'
 while ! rabbitmqctl list_vhosts > /dev/null 2>&1
 do
