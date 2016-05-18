@@ -16,11 +16,12 @@ if [[ "$(cat ${POSTGRES_CLUSTER_DIR}/PG_VERSION)" == '9.3' ]]; then
     apt-get install -qqy postgresql-9.3-postgis-2.1
     echo 'Removing Postgres 9.3 automatically-installed default cluster.'
     pg_dropcluster 9.3 main
-    echo "Moving old cluster contents to \`${POSTGRES_CLUSTER_DIR}_9.3/\`."
+    echo "Moving old cluster contents to \`${POSTGRES_CLUSTER_DIR}_9.3/\` (without deleting \`${POSTGRES_CLUSTER_DIR}\`)."
     mkdir -p "${POSTGRES_CLUSTER_DIR}"_9.3
     chmod --reference="${POSTGRES_CLUSTER_DIR}" "${POSTGRES_CLUSTER_DIR}_9.3"
     chown --reference="${POSTGRES_CLUSTER_DIR}" "${POSTGRES_CLUSTER_DIR}_9.3"
-    mv "${POSTGRES_CLUSTER_DIR}/*" "${POSTGRES_CLUSTER_DIR}_9.3/"
+    # Arcane incantation alert. See: http://superuser.com/a/62192/160413.
+    find "${POSTGRES_CLUSTER_DIR}" -mindepth 1 -maxdepth 1 -exec mv -t"${POSTGRES_CLUSTER_DIR}_9.3" -- {} +
     echo 'Setting Postgres 9.3 to manage the old cluster.'
     mv /etc/postgresql/9.4 /etc/postgresql/9.3
     sed -i 's/9\.4/9\.3/g' /etc/postgresql/9.3/main/postgresql.conf
@@ -52,5 +53,5 @@ $POSTGRES_SINGLE_USER <<< "CREATE DATABASE $KOBO_POSTGRES_DB_NAME OWNER $KOBO_PO
 
 echo 'Initializing PostGIS.'
 pg_ctlcluster 9.4 main start -o '-c listen_addresses=""' # Temporarily start Postgres for local connections only.
-sudo -u postgres psql ${KOBO_POSTGRES_DB_NAME} -c "create extension if not exists postgis; create extension if not exists postgis_topology" \
+sudo -u postgres psql ${KOBO_POSTGRES_DB_NAME} -c "create extension if not exists postgis; create extension if not exists postgis_topology"
 pg_ctlcluster 9.4 main stop
