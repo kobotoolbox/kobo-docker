@@ -16,6 +16,9 @@ else
     rabbitmqctl add_user kpi kpi || true
     rabbitmqctl add_vhost kpi || true
     rabbitmqctl set_permissions -p kpi kpi '.*' '.*' '.*'
+    rabbitmqctl add_user kobocat kobocat || true
+    rabbitmqctl add_vhost kobocat || true
+    rabbitmqctl set_permissions -p kobocat kobocat '.*' '.*' '.*'
 fi
 
 # Don't run forever

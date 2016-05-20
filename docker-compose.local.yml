@@ -56,7 +56,7 @@ kobocat:
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
   environment:
-    - KOBOCAT_BROKER_URL=amqp://guest:guest@rabbit:5672/
+    - KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
     - ENKETO_PROTOCOL=http
     - ENKETO_VERSION=express
     - DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
