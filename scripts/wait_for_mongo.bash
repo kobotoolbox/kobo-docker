@@ -2,5 +2,5 @@
 set -e
 
 echo 'Waiting for container `mongo`.'
-dockerize -timeout=20s -wait ${MONGO_PORT}
+dockerize -timeout=40s -wait ${MONGO_PORT}
 echo 'Container `mongo` up.'

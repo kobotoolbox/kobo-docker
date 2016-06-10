@@ -4,8 +4,9 @@ rabbit:
   # build: ./base_images/rabbit
   hostname: rabbit
   environment:
-    - RABBITMQ_LOGS=-
-    - RABBITMQ_SASL_LOGS=-
+    - RABBITMQ_LOG_BASE=/var/log/rabbitmq
+  volumes:
+    - ./log/rabbitmq:/var/log/rabbitmq
   restart: on-failure
 
 postgres:
@@ -56,7 +57,7 @@ kobocat:
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
   environment:
-    - KOBOCAT_BROKER_URL=amqp://guest:guest@rabbit:5672/
+    - KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
     - ENKETO_PROTOCOL=http
     - ENKETO_VERSION=express
     - DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
@@ -115,7 +116,7 @@ nginx:
   volumes:
       - ./.vols/static:/srv/www:ro
       # get the logs out of glusterfs!
-      - ./.vols/../log/nginx:/var/log/nginx
+      - ./log/nginx:/var/log/nginx
       - ./nginx/:/tmp/kobo_nginx/:ro
       - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
   links:
@@ -140,8 +141,8 @@ enketo_express:
     - ./enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
     - ./scripts/enketo_express_copy_config.bash:/etc/my_init.d/01_enketo_express_copy_config.bash:ro
     # Override Enketo Express icons.
-    # - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
-    # - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
+    - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
+    - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
     # Dev: Use the live `enketo-express` directory from the host machine.
     # - ../enketo-express:/srv/src/enketo_express
 

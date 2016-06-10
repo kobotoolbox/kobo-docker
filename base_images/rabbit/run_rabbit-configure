@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 echo 'Waiting for RabbitMQ to become available...'
-while ! rabbitmqctl list_vhosts > /dev/null 2>&1
+while ! timeout 3 rabbitmqctl list_vhosts > /dev/null 2>&1
 do
     sleep 2
 done
@@ -9,14 +9,25 @@ echo 'The RabbitMQ service is up!'
 
 # KoBoCat uses the default RabbitMQ user, but it's necessary to create a
 # separate user and vhost for KPI
-if rabbitmqctl list_vhosts | grep kpi > /dev/null
+if rabbitmqctl list_vhosts 2>&1 | grep -q kpi
 then
     echo 'RabbitMQ already configured for KPI.'
 else
+    echo 'Configuring RabbitMQ for KPI.'
     rabbitmqctl add_user kpi kpi || true
     rabbitmqctl add_vhost kpi || true
     rabbitmqctl set_permissions -p kpi kpi '.*' '.*' '.*'
 fi
 
-# Don't run forever
-sv stop rabbit-configure > /dev/null
+if rabbitmqctl list_vhosts | grep -q kobocat
+then
+    echo 'RabbitMQ already configured for KoBoCAT.'
+else
+    echo 'Configuring RabbitMQ for KoBoCAT.'
+    rabbitmqctl add_user kobocat kobocat || true
+    rabbitmqctl add_vhost kobocat || true
+    rabbitmqctl set_permissions -p kobocat kobocat '.*' '.*' '.*'
+fi
+
+echo 'RabbitMQ configuration complete; stopping configuration process.'
+sv stop rabbit-configure
