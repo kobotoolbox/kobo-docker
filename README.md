@@ -13,6 +13,7 @@
 9. Optionally clear persisted files (e.g. the Postgres database) from previous runs, **taking care that you are in the `kobo-docker` directory**: `sudo rm -rf .vols/ log/`.
 10. Start the server: `docker-compose up -d` (or without the `-d` option to run in the foreground).
 11. Container output can be viewed with `docker-compose logs`. For an individual container, logs can be viewed by using the container name from your `docker-compose.yml` with e.g. `docker-compose logs enketo_express`.
+12. Be sure to periodically update your containers, especially `nginx`, for security updates with e.g. `git pull && docker-compose pull && docker-compose up -d`.
 
 # TODO
 * KoBoCAT login redirect (e.g https://kc-local.kobotoolbox.org -> https://kf-local.kobotoolbox.org/accounts/login/?next=/kobocat/ -> https://kf-local.kobotoolbox.org/kobocat/ -> `404`)
