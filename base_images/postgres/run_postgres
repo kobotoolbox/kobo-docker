@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+POSTGRES_BIN=/usr/lib/postgresql/9.4/bin/postgres
+POSTGRES_CONFIG_FILE=/etc/postgresql/9.4/main/postgresql.conf
+exec /sbin/setuser postgres $POSTGRES_BIN --config-file=$POSTGRES_CONFIG_FILE

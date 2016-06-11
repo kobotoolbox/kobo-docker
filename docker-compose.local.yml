@@ -9,13 +9,14 @@ rabbit:
     - ./log/rabbitmq:/var/log/rabbitmq
   restart: on-failure
 
-psql:
-  image: kobotoolbox/psql:latest
+postgres:
+  image: kobotoolbox/postgres:latest
   # Dev: Build the image locally.
-  # build: ./base_images/psql
-  hostname: psql
+  # build: ./base_images/postgres
+  hostname: postgres
   volumes:
     - ./.vols/db:/srv/db
+    - ./backups/postgres:/srv/backups
   restart: on-failure
 
 mongo:
@@ -42,7 +43,7 @@ kobocat:
   links:
     - rabbit
     - mongo
-    - psql
+    - postgres
     - kpi
   volumes:
     - ./.vols/static/kobocat:/srv/static
@@ -61,24 +62,25 @@ kobocat:
     - ENKETO_VERSION=express
     - DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
     - DJANGO_DEBUG=False
-    - DATABASE_URL=postgis://kobo:kobo@psql:5432/kobotoolbox
-    - KOBO_PSQL_DB_NAME=kobotoolbox
-    - KOBO_PSQL_DB_USER=kobo
+    - DATABASE_URL=postgis://kobo:kobo@postgres:5432/kobotoolbox
+    - KOBO_POSTGRES_DB_NAME=kobotoolbox
+    - KOBO_POSTGRES_USER=kobo
   restart: on-failure
 
 kpi:
   image: kobotoolbox/kpi:latest
+  # Dev: Build the image locally.
   # build: ../kpi
   hostname: kpi
   env_file:
     - ./envfile.local.txt
   links:
-    - psql
+    - postgres
     - rabbit
   volumes:
-    - "./.vols/static/kpi:/srv/static"
+    - ./.vols/static/kpi:/srv/static
     # The Whoosh search index needs persistent storage
-    - "./.vols/whoosh:/srv/whoosh"
+    - ./.vols/whoosh:/srv/whoosh
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash:ro
     - ./scripts/create_kobo_superuser.bash://etc/my_init.d/20_create_kobo_superuser.bash:ro
@@ -89,7 +91,7 @@ kpi:
     # - ./.transifexrc:/root/.transifexrc
   environment:
     - ENKETO_VERSION=express
-    - DATABASE_URL=postgres://kobo:kobo@psql:5432/kobotoolbox
+    - DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
     - DJANGO_DEBUG=False
     - KPI_PREFIX=/
   restart: on-failure
