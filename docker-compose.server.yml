@@ -41,6 +41,9 @@ kobocat:
   hostname: kobocat
   env_file:
     - ./envfile.server.txt
+    - ./envfiles/aws.txt
+    - ./envfiles/external_services.txt
+    - ./envfiles/kobocat.txt
     - ./envfiles/smtp.txt
   links:
     - rabbit
@@ -59,14 +62,7 @@ kobocat:
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
   environment:
-    - KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
     - ENKETO_PROTOCOL=https
-    - ENKETO_VERSION=express
-    - DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
-    - DJANGO_DEBUG=False
-    - DATABASE_URL=postgis://kobo:kobo@postgres:5432/kobotoolbox
-    - KOBO_POSTGRES_DB_NAME=kobotoolbox
-    - KOBO_POSTGRES_USER=kobo
   restart: on-failure
   # NOTE: Workaround to force name resolution inside containers. If enabled, 
   #   customize with your actual subdomains+domain and server IP. Clients 
@@ -82,6 +78,9 @@ kpi:
   hostname: kpi
   env_file:
     - ./envfile.server.txt
+    - ./envfiles/aws.txt
+    - ./envfiles/external_services.txt
+    - ./envfiles/kobocat.txt
     - ./envfiles/smtp.txt
   links:
     - postgres
@@ -98,11 +97,6 @@ kpi:
     # - ../kpi:/srv/src/kpi
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
-  environment:
-    - ENKETO_VERSION=express
-    - DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
-    - DJANGO_DEBUG=False
-    - KPI_PREFIX=/
   restart: on-failure
   # NOTE: Workaround to force name resolution inside containers. If enabled, 
   #   customize with your actual subdomains+domain and server IP. Clients 
@@ -145,6 +139,7 @@ enketo_express:
   # build: ../enketo-express/
   env_file:
     - ./envfile.server.txt
+    - ./envfiles/external_services.txt
   links:
     - redis_main
     - redis_cache

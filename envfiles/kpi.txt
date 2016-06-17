@@ -1,0 +1,16 @@
+DJANGO_DEBUG=False
+TEMPLATE_DEBUG=False
+
+DJANGO_SETTINGS_MODULE=kobo_playground.settings
+ENKETO_VERSION=Express
+KPI_PREFIX=/
+KPI_BROKER_URL=amqp://kpi:kpi@rabbit:5672/kpi
+DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
+
+#DJANGO_LANGUAGE_CODES=en
+#DKOBO_PREFIX=False
+#KPI_WHOOSH_DIR=./whoosh_index
+#KOBO_SURVEY_PREVIEW_EXPIRATION=24
+#SKIP_CELERY=False
+#EMAIL_BACKEND=django.core.mail.backends.filebased.EmailBackend
+#EMAIL_FILE_PATH=./emails

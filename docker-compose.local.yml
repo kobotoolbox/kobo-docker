@@ -40,6 +40,10 @@ kobocat:
   hostname: kobocat
   env_file:
     - ./envfile.local.txt
+    - ./envfiles/aws.txt
+    - ./envfiles/external_services.txt
+    - ./envfiles/kobocat.txt
+    - ./envfiles/smtp.txt
   links:
     - rabbit
     - mongo
@@ -57,14 +61,7 @@ kobocat:
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
   environment:
-    - KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
     - ENKETO_PROTOCOL=http
-    - ENKETO_VERSION=express
-    - DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
-    - DJANGO_DEBUG=False
-    - DATABASE_URL=postgis://kobo:kobo@postgres:5432/kobotoolbox
-    - KOBO_POSTGRES_DB_NAME=kobotoolbox
-    - KOBO_POSTGRES_USER=kobo
   restart: on-failure
 
 kpi:
@@ -74,6 +71,10 @@ kpi:
   hostname: kpi
   env_file:
     - ./envfile.local.txt
+    - ./envfiles/aws.txt
+    - ./envfiles/external_services.txt
+    - ./envfiles/kpi.txt
+    - ./envfiles/smtp.txt
   links:
     - postgres
     - rabbit
@@ -89,11 +90,6 @@ kpi:
     # - ../kpi:/srv/src/kpi
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
-  environment:
-    - ENKETO_VERSION=express
-    - DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
-    - DJANGO_DEBUG=False
-    - KPI_PREFIX=/
   restart: on-failure
 
 nginx:
@@ -132,6 +128,7 @@ enketo_express:
   # build: ../enketo-express/
   env_file:
     - ./envfile.local.txt
+    - ./envfiles/external_services.txt
   links:
     - redis_main
     - redis_cache
