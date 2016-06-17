@@ -6,6 +6,7 @@ ENKETO_VERSION=Express
 DATABASE_URL=postgis://kobo:kobo@postgres:5432/kobotoolbox
 KOBO_POSTGRES_DB_NAME=kobotoolbox
 KOBO_POSTGRES_USER=kobo
+KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
 
 #ENKETO_OFFLINE_SURVEYS=True
 #KOBOCAT_MONGO_HOST=mongo
@@ -13,7 +14,6 @@ KOBO_POSTGRES_USER=kobo
 #KOBOCAT_MONGO_NAME=formhub
 #KOBOCAT_MONGO_USER=
 #KOBOCAT_MONGO_PASS=
-#KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
 #KOBOCAT_MEDIA_URL=media
 #KOBOCAT_ROOT_URI_PREFIX=
 #KOBOCAT_TEMPLATES_PATH=../kobocat-template
