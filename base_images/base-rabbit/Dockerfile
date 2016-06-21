@@ -1,7 +1,7 @@
 FROM kobotoolbox/base:latest
 
 RUN echo 'deb http://www.rabbitmq.com/debian/ testing main'> /etc/apt/sources.list.d/rabbitmq.list && \
-    curl -s https://www.rabbitmq.com/rabbitmq-signing-key-public.asc | sudo apt-key add - && \
+    curl -s https://www.rabbitmq.com/rabbitmq-release-signing-key.asc | apt-key add - && \
     apt-get -qq update && \
     apt-get -qq -y install \
         rabbitmq-server && \
