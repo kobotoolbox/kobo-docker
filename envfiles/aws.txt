@@ -1,0 +1,25 @@
+####################
+# Account settings #
+####################
+
+#AWS_ACCESS_KEY_ID
+#AWS_SECRET_ACCESS_KEY
+#AWS_SES_REGION_NAME
+#AWS_SES_REGION_ENDPOINT
+
+
+###################
+# E-mail settings #
+###################
+
+# NOTE: These and the settings from `envfiles/smtp.txt` are mutually exclusive; do not use both.
+#EMAIL_BACKEND=django_ses.SESBackend
+#DEFAULT_FROM_EMAIL=
+
+
+####################
+# Storage settings #
+####################
+
+#DEFAULT_FILE_STORAGE=storages.backends.s3boto.S3BotoStorage
+#KOBOCAT_AWS_STORAGE_BUCKET_NAME=

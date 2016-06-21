@@ -41,6 +41,9 @@ kobocat:
   hostname: kobocat
   env_file:
     - ./envfile.server.txt
+    - ./envfiles/aws.txt
+    - ./envfiles/external_services.txt
+    - ./envfiles/kobocat.txt
     - ./envfiles/smtp.txt
   links:
     - rabbit
@@ -53,20 +56,13 @@ kobocat:
     - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
     - ./scripts/wait_for_kpi.bash:/etc/my_init.d/04_wait_for_kpi.bash:ro
-    - ./scripts/computed_vars.server.source.bash:/etc/profile.d/kobocat_computed_vars.source.bash.sh:ro
+    - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
     # Dev: Use the live `kobocat` directory from the host machine.
     # - ../kobocat:/srv/src/kobocat
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
   environment:
-    - KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
     - ENKETO_PROTOCOL=https
-    - ENKETO_VERSION=express
-    - DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
-    - DJANGO_DEBUG=False
-    - DATABASE_URL=postgis://kobo:kobo@postgres:5432/kobotoolbox
-    - KOBO_POSTGRES_DB_NAME=kobotoolbox
-    - KOBO_POSTGRES_USER=kobo
   restart: on-failure
   # NOTE: Workaround to force name resolution inside containers. If enabled, 
   #   customize with your actual subdomains+domain and server IP. Clients 
@@ -82,6 +78,9 @@ kpi:
   hostname: kpi
   env_file:
     - ./envfile.server.txt
+    - ./envfiles/aws.txt
+    - ./envfiles/external_services.txt
+    - ./envfiles/kpi.txt
     - ./envfiles/smtp.txt
   links:
     - postgres
@@ -93,16 +92,11 @@ kpi:
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash:ro
     - ./scripts/create_kobo_superuser.bash://etc/my_init.d/20_create_kobo_superuser.bash:ro
-    - ./scripts/computed_vars.server.source.bash:/etc/profile.d/kpi_computed_vars.source.bash.sh:ro
+    - ./scripts/runtime_variables_kpi.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
     # Dev: Use the live `kpi` directory from the host machine.
     # - ../kpi:/srv/src/kpi
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
-  environment:
-    - ENKETO_VERSION=express
-    - DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
-    - DJANGO_DEBUG=False
-    - KPI_PREFIX=/
   restart: on-failure
   # NOTE: Workaround to force name resolution inside containers. If enabled, 
   #   customize with your actual subdomains+domain and server IP. Clients 
@@ -145,12 +139,13 @@ enketo_express:
   # build: ../enketo-express/
   env_file:
     - ./envfile.server.txt
+    - ./envfiles/external_services.txt
   links:
     - redis_main
     - redis_cache
   restart: on-failure
   volumes:
-    - ./scripts/computed_vars.server.source.bash:/etc/profile.d/enketo_express_computed_vars.source.bash.sh:ro
+    - ./scripts/runtime_variables_enketo_express.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
     - ./enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
     - ./scripts/enketo_express_copy_config.bash:/etc/my_init.d/01_enketo_express_copy_config.bash:ro
     # Override Enketo Express icons.
