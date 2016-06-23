@@ -29,13 +29,8 @@ server {
         ${kobocat_include_proxy_pass}
     }
 
-    # Setting identical to above...
     location / {
-        # Proxy through uWSGI.
-        ${kobocat_include_uwsgi_pass}
-
-        # Debug proxying directly to container.
-        ${kobocat_include_proxy_pass}
+        return 301 https://$server_name$request_uri;
     }
 
     location /static {
