@@ -68,8 +68,8 @@ kobocat:
   #   customize with your actual subdomains+domain and server IP. Clients 
   #   might also need similar manipulations to their `hosts` files.
   # extra_hosts:
-  #   - 'kf-local.kobotoolbox.org:172.17.0.1'
   #   - 'ee-local.kobotoolbox.org:172.17.0.1'
+  #   - 'kf-local.kobotoolbox.org:172.17.0.1'
 
 kpi:
   image: kobotoolbox/kpi:latest
@@ -102,6 +102,7 @@ kpi:
   #   customize with your actual subdomains+domain and server IP. Clients 
   #   might also need similar manipulations to their `hosts` files.
   # extra_hosts:
+  #   - 'ee-local.kobotoolbox.org:172.17.0.1'
   #   - 'kc-local.kobotoolbox.org:172.17.0.1'
 
 nginx:
