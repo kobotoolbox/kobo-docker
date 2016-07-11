@@ -17,7 +17,7 @@ RUN apt-get -qq update && \
         libjpeg-dev \
         nodejs \
         npm \
-        postgresql-client-9.3 \
+        postgresql-client \
         python2.7-dev \
         wget && \
     apt-get clean && \
