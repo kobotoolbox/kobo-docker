@@ -9,7 +9,7 @@ POSTGRES_BIN=/usr/lib/postgresql/9.4/bin/postgres
 POSTGRES_CONFIG_FILE=/etc/postgresql/9.4/main/postgresql.conf
 POSTGRES_CLUSTER_DIR=/srv/db
 
-if [[ "$(ls -l "${POSTGRES_CLUSTER_DIR}" | awk '{print $3}')" != 'postgres' ]]; then
+if [[ "$(ls -ld "${POSTGRES_CLUSTER_DIR}" | awk '{print $3}')" != 'postgres' ]]; then
     echo 'Restoring ownership of Postgres cluster data director.'
     chown -R postgres:postgres "${POSTGRES_CLUSTER_DIR}"
 fi
@@ -34,7 +34,7 @@ if [[ "$(cat ${POSTGRES_CLUSTER_DIR}/PG_VERSION)" == '9.3' ]]; then
     echo "Creating \`pg_restore\`-compatible, compressed backup of the old \`${KOBO_POSTGRES_DB_NAME}\` database."
     TIME_STAMP="$(date +%Y.%m.%d.%H_%M_%S)"
     pg_ctlcluster 9.3 main start -o '-c listen_addresses=""' # Temporarily start Postgres for local connections only.
-    su postgres -c 'pg_dump -Z1 -Fc "${KOBO_POSTGRES_DB_NAME}" > "/srv/backups/${TIME_STAMP}__${KOBO_POSTGRES_DB_NAME}.pg_restore"'
+    su postgres -c "pg_dump -Z1 -Fc ${KOBO_POSTGRES_DB_NAME}" > "/srv/backups/${TIME_STAMP}__${KOBO_POSTGRES_DB_NAME}.pg_restore"
     pg_ctlcluster 9.3 main stop
     echo 'Executing cluster upgrade (without allowing remote connections).'
     pg_upgradecluster -o '-c listen_addresses=""' -O '-c listen_addresses=""' 9.3 main "${POSTGRES_CLUSTER_DIR}"
@@ -48,7 +48,7 @@ fi
 [ -d $POSTGRES_CLUSTER_DIR ] || mkdir -p $POSTGRES_CLUSTER_DIR
 chown -R postgres:postgres $POSTGRES_CLUSTER_DIR
 [ $(cd $POSTGRES_CLUSTER_DIR && ls -lA | wc -l) -ne 1 ] || \
-    su postgres -c '/usr/lib/postgresql/9.4/bin/initdb -D ${POSTGRES_CLUSTER_DIR} -E utf-8 --locale=en_US.UTF-8'
+    su postgres -c "usr/lib/postgresql/9.4/bin/initdb -D ${POSTGRES_CLUSTER_DIR} -E utf-8 --locale=en_US.UTF-8"
 
 su postgres -c "${POSTGRES_BIN} --single --config-file=${POSTGRES_CONFIG_FILE}" <<< "CREATE USER $KOBO_POSTGRES_USER WITH SUPERUSER;" > /dev/null
 su postgres -c "${POSTGRES_BIN} --single --config-file=${POSTGRES_CONFIG_FILE}" <<< "ALTER USER $KOBO_POSTGRES_USER WITH PASSWORD '$KOBO_POSTGRES_PASSWORD';" > /dev/null
@@ -56,5 +56,5 @@ su postgres -c "${POSTGRES_BIN} --single --config-file=${POSTGRES_CONFIG_FILE}" 
 
 echo 'Initializing PostGIS.'
 pg_ctlcluster 9.4 main start -o '-c listen_addresses=""' # Temporarily start Postgres for local connections only.
-su postgres -c 'psql ${KOBO_POSTGRES_DB_NAME} -c "create extension if not exists postgis; create extension if not exists postgis_topology"'
+su postgres -c "psql ${KOBO_POSTGRES_DB_NAME} -c \"create extension if not exists postgis; create extension if not exists postgis_topology\""
 pg_ctlcluster 9.4 main stop

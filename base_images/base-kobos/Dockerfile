@@ -24,7 +24,7 @@ RUN apt-get -qq update && \
     # FIXME: Temporarily install `pip` < v8.1.2 until `pip-tools` is compatible.
     pip install --upgrade pip==8.1.1 && \
     pip install uwsgi && \
-    useradd -s /bin/false -m wsgi && \
+    useradd -s /bin/false -m wsgi
 
 # Install Dockerize.
 RUN wget https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize-linux-amd64-v0.2.0.tar.gz -P /tmp
