@@ -7,7 +7,6 @@ RUN apt-get -qq update && \
         binutils \
         default-jre-headless \
         gdal-bin \
-        libmemcached-dev \
         libpcre3-dev \
         libpq-dev \
         libproj-dev \
@@ -15,27 +14,17 @@ RUN apt-get -qq update && \
         libxml2-dev \
         libxslt1-dev \
         libjpeg-dev \
-        nodejs \
         npm \
         postgresql-client \
         python2.7-dev \
         wget && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    ln -s /usr/bin/nodejs /usr/bin/node && \
-    mkdir -p /etc/service/wsgi && \
-    touch /etc/service/wsgi/run && \
-    curl -s https://bootstrap.pypa.io/get-pip.py -o /get-pip.py && \
-    python /get-pip.py && \
-    rm /get-pip.py && \
+    curl -s https://bootstrap.pypa.io/get-pip.py | python && \
+    # FIXME: Temporarily install `pip` < v8.1.2 until `pip-tools` is compatible.
+    pip install --upgrade pip==8.1.1 && \
     pip install uwsgi && \
     useradd -s /bin/false -m wsgi && \
-    mkdir -p /usr/local/lib/node_modules && \
-    chown -R wsgi /usr/local/lib/node_modules && \
-    npm --no-color install -g \
-        bower \
-        karma \
-        grunt-cli
 
 # Install Dockerize.
 RUN wget https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize-linux-amd64-v0.2.0.tar.gz -P /tmp
