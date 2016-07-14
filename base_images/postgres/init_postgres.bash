@@ -10,21 +10,23 @@ POSTGRES_CONFIG_FILE=/etc/postgresql/9.4/main/postgresql.conf
 POSTGRES_CLUSTER_DIR=/srv/db
 
 if [[ "$(ls -ld "${POSTGRES_CLUSTER_DIR}" | awk '{print $3}')" != 'postgres' ]]; then
-    echo 'Restoring ownership of Postgres cluster data director.'
+    echo 'Restoring ownership of Postgres cluster data directory.'
     chown -R postgres:postgres "${POSTGRES_CLUSTER_DIR}"
 fi
+echo 'Restoring permissions of Postgres cluster data directory.'
+chmod -R 700 "${POSTGRES_CLUSTER_DIR}"
 
 if [[ "$(cat ${POSTGRES_CLUSTER_DIR}/PG_VERSION)" == '9.3' ]]; then
     echo 'Existing Postgres 9.3 database cluster detected. Preparing to upgrade it.'
     echo 'Installing Postgres 9.3 and dependencies.'
     apt-get -qq update
-    apt-get install -qqy postgresql-9.3-postgis-2.1
+    apt-get install -qqy postgresql-9.3-postgis-2.2
     echo 'Removing Postgres 9.3 automatically-installed default cluster.'
     pg_dropcluster 9.3 main
     echo "Moving old cluster contents to \`${POSTGRES_CLUSTER_DIR}_9.3/\` (without deleting \`${POSTGRES_CLUSTER_DIR}\`)."
     mkdir -p "${POSTGRES_CLUSTER_DIR}"_9.3
-    chmod --reference="${POSTGRES_CLUSTER_DIR}" "${POSTGRES_CLUSTER_DIR}_9.3"
-    chown --reference="${POSTGRES_CLUSTER_DIR}" "${POSTGRES_CLUSTER_DIR}_9.3"
+    chmod 700 "${POSTGRES_CLUSTER_DIR}_9.3"
+    chown postgres:postgres "${POSTGRES_CLUSTER_DIR}_9.3"
     # Arcane incantation alert. See: http://superuser.com/a/62192/160413.
     find "${POSTGRES_CLUSTER_DIR}" -mindepth 1 -maxdepth 1 -exec mv -t"${POSTGRES_CLUSTER_DIR}_9.3" -- {} +
     echo 'Setting Postgres 9.3 to manage the old cluster.'
