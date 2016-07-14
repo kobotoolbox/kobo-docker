@@ -1,7 +1,7 @@
 DJANGO_DEBUG=False
 TEMPLATE_DEBUG=False
 
-DJANGO_SETTINGS_MODULE=kobo_playground.settings
+DJANGO_SETTINGS_MODULE=kobo.settings
 ENKETO_VERSION=Express
 KPI_PREFIX=/
 KPI_BROKER_URL=amqp://kpi:kpi@rabbit:5672/kpi
