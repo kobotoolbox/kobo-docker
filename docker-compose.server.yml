@@ -19,6 +19,7 @@ postgres:
   volumes:
     - ./.vols/db:/srv/db
     - ./backups/postgres:/srv/backups
+    - ./base_images/postgres/init_postgres.bash:/etc/my_init.d/10_init_postgres.bash:ro
   restart: on-failure
 
 mongo:
