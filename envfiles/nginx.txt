@@ -1,0 +1,3 @@
+# Options for the following are "uWSGI" or "runserver_plus" (for debugging).
+kpi_WEB_SERVER=runserver_plus
+kobocat_WEB_SERVER=uWSGI

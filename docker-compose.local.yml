@@ -43,6 +43,7 @@ kobocat:
     - ./envfiles/aws.txt
     - ./envfiles/external_services.txt
     - ./envfiles/kobocat.txt
+    - ./envfiles/nginx.txt
     - ./envfiles/smtp.txt
   links:
     - rabbit
@@ -74,6 +75,7 @@ kpi:
     - ./envfiles/aws.txt
     - ./envfiles/external_services.txt
     - ./envfiles/kpi.txt
+    - ./envfiles/nginx.txt
     - ./envfiles/smtp.txt
   links:
     - postgres
@@ -101,10 +103,9 @@ nginx:
   hostname: nginx
   env_file:
     - ./envfile.local.txt
+    - ./envfiles/nginx.txt
   environment:
     - NGINX_CONFIG_FILE_NAME=nginx_site_http.conf
-    - NGINX_DEBUG_kpi=False
-    - NGINX_DEBUG_kobocat=False
   ports:
     # NOTE: The host ports (left of the ":") must match the values in 
     #   `envfile.local.txt`. Do not modify the container ports (right side).

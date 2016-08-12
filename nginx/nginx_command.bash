@@ -14,9 +14,9 @@ declare -A container_ports
 container_ports=( ['kpi']='8000' ['kobocat']='8000' )
 for container_name in "${!container_ports[@]}"; do
 
-    debug_varname="NGINX_DEBUG_${container_name}"     # E.g. `NGINX_DEBUG_kpi`.
-    if [[ "${!debug_varname}" == 'True' ]] ; then
-        echo "Debug proxying directly to \`${container_name}\` without uWSGI."
+    web_server_varname="${container_name}_WEB_SERVER"     # E.g. `kpi_WEB_SERVER`.
+    if [[ "${!web_server_varname}" != 'uWSGI' ]] ; then
+        echo "Proxying directly (debug) to \`${container_name}\` without uWSGI."
 
         # Create a `proxy_pass` configuration for this container.
         cat ${ORIGINAL_DIR}/proxy_pass.conf.tmpl \
