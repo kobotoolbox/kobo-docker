@@ -1,4 +1,4 @@
-DJANGO_DEBUG=False
+KPI_DJANGO_DEBUG=False
 TEMPLATE_DEBUG=False
 
 DJANGO_SETTINGS_MODULE=kobo_playground.settings

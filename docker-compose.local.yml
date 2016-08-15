@@ -104,6 +104,8 @@ nginx:
   env_file:
     - ./envfile.local.txt
     - ./envfiles/nginx.txt
+    - ./envfiles/kobocat.txt
+    - ./envfiles/kpi.txt
   environment:
     - NGINX_CONFIG_FILE_NAME=nginx_site_http.conf
   ports:
