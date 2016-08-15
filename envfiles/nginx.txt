@@ -1,9 +1,9 @@
 # Options for the following are "uWSGI" or "runserver_plus" (for debugging).
-kpi_WEB_SERVER=uWSGI
-kobocat_WEB_SERVER=uWSGI
+KPI_WEB_SERVER=uWSGI
+KOBOCAT_WEB_SERVER=uWSGI
 
 # Options for the following are "Nginx" or "Django".
 # NOTE: In order to serve static files from Django, the corresponding 
 #   `..._DJANGO_DEBUG` environment variable must be set to "True".
 KOBOCAT_STATIC_FILES_SERVER=Nginx
-KPI_STATIC_FILES_SERVER=Django
+KPI_STATIC_FILES_SERVER=Nginx
