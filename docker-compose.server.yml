@@ -119,6 +119,8 @@ nginx:
   env_file:
     - ./envfile.server.txt
     - ./envfiles/nginx.txt
+    - ./envfiles/kobocat.txt
+    - ./envfiles/kpi.txt
   environment:
     - NGINX_CONFIG_FILE_NAME=nginx_site_https.conf
     - TEMPLATED_VAR_REFS=$${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}

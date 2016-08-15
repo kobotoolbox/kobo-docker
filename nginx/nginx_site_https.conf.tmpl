@@ -32,10 +32,6 @@ server {
     location / {
         return 301 https://$server_name$request_uri;
     }
-
-    location /static {
-        alias /srv/www/kobocat;
-    }
 }
 
 # KoBoCAT HTTPS.
@@ -66,9 +62,7 @@ server {
         ${kobocat_include_proxy_pass}
     }
 
-    location /static {
-        alias /srv/www/kobocat;
-    }
+    ${kobocat_location_static}
 }
 
 # KoBoForm HTTP.
@@ -95,29 +89,7 @@ server {
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     ssl_ciphers   'AES256+EECDH:AES256+EDH';
 
-    location /static {
-        alias /srv/www/kpi;
-
-        # gzip configs from here
-        # http://stackoverflow.com/a/12644530/3088435
-        gzip on;
-        gzip_disable "msie6";
-        gzip_comp_level 6;
-        gzip_min_length 1100;
-        gzip_buffers 16 8k;
-        gzip_proxied any;
-        gzip_types
-            text/plain
-            text/css
-            text/js
-            text/xml
-            text/javascript
-            application/javascript
-            application/x-javascript
-            application/json
-            application/xml
-            application/xml+rss;
-    }
+    ${kpi_location_static}
 
     error_page 418 = /static/html/Offline.html;
 

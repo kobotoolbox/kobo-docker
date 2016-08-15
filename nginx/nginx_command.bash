@@ -3,6 +3,32 @@ set -e
 
 ORIGINAL_DIR='/tmp/kobo_nginx'
 TEMPLATES_ENABLED_DIR='/tmp/nginx_templates_activated'
+KOBOCAT_PRODUCTION_LOCATION_STATIC="location /static {
+        alias /srv/www/kobocat;
+    }"
+KPI_PRODUCTION_LOCATION_STATIC="location /static {
+        alias /srv/www/kpi;
+
+        # gzip configs from here
+        # http://stackoverflow.com/a/12644530/3088435
+        gzip on;
+        gzip_disable "msie6";
+        gzip_comp_level 6;
+        gzip_min_length 1100;
+        gzip_buffers 16 8k;
+        gzip_proxied any;
+        gzip_types
+            text/plain
+            text/css
+            text/js
+            text/xml
+            text/javascript
+            application/javascript
+            application/x-javascript
+            application/json
+            application/xml
+            application/xml+rss;
+    }"
 
 mkdir -p ${TEMPLATES_ENABLED_DIR}
 
@@ -44,6 +70,27 @@ for container_name in "${!container_ports[@]}"; do
     # Register the include directive variables (e.g. `kpi_include_proxy_pass` and `kpi_include_uwsgi_pass`)
     #   for template substitution.
     templated_var_refs+=" \${${container_name}_include_proxy_pass} \${${container_name}_include_uwsgi_pass}"
+
+    # Set up serving of static files
+    static_files_server_varname="${container_name^^}_STATIC_FILES_SERVER"
+    static_files_server="${!static_files_server_varname}"
+    django_debug_varname="${container_name^^}_DJANGO_DEBUG"
+    django_debug="${!django_debug_varname}"
+    if [[ "${static_files_server^^}" == "NGINX" ]]; then
+        echo "Serving static files for container ${container_name} from Nginx."
+        production_location_static_varname="${container_name^^}_PRODUCTION_LOCATION_STATIC"
+        location_static="${!production_location_static_varname}"
+    elif [[ "${static_files_server^^}" == "DJANGO" && "${django_debug^^}" == "TRUE" ]]; then
+        echo "Serving static files for container ${container_name} from Django."
+        location_static=''
+    elif [[ "${static_files_server^^}" == "DJANGO" && "${django_debug^^}" != "TRUE" ]]; then
+        echo "Cannot serve static files from Django for container \`${container_name}\` unless \`${django_debug_varname}\` set to \"True\" in \`/envfiles/${container_name}.txt\`."
+        exit 1
+    fi
+    location_static_varname="${container_name}_location_static"
+    export ${location_static_varname}="${location_static}"
+    templated_var_refs+=" \${$location_static_varname}}"
+
 done
 
 # Do environment variable substitutions and activate the resulting config. file.

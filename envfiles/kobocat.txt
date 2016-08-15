@@ -1,4 +1,4 @@
-DJANGO_DEBUG=False
+KOBOCAT_DJANGO_DEBUG=False
 TEMPLATE_DEBUG=False
 
 DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ

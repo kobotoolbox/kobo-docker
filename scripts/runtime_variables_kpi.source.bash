@@ -16,3 +16,5 @@ else
     echo 'Please fill out your `envfile`!'
     exit 1
 fi
+
+export DJANGO_DEBUG="${KPI_DJANGO_DEBUG}"
