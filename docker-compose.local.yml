@@ -17,6 +17,7 @@ postgres:
   volumes:
     - ./.vols/db:/srv/db
     - ./backups/postgres:/srv/backups
+    - ./base_images/postgres/init_postgres.bash:/etc/my_init.d/10_init_postgres.bash:ro
   restart: on-failure
 
 mongo:
@@ -52,6 +53,7 @@ kobocat:
     - kpi
   volumes:
     - ./.vols/static/kobocat:/srv/static
+    - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
     - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
