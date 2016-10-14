@@ -14,6 +14,7 @@ RUN apt-get -qq update && \
         libxml2-dev \
         libxslt1-dev \
         libjpeg-dev \
+        libffi-dev \
         npm \
         postgresql-client \
         python2.7-dev \
