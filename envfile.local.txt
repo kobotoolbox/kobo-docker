@@ -2,10 +2,11 @@
 # Mandatory variables #
 #######################
 
-# The address where your KoBo Toolbox instance can be reached.
+# The address where your KoBo Toolbox instance can be reached; generally the IP address of your computer.
+# DO NOT use "localhost" or "127.0.0.1" or containers will not be able to communicate with each other.
 # NOTE: If you are not connected to a network or don't intend to permit access 
 #   from other devices on your network, use the IP address of Docker's network 
-#   interface. This can be obtained e.g with the following command:
+#   interface. This can usually be obtained e.g with the following command:
 #   docker-compose run --rm kpi /sbin/ip route|awk '/default/ { print $3 }'
 HOST_ADDRESS=
 # See "api key" here: https://github.com/kobotoolbox/enketo-express/tree/master/config#linked-form-and-data-server
