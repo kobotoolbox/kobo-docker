@@ -1,4 +1,4 @@
-# Temporary setup procedure:
+# Setup procedure:
 1. [Install Docker Compose on 64-bit Linux](https://docs.docker.com/compose/install/). OS X and Windows power users can try [the new Docker beta for those platforms](https://blog.docker.com/2016/03/docker-for-mac-windows-beta/).
 2. Determine whether you want to create an HTTP-only **local** instance of KoBo Toolbox, or a HTTPS publicly-accessible **server** instance. Local instances will use [`docker-compose.local.yml`](./docker-compose.local.yml) and [`envfile.local.txt`](./envfile.local.txt), whereas server instances will use [`docker-compose.server.yml`](./docker-compose.server.yml) and [`envfile.server.txt`](./envfile.server.txt) instead.  
 **Note:** For server instances, you are expected to meet the usual basic requirements of serving over HTTPS. That is, DNS records for your domain and subdomains, a CA-signed wildcard (or SAN) SSL certificate valid for those subdomains, and some basic knowledge of Nginx server administration and the use of SSL.
@@ -16,6 +16,3 @@
 11. Container output can be followed with `docker-compose logs -f`. For an individual container, logs can be followed by using the container name from your `docker-compose.yml` with e.g. `docker-compose logs -f enketo_express`.
 
 "Local" setup users can now reach KoBo Toolbox at `http://${HOST_ADDRESS}:${KPI_PUBLIC_PORT}` (substituting in the values entered in [`envfile.local.txt`](./envfile.local.txt)), while "server" setups can be reached at `https://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}` (similarly substituting from [`envfile.server.txt`](./envfile.server.txt)). Be sure to periodically update your containers, especially `nginx`, for security updates by pulling new changes from this `kobo-docker` repo then running e.g. `docker-compose pull && docker-compose up -d`.
-
-# TODO
-* Maps?
