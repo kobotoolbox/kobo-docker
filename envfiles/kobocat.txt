@@ -7,6 +7,10 @@ DATABASE_URL=postgis://kobo:kobo@postgres:5432/kobotoolbox
 KOBO_POSTGRES_DB_NAME=kobotoolbox
 KOBO_POSTGRES_USER=kobo
 KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
+# Default backup schedule is weekly at 12:00 AM UTC on Sunday. For help setting 
+#   a backup schedule, use a `cron` schedule generator (e.g. crontab.guru). To 
+#   disable, comment out the line.
+KOBOCAT_MEDIA_BACKUP_SCHEDULE=0 0 * * 0
 
 #ENKETO_OFFLINE_SURVEYS=True
 #KOBOCAT_MONGO_HOST=mongo
