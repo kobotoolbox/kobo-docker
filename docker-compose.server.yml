@@ -17,7 +17,7 @@ postgres:
   # build: ./base_images/postgres
   hostname: postgres
   env_file:
-    - ./envfiles/postgres.txt
+    - ./envfiles/backups.txt
   volumes:
     - ./.vols/db:/srv/db
     - ./backups/postgres:/srv/backups
@@ -32,7 +32,7 @@ mongo:
   environment:
     - MONGO_DATA=/srv/db
   env_file:
-    - ./envfiles/mongo.txt
+    - ./envfiles/backups.txt
   # NOTE: On OS X and Windows, comment out the following `volumes` directive 
   #   as a workaround to a VirtualBox folder sharing+Mongo incompatibility.
   #   See the "WARNING" at https://hub.docker.com/_/mongo/
@@ -53,6 +53,7 @@ kobocat:
     - ./envfiles/kobocat.txt
     - ./envfiles/nginx.txt
     - ./envfiles/smtp.txt
+    - ./envfiles/backups.txt
   links:
     - rabbit
     - mongo

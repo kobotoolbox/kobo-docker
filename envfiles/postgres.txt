@@ -1,4 +1,0 @@
-# Default backup schedule is weekly at 02:00 AM UTC on Sunday. For help setting 
-#   a backup schedule, use a `cron` schedule generator (e.g. crontab.guru). To 
-#   disable, comment out the line.
-POSTGRES_BACKUP_SCHEDULE=0 2 * * 0
