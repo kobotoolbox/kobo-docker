@@ -29,11 +29,14 @@ mongo:
   hostname: mongo
   environment:
     - MONGO_DATA=/srv/db
+  env_file:
+    - ./envfiles/mongo.txt
   # NOTE: On OS X and Windows, comment out the following `volumes` directive 
   #   as a workaround to a VirtualBox folder sharing+Mongo incompatibility.
   #   See the "WARNING" at https://hub.docker.com/_/mongo/
   volumes:
     - ./.vols/mongo:/srv/db
+    - ./backups/mongo:/srv/backups
   restart: on-failure
 
 kobocat:
