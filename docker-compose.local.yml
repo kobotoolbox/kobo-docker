@@ -14,6 +14,8 @@ postgres:
   # Dev: Build the image locally.
   # build: ./base_images/postgres
   hostname: postgres
+  env_file:
+    - ./envfiles/postgres.txt
   volumes:
     - ./.vols/db:/srv/db
     - ./backups/postgres:/srv/backups

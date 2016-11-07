@@ -27,7 +27,7 @@ if [[ "$(cat ${POSTGRES_CLUSTER_DIR}/PG_VERSION)" == '9.3' ]]; then
     mkdir -p "${POSTGRES_CLUSTER_DIR}"_9.3
     chmod 700 "${POSTGRES_CLUSTER_DIR}_9.3"
     chown postgres:postgres "${POSTGRES_CLUSTER_DIR}_9.3"
-    # Arcane incantation alert. See: http://superuser.com/a/62192/160413.
+    # Arcane incantation alert: move all files including hidden ones. See: http://superuser.com/a/62192/160413.
     find "${POSTGRES_CLUSTER_DIR}" -mindepth 1 -maxdepth 1 -exec mv -t"${POSTGRES_CLUSTER_DIR}_9.3" -- {} +
     echo 'Setting Postgres 9.3 to manage the old cluster.'
     mv /etc/postgresql/9.4 /etc/postgresql/9.3
@@ -60,3 +60,14 @@ echo 'Initializing PostGIS.'
 pg_ctlcluster 9.4 main start -o '-c listen_addresses=""' # Temporarily start Postgres for local connections only.
 su postgres -c "psql ${KOBO_POSTGRES_DB_NAME} -c \"create extension if not exists postgis; create extension if not exists postgis_topology\""
 pg_ctlcluster 9.4 main stop
+
+source /etc/profile
+rm -f /etc/cron.d/backup_postgres_crontab
+if [[ -z "${POSTGRES_BACKUP_SCHEDULE}" ]]; then
+    echo 'Postgres automatic backups disabled.'
+else
+    # Should we first validate the schedule e.g. with `chkcrontab`?
+    cat "/srv/backup_postgres_crontab.envsubst" | envsubst > /etc/cron.d/backup_postgres_crontab
+    echo "Postgres automatic backup schedule: ${POSTGRES_BACKUP_SCHEDULE}"
+fi
+
