@@ -16,3 +16,6 @@
 11. Container output can be followed with `docker-compose logs -f`. For an individual container, logs can be followed by using the container name from your `docker-compose.yml` with e.g. `docker-compose logs -f enketo_express`.
 
 "Local" setup users can now reach KoBo Toolbox at `http://${HOST_ADDRESS}:${KPI_PUBLIC_PORT}` (substituting in the values entered in [`envfile.local.txt`](./envfile.local.txt)), while "server" setups can be reached at `https://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}` (similarly substituting from [`envfile.server.txt`](./envfile.server.txt)). Be sure to periodically update your containers, especially `nginx`, for security updates by pulling new changes from this `kobo-docker` repo then running e.g. `docker-compose pull && docker-compose up -d`.
+
+# Backups
+By default, backups are automatically generated periodically for KoBoCAT media, MongoDB, and Postgres. These timestamped backups are placed in the `backups/kobocat`, `backups/mongo`, and `backups/postgres`, respectively. The `cron`-formatted backup schedules can be individually modified or disabled in [`envfiles/backups.txt`](./envfiles/backups.txt). Redis backups are currently not generated, but the `redis_main` DB file can always be found in `.vols/redis_main_data/`.
