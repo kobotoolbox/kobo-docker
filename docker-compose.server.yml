@@ -16,6 +16,8 @@ postgres:
   # Dev: Build the image locally.
   # build: ./base_images/postgres
   hostname: postgres
+  env_file:
+    - ./envfile.server.txt
   volumes:
     - ./.vols/db:/srv/db
     - ./backups/postgres:/srv/backups
@@ -29,11 +31,14 @@ mongo:
   hostname: mongo
   environment:
     - MONGO_DATA=/srv/db
+  env_file:
+    - ./envfile.server.txt
   # NOTE: On OS X and Windows, comment out the following `volumes` directive 
   #   as a workaround to a VirtualBox folder sharing+Mongo incompatibility.
   #   See the "WARNING" at https://hub.docker.com/_/mongo/
   volumes:
     - ./.vols/mongo:/srv/db
+    - ./backups/mongo:/srv/backups
   restart: on-failure
 
 kobocat:
@@ -56,6 +61,7 @@ kobocat:
   volumes:
     - ./.vols/static/kobocat:/srv/static
     - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
+    - ./backups/kobocat:/srv/backups
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
     - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro

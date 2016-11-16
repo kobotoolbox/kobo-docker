@@ -1,0 +1,2 @@
+# `envsubst` template of `cron.d` file to backup Postgres.
+${POSTGRES_BACKUP_SCHEDULE}    root    /srv/backup_postgres.bash 2>&1 | logger -t backup_postgres_crontab
