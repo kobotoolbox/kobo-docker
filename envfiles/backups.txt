@@ -1,9 +1,0 @@
-# For help setting a backup schedule, use a `cron` schedule generator (e.g. 
-#   crontab.guru). To disable, comment out the relevant line.
-
-# Default KoBoCAT media backup schedule is weekly at 12:00 AM UTC on Sunday.
-KOBOCAT_MEDIA_BACKUP_SCHEDULE=0 0 * * 0
-# Default MongoDB backup schedule is weekly at 01:00 AM UTC on Sunday.
-MONGO_BACKUP_SCHEDULE=0 1 * * 0
-# Default Postgres backup schedule is weekly at 02:00 AM UTC on Sunday.
-POSTGRES_BACKUP_SCHEDULE=0 2 * * 0
