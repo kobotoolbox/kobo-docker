@@ -1,7 +1,7 @@
 {
     "app name": "Enketo Express for KoBo Toolbox",
-    "offline enabled": true,
     "linked form and data server": {
-        "name": "KoBo Toolbox"
+        "name": "KoBo Toolbox",
+        "server url": ""
     }
 }
