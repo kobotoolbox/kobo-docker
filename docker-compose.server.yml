@@ -93,6 +93,8 @@ kpi:
     - ./envfiles/kpi.txt
     - ./envfiles/nginx.txt
     - ./envfiles/smtp.txt
+  environment:
+    - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
   links:
     - postgres
     - rabbit
@@ -104,7 +106,7 @@ kpi:
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
     - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
-    - ./scripts/create_kobo_superuser.bash://etc/my_init.d/20_create_kobo_superuser.bash:ro
+    - ./scripts/create_kobo_superuser.bash:/etc/my_init.d/20_create_kobo_superuser.bash:ro
     - ./scripts/runtime_variables_kpi.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
     # Dev: Use the live `kpi` directory from the host machine.
     # - ../kpi:/srv/src/kpi

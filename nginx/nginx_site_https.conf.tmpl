@@ -12,6 +12,11 @@ server {
     listen      80;
     server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
 
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
     access_log  /var/log/nginx/kobocat.access.log;
     error_log   /var/log/nginx/kobocat.error.log;
 
@@ -47,6 +52,11 @@ server {
     # to add it again to the kf.kobotoolbox.org configuration;
     # old Android doesn't support SNI and would never see it there.
     ssl_ciphers 'AES256+EECDH:AES256+EDH:DHE-RSA-AES128-SHA';
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
 
     # max upload size
     client_max_body_size 75M;
@@ -88,6 +98,11 @@ server {
 
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     ssl_ciphers   'AES256+EECDH:AES256+EDH';
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
 
     ${kpi_location_static}
 
@@ -137,12 +152,13 @@ server {
     #add_header X-Frame-Options DENY; 
     add_header X-Content-Type-Options nosniff;
 
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
     location / {
         proxy_pass  http://enketo_express:8005/;
         proxy_redirect off;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-Real-IP $remote_addr ;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for ;
-        proxy_set_header X-Forwarded-Proto https ;
     }
 }
