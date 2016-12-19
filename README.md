@@ -46,3 +46,8 @@ docker exec -it kobodocker_kobocat_1 /srv/src/kobocat/docker/backup_media.bash
 docker exec -it kobodocker_mongo_1 /srv/backup_mongo.bash
 docker exec -it kobodocker_postgres_1 /srv/backup_postgres.bash
 ```
+
+# Basic troubleshooting
+You can confirm that your containers are running with `docker ps`. To inspect the log output from the containers, execute `docker-compose logs -f` or for a specific container use e.g. `docker-compose logs -f redis_main`.
+
+The documentation for Docker can be found at https://docs.docker.com.
