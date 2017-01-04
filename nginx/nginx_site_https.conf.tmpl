@@ -92,7 +92,7 @@ server {
 
     error_page 418 = /static/html/Offline.html;
 
-    location / {
+    location ${KPI_PREFIX} {
         # Proxy through uWSGI.
         ${kpi_include_uwsgi_pass}
 

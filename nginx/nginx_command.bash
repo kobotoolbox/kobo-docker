@@ -6,7 +6,7 @@ TEMPLATES_ENABLED_DIR='/tmp/nginx_templates_activated'
 KOBOCAT_PRODUCTION_LOCATION_STATIC='location /static {
         alias /srv/www/kobocat;
     }'
-KPI_PRODUCTION_LOCATION_STATIC='location /static {
+KPI_PRODUCTION_LOCATION_STATIC="location ${KPI_PREFIX}/static {
         alias /srv/www/kpi;
 
         # gzip configs from here
@@ -28,7 +28,7 @@ KPI_PRODUCTION_LOCATION_STATIC='location /static {
             application/json
             application/xml
             application/xml+rss;
-    }'
+    }"
 
 mkdir -p ${TEMPLATES_ENABLED_DIR}
 
