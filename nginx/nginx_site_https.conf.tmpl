@@ -15,9 +15,7 @@ server {
     access_log  /var/log/nginx/kobocat.access.log;
     error_log   /var/log/nginx/kobocat.error.log;
 
-    location / {
-        return 301 https://$server_name$request_uri;
-    }
+    return 301 https://$server_name$request_uri;
 }
 
 # KoBoCAT HTTPS.
