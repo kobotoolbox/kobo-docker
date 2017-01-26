@@ -68,7 +68,7 @@ kobocat:
     # Dev: Use live source directories from the host machine.
     # - ../kobocat:/srv/src/kobocat
     #- ../formpack/src/formpack:/usr/local/lib/python2.7/dist-packages/formpack
-    # Dev: Enable the PyDev remote debugger (other half in `envfiles/kpi.txt`). See: http://www.pydev.org/manual_adv_remote_debugger.html
+    # Dev: Share PyDev remote debugger source into container.
     #- ~/devel/liclipse/plugins/org.python.pydev_5.4.0.201611281405/pysrc:/srv/pydev_orig:ro
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
@@ -104,7 +104,7 @@ kpi:
     # Dev: Use live source directories from the host machine.
     # - ../kpi:/srv/src/kpi
     #- ../formpack/src/formpack:/usr/local/lib/python2.7/dist-packages/formpack
-    # Dev: Enable the PyDev remote debugger (other half in `envfiles/kpi.txt`). See: http://www.pydev.org/manual_adv_remote_debugger.html
+    # Dev: Share PyDev remote debugger source into container.
     #- ~/devel/liclipse/plugins/org.python.pydev_5.4.0.201611281405/pysrc:/srv/pydev_orig:ro
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc

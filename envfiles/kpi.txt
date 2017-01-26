@@ -17,6 +17,5 @@ DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
 #KPI_UWSGI_PROCESS_COUNT=2
 
 # Dev: One or more mappings from PyDev remote debugging machine file paths to `kpi` container file 
-#   paths (see https://github.com/kobotoolbox/kpi/blob/master/docker/setup_pydev.bash). Requires 
-#   other PyDev-related changes to your `docker-compose.yml`.
+#   paths (see https://github.com/kobotoolbox/kpi/blob/master/docker/setup_pydev.bash).
 #KPI_PATH_FROM_ECLIPSE_TO_PYTHON_PAIRS=~/devel/kpi -> /srv/src/kpi | ~/devel/formpack/src/formpack -> /usr/local/lib/python2.7/dist-packages/formpack
