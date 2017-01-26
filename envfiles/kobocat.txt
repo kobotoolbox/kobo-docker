@@ -22,3 +22,8 @@ KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
 #KOBOFORM_SERVER_PROTOCOL=http
 #KOBOCAT_DEFAULT_FILE_STORAGE=
 #EMAIL_FILE_PATH=./emails
+
+# Dev: One or more mappings from PyDev remote debugging machine file paths to `kobocat` container 
+#   file paths (see https://github.com/kobotoolbox/kobocat/blob/master/docker/setup_pydev.bash). 
+#   Requires PyDev-related volume mounts in your `docker-compose.yml`.
+#KOBOCAT_PATH_FROM_ECLIPSE_TO_PYTHON_PAIRS=~/devel/kobocat -> /srv/src/kobocat | ~/.virtualenvs/kobocat/lib/python2.7/site-packages -> /usr/local/lib/python2.7/dist-packages
