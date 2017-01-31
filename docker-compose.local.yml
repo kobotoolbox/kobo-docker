@@ -65,8 +65,11 @@ kobocat:
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
     - ./scripts/wait_for_kpi.bash:/etc/my_init.d/04_wait_for_kpi.bash:ro
     - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
-    # Dev: Use the live `kobocat` directory from the host machine.
+    # Dev: Use live source directories from the host machine.
     # - ../kobocat:/srv/src/kobocat
+    #- ../formpack/src/formpack:/usr/local/lib/python2.7/dist-packages/formpack
+    # Dev: Share PyDev remote debugger source into container.
+    #- ~/devel/liclipse/plugins/org.python.pydev_5.4.0.201611281405/pysrc:/srv/pydev_orig:ro
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
   environment:
@@ -98,8 +101,11 @@ kpi:
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
     - ./scripts/create_kobo_superuser.bash://etc/my_init.d/20_create_kobo_superuser.bash:ro
     - ./scripts/runtime_variables_kpi.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
-    # Dev: Use the live `kpi` directory from the host machine.
+    # Dev: Use live source directories from the host machine.
     # - ../kpi:/srv/src/kpi
+    #- ../formpack/src/formpack:/usr/local/lib/python2.7/dist-packages/formpack
+    # Dev: Share PyDev remote debugger source into container.
+    #- ~/devel/liclipse/plugins/org.python.pydev_5.4.0.201611281405/pysrc:/srv/pydev_orig:ro
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
   restart: on-failure
