@@ -11,7 +11,6 @@ DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
 #KPI_WHOOSH_DIR=./whoosh_index
 #KOBO_SURVEY_PREVIEW_EXPIRATION=24
 #SKIP_CELERY=False
-#EMAIL_BACKEND=django.core.mail.backends.filebased.EmailBackend
 #EMAIL_FILE_PATH=./emails
 #SYNC_KOBOCAT_XFORMS_PERIOD_MINUTES=30
 #KPI_UWSGI_PROCESS_COUNT=2
