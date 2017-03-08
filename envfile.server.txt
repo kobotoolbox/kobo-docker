@@ -12,9 +12,9 @@ KOBOCAT_PUBLIC_SUBDOMAIN=
 ENKETO_EXPRESS_PUBLIC_SUBDOMAIN=
 # See "api key" here: https://github.com/kobotoolbox/enketo-express/tree/master/config#linked-form-and-data-server.
 ENKETO_API_TOKEN=
-# Canonically a 50-character random string. See https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key and `get_random_secret_key()` at https://github.com/django/django/blob/master/django/core/management/utils.py.
-# A possible way to generate a random salt is by running the following command from a unix shell:
-# tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=50 count=1 2>/dev/null;echo
+# Canonically a 50-character random string. For Django 1.8.13, see https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key and https://github.com/django/django/blob/4022b2c306e88a4ab7f80507e736ce7ac7d01186/django/core/management/commands/startproject.py#L29-L31.
+# To generate a secret key in the same way as `django-admin startproject` you can run:
+# python -c 'from django.utils.crypto import get_random_string; print(get_random_string(50, "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"))'
 DJANGO_SECRET_KEY=
 # The initial superuser's username.
 KOBO_SUPERUSER_USERNAME=
