@@ -12,7 +12,7 @@ KOBOCAT_PUBLIC_SUBDOMAIN=
 ENKETO_EXPRESS_PUBLIC_SUBDOMAIN=
 # See "api key" here: https://github.com/kobotoolbox/enketo-express/tree/master/config#linked-form-and-data-server.
 ENKETO_API_TOKEN=
-# Canonically a 50-character random string. See https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key and https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key.
+# Canonically a 50-character random string. See https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key and `get_random_secret_key()` at https://github.com/django/django/blob/master/django/core/management/utils.py.
 # A possible way to generate a random salt is by running the following command from a unix shell:
 # tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=50 count=1 2>/dev/null;echo
 DJANGO_SECRET_KEY=
