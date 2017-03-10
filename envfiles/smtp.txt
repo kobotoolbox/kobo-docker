@@ -6,9 +6,9 @@
 # NOTE: To send from AWS EC2 instances, SNS must be used instead of SMTP. These and the SNS e-mail settings from `envfiles/aws.txt` are mutually exclusive; do not use both.
 # See https://docs.djangoproject.com/en/1.8/topics/email/#smtp-backend.
 #EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-#EMAIL_HOST=
-#EMAIL_PORT=
-#EMAIL_HOST_USER=
-#EMAIL_HOST_PASSWORD=
-#EMAIL_USE_TLS=
-#DEFAULT_FROM_EMAIL=
+#EMAIL_HOST=mail.example.com
+#EMAIL_PORT=25
+#EMAIL_HOST_USER=foo
+#EMAIL_HOST_PASSWORD=bar
+#EMAIL_USE_TLS=True
+#DEFAULT_FROM_EMAIL=kobotoolbox@example.com
