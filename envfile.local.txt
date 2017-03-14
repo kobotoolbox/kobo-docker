@@ -19,6 +19,9 @@ DJANGO_SECRET_KEY=
 KOBO_SUPERUSER_USERNAME=
 # The initial superuser's password.
 KOBO_SUPERUSER_PASSWORD=
+# The e-mail address where your users can contact you.
+KOBO_SUPPORT_EMAIL=
+
 # NOTE: Any changes to the public ports must also be reflected in the `ports` directives for the `nginx` container in `docker-compose.local.yml`.
 KPI_PUBLIC_PORT=8000
 KOBOCAT_PUBLIC_PORT=8001
