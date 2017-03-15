@@ -16,6 +16,8 @@ postgres:
   # Dev: Build the image locally.
   # build: ./base_images/postgres
   hostname: postgres
+  ports:
+    - 5432:5432
   env_file:
     - ./envfile.server.txt
   volumes:

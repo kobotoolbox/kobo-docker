@@ -18,6 +18,8 @@ DJANGO_SECRET_KEY=enketorules
 KOBO_SUPERUSER_USERNAME=kobo
 # The initial superuser's password.
 KOBO_SUPERUSER_PASSWORD=kobo
+# The e-mail address where your users can contact you.
+KOBO_SUPPORT_EMAIL=
 
 ######################
 # Optional variables #
