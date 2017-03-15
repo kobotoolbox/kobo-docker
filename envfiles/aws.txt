@@ -2,8 +2,8 @@
 # Account settings #
 ####################
 
-AWS_ACCESS_KEY_ID=AKIAITSYFXDTKQKQFMRA
-AWS_SECRET_ACCESS_KEY=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
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
 
 
 ###################
@@ -26,4 +26,4 @@ AWS_SECRET_ACCESS_KEY=FI5bmAjz87jaPTNFCHefM3lD4KCinrWrDsbP6cVf
 
 KOBOCAT_DEFAULT_FILE_STORAGE=storages.backends.s3boto.S3BotoStorage
 # To use S3 for KoBoCAT's storage, the specified bucket must already exist and the owner of your `AWS_ACCESS_KEY_ID` must have the appropriate S3 permissions.
-KOBOCAT_AWS_STORAGE_BUCKET_NAME=swca-kobo-dev
+KOBOCAT_AWS_STORAGE_BUCKET_NAME=
