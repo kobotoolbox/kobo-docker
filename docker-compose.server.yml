@@ -62,6 +62,7 @@ kobocat:
     - ./.vols/static/kobocat:/srv/static
     - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
     - ./backups/kobocat:/srv/backups
+    - ./log/kobocat:/srv/logs
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
     - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
@@ -106,6 +107,7 @@ kpi:
     - ./.vols/static/kpi:/srv/static
     # The Whoosh search index needs persistent storage
     - ./.vols/whoosh:/srv/whoosh
+    - ./log/kpi:/srv/logs
     - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
     - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
     - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
