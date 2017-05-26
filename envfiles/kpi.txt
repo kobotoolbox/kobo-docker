@@ -2,6 +2,7 @@ KPI_DJANGO_DEBUG=False
 TEMPLATE_DEBUG=False
 
 ENKETO_VERSION=Express
+# Following the uWSGI mountpoint convention, this should have a leading slash but no trailing slash.
 KPI_PREFIX=/
 KPI_BROKER_URL=amqp://kpi:kpi@rabbit:5672/kpi
 DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
