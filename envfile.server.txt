@@ -2,24 +2,22 @@
 # Mandatory variables #
 #######################
 
-# The publicly-accessible domain where your KoBo Toolbox instance will be reached (e.g. example.com).
-PUBLIC_DOMAIN_NAME=
-# The publicly-accessible subdomain for the KoBoForm form building and management interface (e.g. koboform).
-KOBOFORM_PUBLIC_SUBDOMAIN=
-# The publicly-accessible subdomain for the KoBoCAT data collection and project management interface (e.g.kobocat).
-KOBOCAT_PUBLIC_SUBDOMAIN=
-# The publicly-accessible subdomain for the Enketo Express web forms (e.g. enketo).
-ENKETO_EXPRESS_PUBLIC_SUBDOMAIN=
+# The publicly-accessible domain where your KoBo Toolbox instance will be reached.
+PUBLIC_DOMAIN_NAME=swcacloud.com
+# The publicly-accessible subdomain for the KoBoForm form building and management interface.
+KOBOFORM_PUBLIC_SUBDOMAIN=koboform1
+# The publicly-accessible subdomain for the KoBoCAT data collection and project management interface.
+KOBOCAT_PUBLIC_SUBDOMAIN=kobocat1
+# The publicly-accessible subdomain for the Enketo Express web forms.
+ENKETO_EXPRESS_PUBLIC_SUBDOMAIN=enketo1
 # See "api key" here: https://github.com/kobotoolbox/enketo-express/tree/master/config#linked-form-and-data-server.
-ENKETO_API_TOKEN=
-# Canonically a 50-character random string. For Django 1.8.13, see https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key and https://github.com/django/django/blob/4022b2c306e88a4ab7f80507e736ce7ac7d01186/django/core/management/commands/startproject.py#L29-L31.
-# To generate a secret key in the same way as `django-admin startproject` you can run:
-# docker-compose run --rm kpi python -c 'from django.utils.crypto import get_random_string; print(get_random_string(50, "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"))'
-DJANGO_SECRET_KEY=
+ENKETO_API_TOKEN=enketorules
+# Canonically a 50-character random string. See https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key and https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key.
+DJANGO_SECRET_KEY=enketorules
 # The initial superuser's username.
-KOBO_SUPERUSER_USERNAME=
+KOBO_SUPERUSER_USERNAME=kobo
 # The initial superuser's password.
-KOBO_SUPERUSER_PASSWORD=
+KOBO_SUPERUSER_PASSWORD=kobo
 # The e-mail address where your users can contact you.
 KOBO_SUPPORT_EMAIL=
 
