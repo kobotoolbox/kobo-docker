@@ -9,7 +9,7 @@ rabbit:
     - RABBITMQ_LOG_BASE=/var/log/rabbitmq
   volumes:
     - ./log/rabbitmq:/var/log/rabbitmq
-  restart: on-failure
+  restart: unless-stopped
 
 postgres:
   image: kobotoolbox/postgres:latest
@@ -22,7 +22,7 @@ postgres:
     - ./.vols/db:/srv/db
     - ./backups/postgres:/srv/backups
     - ./base_images/postgres/init_postgres.bash:/etc/my_init.d/10_init_postgres.bash:ro
-  restart: on-failure
+  restart: unless-stopped
 
 mongo:
   image: kobotoolbox/mongo:latest
@@ -39,7 +39,7 @@ mongo:
   volumes:
     - ./.vols/mongo:/srv/db
     - ./backups/mongo:/srv/backups
-  restart: on-failure
+  restart: unless-stopped
 
 kobocat:
   image: kobotoolbox/kobocat:latest
@@ -77,7 +77,7 @@ kobocat:
     # - ./.transifexrc:/root/.transifexrc
   environment:
     - ENKETO_PROTOCOL=https
-  restart: on-failure
+  restart: unless-stopped
   # NOTE: Workaround to force name resolution inside containers. If enabled, 
   #   customize with your actual subdomains+domain and server IP. Clients 
   #   might also need similar manipulations to their `hosts` files.
@@ -122,7 +122,7 @@ kpi:
     #- ~/devel/liclipse/plugins/org.python.pydev_5.4.0.201611281405/pysrc:/srv/pydev_orig:ro
     # Dev: Share your `.transifexrc` into the container.
     # - ./.transifexrc:/root/.transifexrc
-  restart: on-failure
+  restart: unless-stopped
   # NOTE: Workaround to force name resolution inside containers. If enabled, 
   #   customize with your actual subdomains+domain and server IP. Clients 
   #   might also need similar manipulations to their `hosts` files.
@@ -157,7 +157,7 @@ nginx:
     - kobocat
     - kpi
     - enketo_express
-  restart: on-failure
+  restart: unless-stopped
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 enketo_express:
@@ -170,7 +170,7 @@ enketo_express:
   links:
     - redis_main
     - redis_cache
-  restart: on-failure
+  restart: unless-stopped
   volumes:
     - ./scripts/runtime_variables_enketo_express.source.bash:/etc/profile.d/runtime_variables_enketo_express.source.bash.sh:ro
     - ./enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
@@ -194,7 +194,7 @@ redis_main:
   volumes:
     - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf:ro
     - ./.vols/redis_main_data/:/data/
-  restart: on-failure
+  restart: unless-stopped
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 redis_cache:
@@ -202,4 +202,4 @@ redis_cache:
   # Map our "cache" Redis config into the container.
   volumes:
     - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf:ro
-  restart: on-failure
+  restart: unless-stopped
