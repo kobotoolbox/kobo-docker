@@ -116,6 +116,8 @@ kpi:
     # Dev: Use live source directories from the host machine.
     #- ../kpi:/srv/src/kpi
     #- ../formpack/src/formpack:/usr/local/lib/python2.7/dist-packages/formpack
+    # Allow access to Kobocat's media uploads within KPI
+    - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
     # Dev: Share PyDev remote debugger source into container.
     #- ~/devel/liclipse/plugins/org.python.pydev_5.4.0.201611281405/pysrc:/srv/pydev_orig:ro
     # Dev: Share your `.transifexrc` into the container.
