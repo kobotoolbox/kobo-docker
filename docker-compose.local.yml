@@ -31,7 +31,7 @@ mongo:
     - MONGO_DATA=/srv/db
   env_file:
     - ./envfile.local.txt
-  # NOTE: On OS X and Windows, comment out the following `volumes` directive 
+  # NOTE: On OS X and Windows, comment out the following `volumes` directive
   #   as a workaround to a VirtualBox folder sharing+Mongo incompatibility.
   #   See the "WARNING" at https://hub.docker.com/_/mongo/
   volumes:
@@ -106,6 +106,8 @@ kpi:
     # Dev: Use live source directories from the host machine.
     # - ../kpi:/srv/src/kpi
     #- ../formpack/src/formpack:/usr/local/lib/python2.7/dist-packages/formpack
+    # In case you're developping locally and solely using local storage uncomment the following line so you can access media uploads locally within KPI
+    # - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
     # Dev: Share PyDev remote debugger source into container.
     #- ~/devel/liclipse/plugins/org.python.pydev_5.4.0.201611281405/pysrc:/srv/pydev_orig:ro
     # Dev: Share your `.transifexrc` into the container.
@@ -125,7 +127,7 @@ nginx:
   environment:
     - NGINX_CONFIG_FILE_NAME=nginx_site_http.conf
   ports:
-    # NOTE: The host ports (left of the ":") must match the values in 
+    # NOTE: The host ports (left of the ":") must match the values in
     #   `envfile.local.txt`. Do not modify the container ports (right side).
     - 8000:9000 # KPI
     - 8001:9001 # KoBoCAT
