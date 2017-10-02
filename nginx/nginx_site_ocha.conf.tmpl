@@ -15,8 +15,6 @@ server {
     access_log  /var/log/nginx/kobocat.access.log;
     error_log   /var/log/nginx/kobocat.error.log;
 
-    client_max_body_size 75M;
-
     include /etc/nginx/ocha_common.conf;
 
     location / {
@@ -34,9 +32,6 @@ server {
 server {
     listen      80;
     server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
-
-    # max upload size
-    client_max_body_size 75M;
 
     include /etc/nginx/ocha_common.conf;
 
