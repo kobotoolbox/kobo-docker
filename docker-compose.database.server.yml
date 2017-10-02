@@ -49,6 +49,10 @@ redis_main:
   restart: on-failure
   ports:
     - 6379:6379
+  sysctls:
+      - net.core.somaxconn: 2048
+      - vm.overcommit_memory: 1
+
   command: "redis-server /etc/redis/redis.conf"
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
@@ -61,4 +65,8 @@ redis_cache:
   restart: on-failure
   ports:
     - 6380:6380
+  sysctls:
+      - net.core.somaxconn: 2048
+      - vm.overcommit_memory: 1
+
   command: "redis-server /etc/redis/redis.conf"
