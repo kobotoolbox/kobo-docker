@@ -45,9 +45,11 @@ redis_main:
   volumes:
     - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf:ro
     - ./.vols/redis_main_data/:/data/
+    - ./log/redis_main:/var/log/redis
   restart: on-failure
   ports:
     - 6379:6379
+  command: "redis-server /etc/redis/redis.conf"
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 redis_cache:
@@ -55,6 +57,8 @@ redis_cache:
   # Map our "cache" Redis config into the container.
   volumes:
     - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf:ro
+    - ./log/redis_cache:/var/log/redis
   restart: on-failure
   ports:
     - 6380:6380
+  command: "redis-server /etc/redis/redis.conf"
