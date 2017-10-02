@@ -7,11 +7,11 @@ services:
     hostname: kobocat
     env_file:
       - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/aws.txt
-      - ../kobo-deployments/external_services.txt
-      - ../kobo-deployments/kobocat.txt
-      - ../kobo-deployments/nginx.txt
-      - ../kobo-deployments/smtp.txt
+      - ../kobo-deployments/envfiles/aws.txt
+      - ../kobo-deployments/envfiles/external_services.txt
+      - ../kobo-deployments/envfiles/kobocat.txt
+      - ../kobo-deployments/envfiles/nginx.txt
+      - ../kobo-deployments/envfiles/smtp.txt
     links:
       - kpi
     volumes:
@@ -38,11 +38,11 @@ services:
     hostname: kpi
     env_file:
       - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/aws.txt
-      - ../kobo-deployments/external_services.txt
-      - ../kobo-deployments/kpi.txt
-      - ../kobo-deployments/nginx.txt
-      - ../kobo-deployments/smtp.txt
+      - ../kobo-deployments/envfiles/aws.txt
+      - ../kobo-deployments/envfiles/external_services.txt
+      - ../kobo-deployments/envfiles/kpi.txt
+      - ../kobo-deployments/envfiles/nginx.txt
+      - ../kobo-deployments/envfiles/smtp.txt
     environment:
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
     volumes:
@@ -70,9 +70,9 @@ services:
     hostname: nginx
     env_file:
       - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/nginx.txt
-      - ../kobo-deployments/kobocat.txt
-      - ../kobo-deployments/kpi.txt
+      - ../kobo-deployments/envfiles/nginx.txt
+      - ../kobo-deployments/envfiles/kobocat.txt
+      - ../kobo-deployments/envfiles/kpi.txt
     environment:
       - NGINX_CONFIG_FILE_NAME=nginx_site_ocha.conf
       - TEMPLATED_VAR_REFS=$${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
@@ -98,7 +98,7 @@ services:
     image: kobotoolbox/enketo_express
     env_file:
       - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/external_services.txt
+      - ../kobo-deployments/envfiles/external_services.txt
     restart: on-failure
     volumes:
       - ./scripts/runtime_variables_enketo_express.source.bash:/etc/profile.d/runtime_variables_enketo_express.source.bash.sh:ro
