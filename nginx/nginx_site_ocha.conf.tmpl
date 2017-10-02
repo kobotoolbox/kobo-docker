@@ -7,6 +7,33 @@ charset     utf-8;
 # Dumb, non-SNI clients will receive the certificate
 # for the first HTTPS server listed.
 
+# Default configuration
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+
+    # Add index.php to the list if you are using PHP
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name $hostname;
+
+    location / {
+        # return empty response
+        return 204;
+    }
+
+    # Proxy ELB status
+    location ~ /elb/([^/]*)/(.*)$ {
+        resolver 127.0.0.1;
+        proxy_pass http://127.0.0.1/$2;
+        proxy_set_header Host $1;
+        proxy_intercept_errors on;
+        access_log  off;
+    }
+}
+
 # KoBoCAT HTTP.
 server {
     listen      80;
@@ -28,7 +55,7 @@ server {
     ${kobocat_location_static}
 }
 
-# KoBoForm HTTPS.
+# KoBoForm HTTP.
 server {
     listen      80;
     server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
