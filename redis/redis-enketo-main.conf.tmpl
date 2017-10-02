@@ -1,14 +1,14 @@
-# Redis configuration for Enketo's XSLT Cache
+# Redis configuration for Enketo's main database instance
 
 supervised no
 
 daemonize no
 
-pidfile /var/run/redis/redis-enketo-cache.pid
+pidfile /var/run/redis/redis-enketo-main.pid
 
-port 6380
+port 6379
 
-bind 127.0.0.1
+bind 127.0.0.1 ${CONTAINER_IP}
 
 timeout 0
 
@@ -16,11 +16,11 @@ tcp-keepalive 0
 
 loglevel notice
 
-# logfile /var/log/redis/redis-enketo-cache.log
+logfile /var/log/redis/redis-enketo-main.log
 
 databases 16
 
-save 3600 1
+save 300 1
 
 stop-writes-on-bgsave-error yes
 
@@ -28,7 +28,7 @@ rdbcompression yes
 
 rdbchecksum yes
 
-dbfilename enketo-cache.rdb
+dbfilename enketo-main.rdb
 
 dir /data/
 

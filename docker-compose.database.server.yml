@@ -1,5 +1,6 @@
 # For public, HTTPS servers.
-version: '2.1'
+version: '3'
+
 services:
   rabbit:
     image: kobotoolbox/rabbit:latest
@@ -44,30 +45,30 @@ services:
     image: redis:3.2
     # Map our "main" Redis config into the container.
     volumes:
-      - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf:ro
       - ./.vols/redis_main_data/:/data/
+      - ./redis/redis-enketo-main.conf.tmpl:/etc/redis/redis.conf.tmpl:ro
+      - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_main:/var/log/redis
     restart: on-failure
     ports:
       - 6379:6379
     sysctls:
-        - net.core.somaxconn: 2048
-        - vm.overcommit_memory: 1
+        - net.core.somaxconn=2048
 
-    command: "redis-server /etc/redis/redis.conf"
+    command: "/bin/bash /tmp/redis/entrypoint.sh"
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
   redis_cache:
     image: redis:3.2
     # Map our "cache" Redis config into the container.
     volumes:
-      - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf:ro
+      - ./redis/redis-enketo-cache.conf.tmpl:/etc/redis/redis.conf.tmpl:ro
+      - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_cache:/var/log/redis
     restart: on-failure
     ports:
       - 6380:6380
     sysctls:
-        - net.core.somaxconn: 2048
-        - vm.overcommit_memory: 1
+        - net.core.somaxconn=2048
 
-    command: "redis-server /etc/redis/redis.conf"
+    command: "/bin/bash /tmp/redis/entrypoint.sh"

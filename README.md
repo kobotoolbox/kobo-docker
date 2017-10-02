@@ -73,3 +73,8 @@ Developers can use [PyDev](http://www.pydev.org/)'s [remote, graphical Python de
 5. Breakpoints can be inserted with e.g. `import pydevd; pydevd.settrace('${DEBUGGING_MACHINE_IP}')`.
 
 Remote debugging in the `kobocat` container can be accomplished in a similar manner.
+
+
+# Redis performance
+Please take a look at https://www.techandme.se/performance-tips-for-redis-cache-server/
+to get rid of Warning message when starting redis containers 
