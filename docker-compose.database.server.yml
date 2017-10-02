@@ -15,7 +15,7 @@ postgres:
   image: kobotoolbox/postgres:latest
   hostname: postgres
   env_file:
-    - ./envfile.server.txt
+    - ../kobo-deployments/envfile.txt
   volumes:
     - ./.vols/db:/srv/db
     - ./backups/postgres:/srv/backups
@@ -30,7 +30,7 @@ mongo:
   environment:
     - MONGO_DATA=/srv/db
   env_file:
-    - ./envfile.server.txt
+    - ../kobo-deployments/envfile.txt
   volumes:
     - ./.vols/mongo:/srv/db
     - ./backups/mongo:/srv/backups
@@ -40,7 +40,7 @@ mongo:
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 redis_main:
-  image: redis:latest
+  image: redis:3.2
   # Map our "main" Redis config into the container.
   volumes:
     - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf:ro
@@ -51,7 +51,7 @@ redis_main:
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 redis_cache:
-  image: redis:latest
+  image: redis:3.2
   # Map our "cache" Redis config into the container.
   volumes:
     - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf:ro

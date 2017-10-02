@@ -4,12 +4,12 @@ kobocat:
   image: kobotoolbox/kobocat:latest
   hostname: kobocat
   env_file:
-    - ./envfile.server.txt
-    - ./envfiles/aws.txt
-    - ./envfiles/external_services.txt
-    - ./envfiles/kobocat.txt
-    - ./envfiles/nginx.txt
-    - ./envfiles/smtp.txt
+    - ../kobo-deployments/envfile.txt
+    - ../kobo-deployments/aws.txt
+    - ../kobo-deployments/external_services.txt
+    - ../kobo-deployments/kobocat.txt
+    - ../kobo-deployments/nginx.txt
+    - ../kobo-deployments/smtp.txt
   links:
     - kpi
   volumes:
@@ -35,12 +35,12 @@ kpi:
   image: kobotoolbox/kpi:latest
   hostname: kpi
   env_file:
-    - ./envfile.server.txt
-    - ./envfiles/aws.txt
-    - ./envfiles/external_services.txt
-    - ./envfiles/kpi.txt
-    - ./envfiles/nginx.txt
-    - ./envfiles/smtp.txt
+    - ../kobo-deployments/envfile.txt
+    - ../kobo-deployments/aws.txt
+    - ../kobo-deployments/external_services.txt
+    - ../kobo-deployments/kpi.txt
+    - ../kobo-deployments/nginx.txt
+    - ../kobo-deployments/smtp.txt
   environment:
     - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
   volumes:
@@ -67,10 +67,10 @@ nginx:
   # build: ./base_images/nginx
   hostname: nginx
   env_file:
-    - ./envfile.server.txt
-    - ./envfiles/nginx.txt
-    - ./envfiles/kobocat.txt
-    - ./envfiles/kpi.txt
+    - ../kobo-deployments/envfile.txt
+    - ../kobo-deployments/nginx.txt
+    - ../kobo-deployments/kobocat.txt
+    - ../kobo-deployments/kpi.txt
   environment:
     - NGINX_CONFIG_FILE_NAME=nginx_site_ocha.conf
     - TEMPLATED_VAR_REFS=$${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
@@ -95,11 +95,8 @@ nginx:
 enketo_express:
   image: kobotoolbox/enketo_express
   env_file:
-    - ./envfile.server.txt
-    - ./envfiles/external_services.txt
-  links:
-    - redis_main
-    - redis_cache
+    - ../kobo-deployments/envfile.txt
+    - ../kobo-deployments/external_services.txt
   restart: on-failure
   volumes:
     - ./scripts/runtime_variables_enketo_express.source.bash:/etc/profile.d/runtime_variables_enketo_express.source.bash.sh:ro
