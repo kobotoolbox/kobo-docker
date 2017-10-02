@@ -3,19 +3,19 @@
 #######################
 
 # The publicly-accessible domain where your KoBo Toolbox instance will be reached (e.g. example.com).
-PUBLIC_DOMAIN_NAME=
+PUBLIC_DOMAIN_NAME=kobo.ocha.kbtdev.org
 # The publicly-accessible subdomain for the KoBoForm form building and management interface (e.g. koboform).
-KOBOFORM_PUBLIC_SUBDOMAIN=
+KOBOFORM_PUBLIC_SUBDOMAIN=kpi.ocha.kbtdev.org
 # The publicly-accessible subdomain for the KoBoCAT data collection and project management interface (e.g.kobocat).
-KOBOCAT_PUBLIC_SUBDOMAIN=
+KOBOCAT_PUBLIC_SUBDOMAIN=kc.ocha.kbtdev.org
 # The publicly-accessible subdomain for the Enketo Express web forms (e.g. enketo).
-ENKETO_EXPRESS_PUBLIC_SUBDOMAIN=
+ENKETO_EXPRESS_PUBLIC_SUBDOMAIN=ee.ocha.kbtdev.org
 # See "api key" here: https://github.com/kobotoolbox/enketo-express/tree/master/config#linked-form-and-data-server.
-ENKETO_API_TOKEN=
+ENKETO_API_TOKEN=DyQ1l4JlvOfTY543pnE8p5OGm0OAWycx6JvSaDRSuAhVvf7B31IxqlRv7sJ4fCQajJV/aMTmv89fxxmNGaDtOH/HGgbJ2GxtZ0VS/86kFvaNCDc8HC0j9NDl+5Pxfjk6v+X0FOM/q+KcZ7H+FksmtUPOOd7F/VXcjM4bVnLISCra4usZ/Cwz9Z9pNh5uVu6LxePzF3ula0OIxiH3H5JuevOixQ9GGCrjPS7ZWg6Zu3qnF8PxJPUIE7w6OZYszHjbWYp2hZw6E5bbBPRbiUnH22HLfepdBK6OKdOLz249V2QxvoXOG9SeN15FeKbkJ0Gx2/MyozXqDOoFge5tG+QR7g==
 # Canonically a 50-character random string. For Django 1.8.13, see https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key and https://github.com/django/django/blob/4022b2c306e88a4ab7f80507e736ce7ac7d01186/django/core/management/commands/startproject.py#L29-L31.
 # To generate a secret key in the same way as `django-admin startproject` you can run:
 # docker-compose run --rm kpi python -c 'from django.utils.crypto import get_random_string; print(get_random_string(50, "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"))'
-DJANGO_SECRET_KEY=
+DJANGO_SECRET_KEY=mlfs33xs1l4xf6a36x0xsrgcpjxxdxsisfo6HOktYXB9y
 # The initial superuser's username.
 KOBO_SUPERUSER_USERNAME=
 # The initial superuser's password.

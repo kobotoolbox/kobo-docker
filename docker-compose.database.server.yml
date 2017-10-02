@@ -1,0 +1,60 @@
+# For public, HTTPS servers.
+
+rabbit:
+  image: kobotoolbox/rabbit:latest
+  hostname: rabbit
+  environment:
+    - RABBITMQ_LOG_BASE=/var/log/rabbitmq
+  volumes:
+    - ./log/rabbitmq:/var/log/rabbitmq
+  restart: on-failure
+  ports:
+    - 5672:5672
+
+postgres:
+  image: kobotoolbox/postgres:latest
+  hostname: postgres
+  env_file:
+    - ./envfile.server.txt
+  volumes:
+    - ./.vols/db:/srv/db
+    - ./backups/postgres:/srv/backups
+    - ./base_images/postgres/init_postgres.bash:/etc/my_init.d/10_init_postgres.bash:ro
+  restart: on-failure
+  ports:
+    - 5432:5432
+
+mongo:
+  image: kobotoolbox/mongo:latest
+  hostname: mongo
+  environment:
+    - MONGO_DATA=/srv/db
+  env_file:
+    - ./envfile.server.txt
+  volumes:
+    - ./.vols/mongo:/srv/db
+    - ./backups/mongo:/srv/backups
+  restart: on-failure
+  ports:
+    - 27017:27017
+
+# Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
+redis_main:
+  image: redis:latest
+  # Map our "main" Redis config into the container.
+  volumes:
+    - ./redis/redis-enketo-main.conf:/etc/redis/redis.conf:ro
+    - ./.vols/redis_main_data/:/data/
+  restart: on-failure
+  ports:
+    - 6379:6379
+
+# Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
+redis_cache:
+  image: redis:latest
+  # Map our "cache" Redis config into the container.
+  volumes:
+    - ./redis/redis-enketo-cache.conf:/etc/redis/redis.conf:ro
+  restart: on-failure
+  ports:
+    - 6380:6380
