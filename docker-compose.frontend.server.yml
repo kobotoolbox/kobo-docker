@@ -26,6 +26,10 @@ services:
       - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
     environment:
       - ENKETO_PROTOCOL=https
+      - RABBIT_PORT=5672
+      - POSTGRES_PORT=5432
+      - MONGO_PORT=27017
+      - KPI_PORT=8000
     restart: on-failure
     # NOTE: Workaround to force name resolution inside containers.
     extra_hosts:
@@ -45,6 +49,9 @@ services:
       - ../kobo-deployments/envfiles/smtp.txt
     environment:
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
+      - RABBIT_PORT=5672
+      - POSTGRES_PORT=5432
+      - MONGO_PORT=27017
     volumes:
       - ./.vols/static/kpi:/srv/static
       # The Whoosh search index needs persistent storage
