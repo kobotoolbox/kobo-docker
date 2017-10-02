@@ -1,111 +1,112 @@
 # For public, HTTPS servers.
+version: '2.1'
+services:
+  kobocat:
+    image: kobotoolbox/kobocat:latest
+    hostname: kobocat
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/aws.txt
+      - ../kobo-deployments/external_services.txt
+      - ../kobo-deployments/kobocat.txt
+      - ../kobo-deployments/nginx.txt
+      - ../kobo-deployments/smtp.txt
+    links:
+      - kpi
+    volumes:
+      - ./.vols/static/kobocat:/srv/static
+      - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
+      - ./backups/kobocat:/srv/backups
+      - ./log/kobocat:/srv/logs
+      - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
+      - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
+      - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
+      - ./scripts/wait_for_kpi.bash:/etc/my_init.d/04_wait_for_kpi.bash:ro
+      - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
+    environment:
+      - ENKETO_PROTOCOL=https
+    restart: on-failure
+    # NOTE: Workaround to force name resolution inside containers.
+    extra_hosts:
+      - 'rabbit: 10.0.1.92'
+      - 'mongo: 10.0.1.92'
+      - 'postgres: 10.0.1.92'
 
-kobocat:
-  image: kobotoolbox/kobocat:latest
-  hostname: kobocat
-  env_file:
-    - ../kobo-deployments/envfile.txt
-    - ../kobo-deployments/aws.txt
-    - ../kobo-deployments/external_services.txt
-    - ../kobo-deployments/kobocat.txt
-    - ../kobo-deployments/nginx.txt
-    - ../kobo-deployments/smtp.txt
-  links:
-    - kpi
-  volumes:
-    - ./.vols/static/kobocat:/srv/static
-    - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
-    - ./backups/kobocat:/srv/backups
-    - ./log/kobocat:/srv/logs
-    - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
-    - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
-    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
-    - ./scripts/wait_for_kpi.bash:/etc/my_init.d/04_wait_for_kpi.bash:ro
-    - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
-  environment:
-    - ENKETO_PROTOCOL=https
-  restart: on-failure
-  # NOTE: Workaround to force name resolution inside containers.
-  extra_hosts:
-    - 'rabbit: 10.0.1.92'
-    - 'mongo: 10.0.1.92'
-    - 'postgres: 10.0.1.92'
+  kpi:
+    image: kobotoolbox/kpi:latest
+    hostname: kpi
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/aws.txt
+      - ../kobo-deployments/external_services.txt
+      - ../kobo-deployments/kpi.txt
+      - ../kobo-deployments/nginx.txt
+      - ../kobo-deployments/smtp.txt
+    environment:
+      - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
+    volumes:
+      - ./.vols/static/kpi:/srv/static
+      # The Whoosh search index needs persistent storage
+      - ./.vols/whoosh:/srv/whoosh
+      - ./log/kpi:/srv/logs
+      - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
+      - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
+      - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
+      - ./scripts/create_kobo_superuser.bash:/etc/my_init.d/20_create_kobo_superuser.bash:ro
+      - ./scripts/runtime_variables_kpi.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
+      # Allow access to Kobocat's media uploads within KPI
+      - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
+    restart: on-failure
+    extra_hosts:
+      - 'rabbit: 10.0.1.92'
+      - 'mongo: 10.0.1.92'
+      - 'postgres: 10.0.1.92'
 
-kpi:
-  image: kobotoolbox/kpi:latest
-  hostname: kpi
-  env_file:
-    - ../kobo-deployments/envfile.txt
-    - ../kobo-deployments/aws.txt
-    - ../kobo-deployments/external_services.txt
-    - ../kobo-deployments/kpi.txt
-    - ../kobo-deployments/nginx.txt
-    - ../kobo-deployments/smtp.txt
-  environment:
-    - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
-  volumes:
-    - ./.vols/static/kpi:/srv/static
-    # The Whoosh search index needs persistent storage
-    - ./.vols/whoosh:/srv/whoosh
-    - ./log/kpi:/srv/logs
-    - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
-    - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
-    - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
-    - ./scripts/create_kobo_superuser.bash:/etc/my_init.d/20_create_kobo_superuser.bash:ro
-    - ./scripts/runtime_variables_kpi.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
-    # Allow access to Kobocat's media uploads within KPI
-    - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
-  restart: on-failure
-  extra_hosts:
-    - 'rabbit: 10.0.1.92'
-    - 'mongo: 10.0.1.92'
-    - 'postgres: 10.0.1.92'
+  nginx:
+    image: kobotoolbox/nginx:latest
+    # Dev: Build the image locally.
+    # build: ./base_images/nginx
+    hostname: nginx
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/nginx.txt
+      - ../kobo-deployments/kobocat.txt
+      - ../kobo-deployments/kpi.txt
+    environment:
+      - NGINX_CONFIG_FILE_NAME=nginx_site_ocha.conf
+      - TEMPLATED_VAR_REFS=$${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+        - ./.vols/static:/srv/www:ro
+        # get the logs out of glusterfs!
+        - ./log/nginx:/var/log/nginx
+        - ./nginx/:/tmp/kobo_nginx/:ro
+        - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
+        - ./nginx/ocha_common.conf:/etc/nginx/ocha_common.conf:ro
+        - ./secrets/:/tmp/kobo_toolbox_secrets/:ro
+    links:
+      - kobocat
+      - kpi
+      - enketo_express
+    restart: on-failure
 
-nginx:
-  image: kobotoolbox/nginx:latest
-  # Dev: Build the image locally.
-  # build: ./base_images/nginx
-  hostname: nginx
-  env_file:
-    - ../kobo-deployments/envfile.txt
-    - ../kobo-deployments/nginx.txt
-    - ../kobo-deployments/kobocat.txt
-    - ../kobo-deployments/kpi.txt
-  environment:
-    - NGINX_CONFIG_FILE_NAME=nginx_site_ocha.conf
-    - TEMPLATED_VAR_REFS=$${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
-  ports:
-    - 80:80
-    - 443:443
-  volumes:
-      - ./.vols/static:/srv/www:ro
-      # get the logs out of glusterfs!
-      - ./log/nginx:/var/log/nginx
-      - ./nginx/:/tmp/kobo_nginx/:ro
-      - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
-      - ./nginx/ocha_common.conf:/etc/nginx/ocha_common.conf:ro
-      - ./secrets/:/tmp/kobo_toolbox_secrets/:ro
-  links:
-    - kobocat
-    - kpi
-    - enketo_express
-  restart: on-failure
-
-# Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
-enketo_express:
-  image: kobotoolbox/enketo_express
-  env_file:
-    - ../kobo-deployments/envfile.txt
-    - ../kobo-deployments/external_services.txt
-  restart: on-failure
-  volumes:
-    - ./scripts/runtime_variables_enketo_express.source.bash:/etc/profile.d/runtime_variables_enketo_express.source.bash.sh:ro
-    - ./enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
-    - ./scripts/enketo_express_copy_config.bash:/etc/my_init.d/01_enketo_express_copy_config.bash:ro
-    # Override Enketo Express icons.
-    - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
-    - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
-  extra_hosts:
-    - 'redis_main: 10.0.1.92'
-    - 'redis_cache: 10.0.1.92'
+  # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
+  enketo_express:
+    image: kobotoolbox/enketo_express
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/external_services.txt
+    restart: on-failure
+    volumes:
+      - ./scripts/runtime_variables_enketo_express.source.bash:/etc/profile.d/runtime_variables_enketo_express.source.bash.sh:ro
+      - ./enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
+      - ./scripts/enketo_express_copy_config.bash:/etc/my_init.d/01_enketo_express_copy_config.bash:ro
+      # Override Enketo Express icons.
+      - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
+      - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
+    extra_hosts:
+      - 'redis_main: 10.0.1.92'
+      - 'redis_cache: 10.0.1.92'
 
