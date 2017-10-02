@@ -1,0 +1,85 @@
+# `envsubst` template.
+# Context: http
+
+charset     utf-8;
+
+# The ORDER of the servers is important!
+# Dumb, non-SNI clients will receive the certificate
+# for the first HTTPS server listed.
+
+# KoBoCAT HTTP.
+server {
+    listen      80;
+    server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+
+    access_log  /var/log/nginx/kobocat.access.log;
+    error_log   /var/log/nginx/kobocat.error.log;
+
+    client_max_body_size 75M;
+
+    include /etc/nginx/ocha_common.conf;
+
+    location / {
+        # Proxy through uWSGI.
+        ${kobocat_include_uwsgi_pass}
+
+        # Debug proxying directly to container.
+        ${kobocat_include_proxy_pass}
+    }
+
+    ${kobocat_location_static}
+}
+
+# KoBoForm HTTPS.
+server {
+    listen      80;
+    server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+
+    # max upload size
+    client_max_body_size 75M;
+
+    include /etc/nginx/ocha_common.conf;
+
+
+    access_log  /var/log/nginx/kpi.access.log;
+    error_log   /var/log/nginx/kpi.error.log;
+
+    ${kpi_location_static}
+
+    error_page 418 = /static/html/Offline.html;
+
+    location / {
+        # Proxy through uWSGI.
+        ${kpi_include_uwsgi_pass}
+
+        # Debug proxying directly to container.
+        ${kpi_include_proxy_pass}
+    }
+}
+
+server {
+    listen 80;
+    server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+
+    resolver 8.8.4.4 8.8.8.8 valid=300s;
+    resolver_timeout 10s;
+
+    client_max_body_size 100M;
+
+    # add_header Strict-Transport-Security max-age=63072000;
+    # add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    access_log  /var/log/nginx/enketo_express.access.log;
+    error_log   /var/log/nginx/enketo_express.error.log;
+
+    location / {
+        proxy_pass  http://enketo_express:8005/;
+        proxy_redirect off;
+    }
+}
