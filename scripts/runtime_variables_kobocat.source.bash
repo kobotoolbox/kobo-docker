@@ -9,7 +9,7 @@ elif [[ ! -z "${HOST_ADDRESS}" ]]; then
     export KOBOFORM_URL="http://${HOST_ADDRESS}:${KPI_PUBLIC_PORT}"
     export ENKETO_URL="http://${HOST_ADDRESS}:${ENKETO_EXPRESS_PUBLIC_PORT}"
     export CSRF_COOKIE_DOMAIN="${HOST_ADDRESS}"
-    export DJANGO_ALLOWED_HOSTS="${HOST_ADDRESS}"
+    export DJANGO_ALLOWED_HOSTS='*'
 else
     echo 'Please fill out your `envfile`!'
     exit 1

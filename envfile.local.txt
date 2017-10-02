@@ -8,19 +8,19 @@
 #   from other devices on your network, use the IP address of Docker's network 
 #   interface. This can usually be obtained e.g with the following command:
 #   docker-compose run --rm kpi /sbin/ip route|awk '/default/ { print $3 }'
-HOST_ADDRESS=
+HOST_ADDRESS=172.16.52.2
 # See "api key" here: https://github.com/kobotoolbox/enketo-express/tree/master/config#linked-form-and-data-server
-ENKETO_API_TOKEN=
+ENKETO_API_TOKEN=vm.dev
 # Canonically a 50-character random string. For Django 1.8.13, see https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key and https://github.com/django/django/blob/4022b2c306e88a4ab7f80507e736ce7ac7d01186/django/core/management/commands/startproject.py#L29-L31.
 # To generate a secret key in the same way as `django-admin startproject` you can run:
 # docker-compose run --rm kpi python -c 'from django.utils.crypto import get_random_string; print(get_random_string(50, "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"))'
-DJANGO_SECRET_KEY=
+DJANGO_SECRET_KEY="o6dic2c!&z2xx&!bisfb)lo3hhvogkv3%f@*4r6)=m4z#)b(r7"
 # The initial superuser's username.
-KOBO_SUPERUSER_USERNAME=
+KOBO_SUPERUSER_USERNAME=nolive
 # The initial superuser's password.
-KOBO_SUPERUSER_PASSWORD=
+KOBO_SUPERUSER_PASSWORD=1234567890
 # The e-mail address where your users can contact you.
-KOBO_SUPPORT_EMAIL=
+KOBO_SUPPORT_EMAIL=olivierleger@gmail.com
 
 # NOTE: Any changes to the public ports must also be reflected in the `ports` directives for the `nginx` container in `docker-compose.local.yml`.
 KPI_PUBLIC_PORT=8000

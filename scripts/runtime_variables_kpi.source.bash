@@ -11,7 +11,7 @@ elif [[ ! -z "${HOST_ADDRESS}" ]]; then
     export KOBOCAT_URL="http://${HOST_ADDRESS}:${KOBOCAT_PUBLIC_PORT}"
     export KOBOCAT_INTERNAL_URL="${KOBOCAT_URL}" # FIXME: Use an actual internal URL.
     export CSRF_COOKIE_DOMAIN="${HOST_ADDRESS}"
-    export DJANGO_ALLOWED_HOSTS="${HOST_ADDRESS}"
+    export DJANGO_ALLOWED_HOSTS='*'
 else
     echo 'Please fill out your `envfile`!'
     exit 1
