@@ -42,6 +42,10 @@ server {
     access_log  /var/log/nginx/kobocat.access.log;
     error_log   /var/log/nginx/kobocat.error.log;
 
+    location ~ /forms(.*) {
+        return 301 $1;
+    }
+
     include /etc/nginx/ocha_common.conf;
 
     location / {

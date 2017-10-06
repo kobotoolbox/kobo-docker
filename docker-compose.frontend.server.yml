@@ -49,6 +49,7 @@ services:
       - ../kobo-deployments/envfiles/smtp.txt
     environment:
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
+      - SYNC_KOBOCAT_XFORMS=False # Should be on at least on one frontend environment
       - RABBIT_PORT=5672
       - POSTGRES_PORT=5432
       - MONGO_PORT=27017
