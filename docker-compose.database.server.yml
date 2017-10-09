@@ -18,6 +18,7 @@ services:
     hostname: postgres
     env_file:
       - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/databases.txt
     volumes:
       - ./.vols/db:/srv/db
       - ./backups/postgres:/srv/backups
@@ -33,6 +34,7 @@ services:
       - MONGO_DATA=/srv/db
     env_file:
       - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/databases.txt
     volumes:
       - ./.vols/mongo:/srv/db
       - ./backups/mongo:/srv/backups
