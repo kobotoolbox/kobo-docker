@@ -42,7 +42,7 @@ server {
     access_log  /var/log/nginx/kobocat.access.log;
     error_log   /var/log/nginx/kobocat.error.log;
 
-    include /etc/nginx/ocha_common.conf;
+    include /etc/nginx/include.uwsgi_app_common.conf;
 
     location / {
         # Proxy through uWSGI.
@@ -60,8 +60,7 @@ server {
     listen      80;
     server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
 
-    include /etc/nginx/ocha_common.conf;
-
+    include /etc/nginx/include.uwsgi_app_common.conf;
 
     location ~ /forms(.*) {
         return 301 $1;
@@ -91,6 +90,8 @@ server {
     resolver_timeout 10s;
 
     client_max_body_size 100M;
+
+    include /etc/nginx/include.https_redirection.conf;
 
     # add_header Strict-Transport-Security max-age=63072000;
     # add_header X-Frame-Options DENY;
