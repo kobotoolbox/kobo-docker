@@ -7,9 +7,6 @@ services:
     hostname: kobocat
     env_file:
       - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/envfiles/postgres.txt
-      - ../kobo-deployments/envfiles/mongo.txt
-      - ../kobo-deployments/envfiles/rabbit.txt
       - ../kobo-deployments/envfiles/aws.txt
       - ../kobo-deployments/envfiles/external_services.txt
       - ../kobo-deployments/envfiles/kobocat.txt
@@ -17,9 +14,9 @@ services:
       - ../kobo-deployments/envfiles/smtp.txt
     environment:
       - ENKETO_PROTOCOL=https
-#      - RABBIT_PORT=5672
-#      - POSTGRES_PORT=5432
-#      - MONGO_PORT=27017
+      - RABBIT_PORT=5672
+      - POSTGRES_PORT=5432
+      - MONGO_PORT=27017
       - KPI_PORT=8000
     links:
       - kpi
@@ -46,9 +43,6 @@ services:
     hostname: kpi
     env_file:
       - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/envfiles/postgres.txt
-      - ../kobo-deployments/envfiles/mongo.txt
-      - ../kobo-deployments/envfiles/rabbit.txt
       - ../kobo-deployments/envfiles/aws.txt
       - ../kobo-deployments/envfiles/external_services.txt
       - ../kobo-deployments/envfiles/kpi.txt
@@ -57,9 +51,9 @@ services:
     environment:
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
       - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
-#      - RABBIT_PORT=5672
-#      - POSTGRES_PORT=5432
-#      - MONGO_PORT=27017
+      - RABBIT_PORT=5672
+      - POSTGRES_PORT=5432
+      - MONGO_PORT=27017
     volumes:
       - ./.vols/static/kpi:/srv/static
       # The Whoosh search index needs persistent storage
@@ -85,9 +79,6 @@ services:
     hostname: nginx
     env_file:
       - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/envfiles/postgres.txt
-      - ../kobo-deployments/envfiles/mongo.txt
-      - ../kobo-deployments/envfiles/rabbit.txt
       - ../kobo-deployments/envfiles/nginx.txt
       - ../kobo-deployments/envfiles/kobocat.txt
       - ../kobo-deployments/envfiles/kpi.txt
