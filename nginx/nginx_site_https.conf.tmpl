@@ -26,7 +26,7 @@ server {
     server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
     ssl_certificate /tmp/kobo_toolbox_secrets/ssl.crt;
     ssl_certificate_key /tmp/kobo_toolbox_secrets/ssl.key;
-    
+
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     # ssl_ciphers prevents Forward Secrecy; requires >ie6/winxp
     # DHE-RSA-AES128-SHA provides Android 2.3 compatibility. No need
@@ -58,7 +58,7 @@ server {
 
     access_log  /var/log/nginx/kpi.access.log;
     error_log   /var/log/nginx/kpi.error.log;
-    
+
     return 301 https://$server_name$request_uri;
 }
 
@@ -127,7 +127,7 @@ server {
     client_max_body_size 100M;
 
     add_header Strict-Transport-Security max-age=63072000;
-    #add_header X-Frame-Options DENY; 
+    #add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
 
     proxy_set_header Host $host;
@@ -142,4 +142,30 @@ server {
         proxy_pass  http://enketo_express:8005/;
         proxy_redirect off;
     }
+}
+
+# reject requests with different Host names
+server {
+    listen 443 default_server;
+    server_name _;
+
+    ssl on;
+    ssl_certificate     /tmp/kobo_toolbox_secrets/ssl.crt;
+    ssl_certificate_key /tmp/kobo_toolbox_secrets/ssl.key;
+
+    ssl_ciphers "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_session_cache shared:SSL:10m;
+
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    resolver 8.8.4.4 8.8.8.8 valid=300s;
+    resolver_timeout 10s;
+
+    ssl_prefer_server_ciphers on;
+    # TODO: Automatically activate this if `dhparam.pem` provided.
+    #ssl_dhparam /etc/nginx/ssl/dhparam.pem;
+
+    return 444;
 }
