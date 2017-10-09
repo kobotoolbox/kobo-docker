@@ -121,7 +121,7 @@ services:
     restart: on-failure
     volumes:
       - ./scripts/runtime_variables_enketo_express.source.bash:/etc/profile.d/runtime_variables_enketo_express.source.bash.sh:ro
-      - ./enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
+      - ../kobo-deployments/enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
       - ./scripts/enketo_express_copy_config.bash:/etc/my_init.d/01_enketo_express_copy_config.bash:ro
       # Override Enketo Express icons.
       - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
