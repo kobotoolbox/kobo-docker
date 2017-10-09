@@ -7,11 +7,20 @@ services:
     hostname: kobocat
     env_file:
       - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/postgres.txt
+      - ../kobo-deployments/envfiles/mongo.txt
+      - ../kobo-deployments/envfiles/rabbit.txt
       - ../kobo-deployments/envfiles/aws.txt
       - ../kobo-deployments/envfiles/external_services.txt
       - ../kobo-deployments/envfiles/kobocat.txt
       - ../kobo-deployments/envfiles/nginx.txt
       - ../kobo-deployments/envfiles/smtp.txt
+    environment:
+      - ENKETO_PROTOCOL=https
+#      - RABBIT_PORT=5672
+#      - POSTGRES_PORT=5432
+#      - MONGO_PORT=27017
+      - KPI_PORT=8000
     links:
       - kpi
     volumes:
@@ -24,24 +33,22 @@ services:
       - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
       - ./scripts/wait_for_kpi.bash:/etc/my_init.d/04_wait_for_kpi.bash:ro
       - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
-    environment:
-      - ENKETO_PROTOCOL=https
-      - RABBIT_PORT=5672
-      - POSTGRES_PORT=5432
-      - MONGO_PORT=27017
-      - KPI_PORT=8000
+
     restart: on-failure
     # NOTE: Workaround to force name resolution inside containers.
-    extra_hosts:
-      - 'rabbit: 10.0.1.92'
-      - 'mongo: 10.0.1.92'
-      - 'postgres: 10.0.1.92'
+#    extra_hosts:
+#      - 'rabbit: 10.0.1.92'
+#      - 'mongo: 10.0.1.92'
+#      - 'postgres: 10.0.1.92'
 
   kpi:
     image: kobotoolbox/kpi:latest
     hostname: kpi
     env_file:
       - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/postgres.txt
+      - ../kobo-deployments/envfiles/mongo.txt
+      - ../kobo-deployments/envfiles/rabbit.txt
       - ../kobo-deployments/envfiles/aws.txt
       - ../kobo-deployments/envfiles/external_services.txt
       - ../kobo-deployments/envfiles/kpi.txt
@@ -50,9 +57,9 @@ services:
     environment:
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
       - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
-      - RABBIT_PORT=5672
-      - POSTGRES_PORT=5432
-      - MONGO_PORT=27017
+#      - RABBIT_PORT=5672
+#      - POSTGRES_PORT=5432
+#      - MONGO_PORT=27017
     volumes:
       - ./.vols/static/kpi:/srv/static
       # The Whoosh search index needs persistent storage
@@ -66,10 +73,10 @@ services:
       # Allow access to Kobocat's media uploads within KPI
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
     restart: on-failure
-    extra_hosts:
-      - 'rabbit: 10.0.1.92'
-      - 'mongo: 10.0.1.92'
-      - 'postgres: 10.0.1.92'
+    #extra_hosts:
+    #  - 'rabbit: 10.0.1.92'
+    #  - 'mongo: 10.0.1.92'
+    #  - 'postgres: 10.0.1.92'
 
   nginx:
     image: kobotoolbox/nginx:latest
@@ -78,6 +85,9 @@ services:
     hostname: nginx
     env_file:
       - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/postgres.txt
+      - ../kobo-deployments/envfiles/mongo.txt
+      - ../kobo-deployments/envfiles/rabbit.txt
       - ../kobo-deployments/envfiles/nginx.txt
       - ../kobo-deployments/envfiles/kobocat.txt
       - ../kobo-deployments/envfiles/kpi.txt
@@ -106,6 +116,7 @@ services:
     image: kobotoolbox/enketo_express
     env_file:
       - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/enketo.txt
       - ../kobo-deployments/envfiles/external_services.txt
     restart: on-failure
     volumes:
@@ -115,7 +126,7 @@ services:
       # Override Enketo Express icons.
       - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
       - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
-    extra_hosts:
-      - 'redis_main: 10.0.1.92'
-      - 'redis_cache: 10.0.1.92'
+    #extra_hosts:
+    #  - 'redis_main: 10.0.1.92'
+    #  - 'redis_cache: 10.0.1.92'
 
