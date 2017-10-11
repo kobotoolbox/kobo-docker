@@ -1,3 +1,5 @@
+# DO NOT attempt to use this code unless your database was created with Postgres 9.5!
+
 # WARNING
 If you started running KoBo Toolbox using a version of `kobo-docker` from before to [2016.10.13](https://github.com/kobotoolbox/kobo-docker/commit/316b1464c86e2c447ca88c10d383662b4f2e4ac6), actions that recreate the `kobocat` container (including `docker-compose up ...` under some circumstances) will result in losing access to user media files (e.g. responses to photo questions). Safely stored media files can be found in `kobo-docker/.vols/kobocat_media_uploads/`.
 
@@ -47,6 +49,7 @@ Once this is noted, you can `docker-compose stop` and search for potentially-mis
 "Local" setup users can now reach KoBo Toolbox at `http://${HOST_ADDRESS}:${KPI_PUBLIC_PORT}` (substituting in the values entered in [`envfile.local.txt`](./envfile.local.txt)), while "server" setups can be reached at `https://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}` (similarly substituting from [`envfile.server.txt`](./envfile.server.txt)). Be sure to periodically update your containers, especially `nginx`, for security updates by pulling new changes from this `kobo-docker` repo then running e.g. `docker-compose pull && docker-compose up -d`.
 
 # Backups
+**POSTGRES AUTOMATIC BACKUP IS CURRENTLY UNAVAILABLE**
 Automatic, periodic backups of KoBoCAT media, MongoDB, and Postgres can be individually enabled by uncommenting (and optionally customizing) the `*_BACKUP_SCHEDULE` variables in your `envfile`. When enabled, timestamped backups will be placed in `backups/kobocat`, `backups/mongo`, and `backups/postgres`, respectively. Redis backups are currently not generated, but the `redis_main` DB file is updated every 5 minutes and can always be found in `.vols/redis_main_data/`.
 
 Backups can also be manually triggered when `kobo-docker` is running by executing the the following commands:
@@ -77,4 +80,4 @@ Remote debugging in the `kobocat` container can be accomplished in a similar man
 
 # Redis performance
 Please take a look at https://www.techandme.se/performance-tips-for-redis-cache-server/
-to get rid of Warning message when starting redis containers 
+to get rid of Warning message when starting redis containers
