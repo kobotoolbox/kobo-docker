@@ -14,15 +14,14 @@ services:
       - 5672:5672
 
   postgres:
-    image: kobotoolbox/postgres:latest
+    image: mdillon/postgis:9.5-alpine
     hostname: postgres
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/databases.txt
     volumes:
-      - ./.vols/db:/srv/db
+      - ./.vols/db:/var/lib/postgresql/data
       - ./backups/postgres:/srv/backups
-      - ./base_images/postgres/init_postgres.bash:/etc/my_init.d/10_init_postgres.bash:ro
     restart: on-failure
     ports:
       - 5432:5432

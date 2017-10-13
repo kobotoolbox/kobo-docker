@@ -4,8 +4,6 @@ TEMPLATE_DEBUG=False
 DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
 ENKETO_VERSION=Express
 DATABASE_URL=postgis://kobo:kobo@postgres:5432/kobotoolbox
-KOBO_POSTGRES_DB_NAME=kobotoolbox
-KOBO_POSTGRES_USER=kobo
 KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
 
 #ENKETO_OFFLINE_SURVEYS=True
