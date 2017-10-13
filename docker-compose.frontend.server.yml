@@ -16,6 +16,9 @@ services:
     environment:
       - ENKETO_PROTOCOL=https
       - KPI_PORT=8000
+      - KC_UWSGI_MAX_REQUESTS=2048
+      - KC_UWSGI_WORKERS_COUNT=4
+      - KC_UWSGI_CHEAPER_WORKERS_COUNT=2
     links:
       - kpi
     volumes:
@@ -28,7 +31,7 @@ services:
       - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
       - ./scripts/wait_for_kpi.bash:/etc/my_init.d/04_wait_for_kpi.bash:ro
       - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
-
+      - ./uwsgi/kc_uwsgi.ini:/srv/src/kobocat/uwsgi.ini:ro
     restart: on-failure
 
   kpi:
@@ -45,6 +48,9 @@ services:
     environment:
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
       - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
+      - KPI_UWSGI_MAX_REQUESTS=2048
+      - KPI_UWSGI_WORKERS_COUNT=4
+      - KPI_UWSGI_CHEAPER_WORKERS_COUNT=2
     volumes:
       - ./.vols/static/kpi:/srv/static
       # The Whoosh search index needs persistent storage
@@ -55,6 +61,7 @@ services:
       - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
       - ./scripts/create_kobo_superuser.bash:/etc/my_init.d/20_create_kobo_superuser.bash:ro
       - ./scripts/runtime_variables_kpi.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
+      - ./uwsgi/kpi_uwsgi.ini:/srv/src/kpi/uwsgi.ini:ro
       # Allow access to Kobocat's media uploads within KPI
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
     restart: on-failure

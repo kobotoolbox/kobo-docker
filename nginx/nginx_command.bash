@@ -32,6 +32,9 @@ KPI_PRODUCTION_LOCATION_STATIC='location /static {
 
 mkdir -p ${TEMPLATES_ENABLED_DIR}
 
+echo "Overwrite default nginx configuration"
+cp /tmp/kobo_nginx/nginx.conf /etc/nginx/nginx.conf
+
 echo "Clearing out any default configurations."
 rm -rf /etc/nginx/conf.d/*
 
