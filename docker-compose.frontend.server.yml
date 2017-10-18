@@ -17,7 +17,8 @@ services:
       - ENKETO_PROTOCOL=https
       - KPI_PORT=8000
       - KC_UWSGI_MAX_REQUESTS=2048
-      - KC_UWSGI_WORKERS_COUNT=4
+      - KC_UWSGI_WORKERS_COUNT=24
+      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=7516192768
       - KC_UWSGI_CHEAPER_WORKERS_COUNT=2
     links:
       - kpi
@@ -49,7 +50,8 @@ services:
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
       - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
       - KPI_UWSGI_MAX_REQUESTS=2048
-      - KPI_UWSGI_WORKERS_COUNT=4
+      - KPI_UWSGI_WORKERS_COUNT=24
+      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=7516192768
       - KPI_UWSGI_CHEAPER_WORKERS_COUNT=2
     volumes:
       - ./.vols/static/kpi:/srv/static
