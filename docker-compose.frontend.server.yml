@@ -13,6 +13,8 @@ services:
       - ../kobo-deployments/envfiles/kobocat.txt
       - ../kobo-deployments/envfiles/nginx.txt
       - ../kobo-deployments/envfiles/smtp.txt
+    sysctls:
+      - net.core.somaxconn=2048
     environment:
       - ENKETO_PROTOCOL=https
       - KPI_PORT=8000
@@ -46,6 +48,8 @@ services:
       - ../kobo-deployments/envfiles/kpi.txt
       - ../kobo-deployments/envfiles/nginx.txt
       - ../kobo-deployments/envfiles/smtp.txt
+    sysctls:
+      - net.core.somaxconn=2048
     environment:
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
       - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
