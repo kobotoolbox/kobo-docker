@@ -95,6 +95,7 @@ kpi:
     - mongo
   volumes:
     - ./.vols/static/kpi:/srv/static
+    - ./.vols/kpi_media:/srv/src/kpi/media
     # The Whoosh search index needs persistent storage
     - ./.vols/whoosh:/srv/whoosh
     - ./log/kpi:/srv/logs
