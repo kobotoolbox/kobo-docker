@@ -14,14 +14,18 @@ services:
       - 5672:5672
 
   postgres:
-    image: mdillon/postgis:9.5-alpine
+    image: mdillon/postgis:9.5
     hostname: postgres
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/databases.txt
+    environment:
+      - KOBO_POSTGRES_DB_SERVER_ROLE=master
     volumes:
       - ./.vols/db:/var/lib/postgresql/data
       - ./backups/postgres:/srv/backups
+      - ./postgres:/kobo-docker-scripts
+    command: "/bin/bash /kobo-docker-scripts/entrypoint.sh"
     restart: on-failure
     ports:
       - 5432:5432

@@ -1,0 +1,32 @@
+# For public, HTTPS servers.
+version: '3'
+
+services:
+#  rabbit:
+#    extends:
+#      file: docker-compose.primary.backend.server.yml
+#      service: rabbit
+
+  postgres:
+    extends:
+      file: docker-compose.primary.backend.server.yml
+      service: postgres
+    environment:
+      - KOBO_POSTGRES_DB_SERVER_ROLE=slave
+
+#  mongo:
+#    extends:
+#      file: docker-compose.primary.backend.server.yml
+#      service: mongo
+#
+#  # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
+#  redis_main:
+#    extends:
+#      file: docker-compose.primary.backend.server.yml
+#      service: redis_main
+#
+#  # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
+#  redis_cache:
+#    extends:
+#      file: docker-compose.primary.backend.server.yml
+#      service: redis_cache

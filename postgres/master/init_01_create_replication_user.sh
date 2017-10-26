@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+echo "Creating replication user..."
+psql -c "
+    DROP ROLE IF EXISTS ${KOBO_POSTGRES_REPLICATION_USER};
+    CREATE USER ${KOBO_POSTGRES_REPLICATION_USER} REPLICATION LOGIN CONNECTION LIMIT 1 ENCRYPTED PASSWORD '${KOBO_POSTGRES_REPLICATION_PASSWORD}';
+"
+echo "Replication user created!"

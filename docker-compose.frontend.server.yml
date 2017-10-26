@@ -16,7 +16,7 @@ services:
     sysctls:
       - net.core.somaxconn=2048
     environment:
-      - ENKETO_PROTOCOL=https
+      - ENKETO_PROTOCOL=http
       - KPI_PORT=8000
       - KC_UWSGI_MAX_REQUESTS=2048
       - KC_UWSGI_WORKERS_COUNT=24
@@ -91,7 +91,6 @@ services:
       - 443:443
     volumes:
         - ./.vols/static:/srv/www:ro
-        # get the logs out of glusterfs!
         - ./log/nginx:/var/log/nginx
         - ./nginx/:/tmp/kobo_nginx/:ro
         - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
