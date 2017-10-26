@@ -1,5 +1,5 @@
 # For public, HTTPS servers.
-version: '3'
+version: '2.1'
 
 services:
 #  rabbit:
@@ -11,6 +11,10 @@ services:
     extends:
       file: docker-compose.primary.backend.server.yml
       service: postgres
+    volumes:
+      - /tmp/db:/var/lib/postgresql/data
+      - ./backups/postgres:/srv/backups
+      - ./postgres:/kobo-docker-scripts
     environment:
       - KOBO_POSTGRES_DB_SERVER_ROLE=slave
 

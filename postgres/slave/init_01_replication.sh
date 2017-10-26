@@ -12,9 +12,12 @@ IS_OPENED=$((echo > /dev/tcp/${KOBO_POSTGRES_MASTER_ENDPOINT//\"/}/5432) >/dev/n
 
 if [ "$IS_OPENED" == "1" ]; then
     echo "Deleting database directory..."
-    rm -fr $POSTGRES_DATA_DIR/*
+    rm -rf $POSTGRES_DATA_DIR/*
     echo "Cloning master data..."
-    su postgres -c "PGPASSFILE=${POSTGRES_REPO//\"/}/.pgpass pg_basebackup -h ${KOBO_POSTGRES_MASTER_ENDPOINT//\"/} -D ${POSTGRES_DATA_DIR//\"/} -U ${KOBO_POSTGRES_REPLICATION_USER//\"/} -v -P --xlog"
+
+    # su postgres -c "PGPASSFILE=${POSTGRES_REPO//\"/}/.pgpass pg_basebackup -h ${KOBO_POSTGRES_MASTER_ENDPOINT//\"/} -D ${POSTGRES_DATA_DIR//\"/} -U ${KOBO_POSTGRES_REPLICATION_USER//\"/} -v -P --xlog"
+
+    PGPASSFILE=${POSTGRES_REPO//\"/}/.pgpass pg_basebackup -h ${KOBO_POSTGRES_MASTER_ENDPOINT//\"/} -D ${POSTGRES_DATA_DIR//\"/} -U ${KOBO_POSTGRES_REPLICATION_USER//\"/} -v -P --xlog
     echo "Master data cloned!"
 
     POSTGRES_RECOVERY_FILE=${POSTGRES_DATA_DIR}/recovery.conf
@@ -29,6 +32,8 @@ if [ "$IS_OPENED" == "1" ]; then
     sed -i "s~POSTGRES_DATA_DIR~${POSTGRES_DATA_DIR//\"/}~g" "$POSTGRES_RECOVERY_FILE"
 
     chown postgres:postgres ${POSTGRES_RECOVERY_FILE}
+
+    chown -R postgres:postgres ${POSTGRES_DATA_DIR}
 
     echo "Done!"
 else
