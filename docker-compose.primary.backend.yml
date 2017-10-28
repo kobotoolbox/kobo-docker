@@ -1,0 +1,30 @@
+# For public, HTTPS servers.
+version: '2.1'
+
+services:
+  rabbit:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: rabbit
+
+  postgres:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: postgres
+    environment:
+      - KOBO_POSTGRES_DB_SERVER_ROLE=master
+
+  mongo:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: mongo
+
+  redis_main:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: redis_main
+
+  redis_cache:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: redis_cache

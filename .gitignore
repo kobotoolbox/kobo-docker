@@ -6,3 +6,4 @@ build
 docker-compose.yml
 .transifexrc
 .idea/*
+docker-compose.frontend.local.override.yml

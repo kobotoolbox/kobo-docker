@@ -19,11 +19,10 @@ services:
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/databases.txt
-    environment:
-      - KOBO_POSTGRES_DB_SERVER_ROLE=master
     volumes:
       - ./.vols/db:/var/lib/postgresql/data
       - ./backups/postgres:/srv/backups
+      - ./log/postgres:/srv/logs
       - ./postgres:/kobo-docker-scripts
     command: "/bin/bash /kobo-docker-scripts/entrypoint.sh"
     restart: on-failure

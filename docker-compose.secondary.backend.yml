@@ -9,11 +9,12 @@ services:
 
   postgres:
     extends:
-      file: docker-compose.primary.backend.server.yml
+      file: docker-compose.backend.template.yml
       service: postgres
     volumes:
-      - /tmp/db:/var/lib/postgresql/data
+      - /tmp/postgres/db:/var/lib/postgresql/data
       - ./backups/postgres:/srv/backups
+      - /tmp/postgres/logs:/srv/logs
       - ./postgres:/kobo-docker-scripts
     environment:
       - KOBO_POSTGRES_DB_SERVER_ROLE=slave
