@@ -1,7 +1,9 @@
 # `envsubst` template.
-# Context: http
+# Context: ocha
 
 charset     utf-8;
+
+perl_set $PUBLIC_REQUEST_SCHEME 'sub { return $ENV{"PUBLIC_REQUEST_SCHEME"}; }';
 
 # The ORDER of the servers is important!
 # Dumb, non-SNI clients will receive the certificate

@@ -16,7 +16,7 @@ services:
     sysctls:
       - net.core.somaxconn=2048
     environment:
-      - ENKETO_PROTOCOL=http
+      - ENKETO_PROTOCOL=https
       - KPI_PORT=8000
       - KC_UWSGI_MAX_REQUESTS=2048
       - KC_UWSGI_WORKERS_COUNT=24
