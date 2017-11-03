@@ -16,6 +16,18 @@ cp $KOBO_DOCKER_SCRIPTS_DIR/shared/init_* /docker-entrypoint-initdb.d/
 cp $KOBO_DOCKER_SCRIPTS_DIR/$KOBO_POSTGRES_DB_SERVER_ROLE/init_* /docker-entrypoint-initdb.d/
 
 
+# Restore permissions
+if [ ! -d $POSTGRES_LOGS_DIR ]; then
+    mkdir -p $POSTGRES_LOGS_DIR
+fi
+
+if [ ! -d $POSTGRES_BACKUPS_DIR ]; then
+    mkdir -p $POSTGRES_BACKUPS_DIR
+fi
+
+chown -R postgres:postgres $POSTGRES_LOGS_DIR
+chown -R postgres:postgres $POSTGRES_BACKUPS_DIR
+
 # if file exists. Container has already boot once
 if [ -f "$POSTGRES_DATA_DIR/kobo_first_run" ]; then
     /bin/bash $KOBO_DOCKER_SCRIPTS_DIR/shared/init_00_set_postgres_config.sh
@@ -24,10 +36,6 @@ elif [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "slave" ]; then
     echo "Disabling postgis update..."
     mv /docker-entrypoint-initdb.d/postgis.sh /docker-entrypoint-initdb.d/postgis.sh.disabled
 fi
-
-# Restore permissions
-# chown -R postgres:postgres $POSTGRES_LOGS_DIR
-# chown -R postgres:postgres $POSTGRES_BACKUPS_DIR
 
 echo "Launching official entrypoint..."
 /bin/bash /docker-entrypoint.sh postgres
