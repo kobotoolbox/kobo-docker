@@ -30,7 +30,7 @@ chown -R postgres:postgres $POSTGRES_BACKUPS_DIR
 
 # if file exists. Container has already boot once
 if [ -f "$POSTGRES_DATA_DIR/kobo_first_run" ]; then
-    /bin/bash $KOBO_DOCKER_SCRIPTS_DIR/shared/init_00_set_postgres_config.sh
+    /bin/bash $KOBO_DOCKER_SCRIPTS_DIR/shared/init_02_set_postgres_config.sh
 elif [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "slave" ]; then
     # Because slave is a replica. This script has already been run on master
     echo "Disabling postgis update..."

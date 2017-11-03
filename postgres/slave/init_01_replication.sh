@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-
-# Remove CIDR from Endpoint.
-KOBO_POSTGRES_MASTER_ENDPOINT=${KOBO_POSTGRES_MASTER_ENDPOINT/\/32/}
-
 echo "Creating pgpass file..."
 echo "${KOBO_POSTGRES_MASTER_ENDPOINT}:5432:*:${KOBO_POSTGRES_REPLICATION_USER}:${KOBO_POSTGRES_REPLICATION_PASSWORD}" | tr -d '"' > "$POSTGRES_REPO/.pgpass"
 chown postgres:postgres "$POSTGRES_REPO/.pgpass"
