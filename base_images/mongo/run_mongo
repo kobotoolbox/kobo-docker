@@ -17,4 +17,5 @@ user=${MONGO_USER:-"mongodb"}
 [ -d $data_dir ] || mkdir -p $data_dir
 chown -R $user $data_dir
 
-exec /sbin/setuser $user /usr/bin/mongod --dbpath $data_dir --journal --noprealloc --smallfiles
+#exec /sbin/setuser $user /usr/bin/mongod --dbpath $data_dir --journal --noprealloc --smallfiles
+exec /sbin/setuser $user /usr/bin/mongod --dbpath $data_dir --journal

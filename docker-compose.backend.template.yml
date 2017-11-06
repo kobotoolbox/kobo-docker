@@ -40,6 +40,7 @@ services:
     volumes:
       - ./.vols/mongo:/srv/db
       - ./backups/mongo:/srv/backups
+      - ./base_images/mongo/run_mongo:/etc/service/mongo/run
     restart: on-failure
     ports:
       - 27017:27017
