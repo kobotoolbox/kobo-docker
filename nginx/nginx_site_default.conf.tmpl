@@ -44,7 +44,7 @@ server {
     access_log  /var/log/nginx/kobocat.access.log;
     error_log   /var/log/nginx/kobocat.error.log;
 
-    include /etc/nginx/include.uwsgi_app_common.conf;
+    include /etc/nginx/include.server.directive.common.conf;
 
     location / {
         # Proxy through uWSGI.
@@ -62,7 +62,7 @@ server {
     listen      80;
     server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
 
-    include /etc/nginx/include.uwsgi_app_common.conf;
+    include /etc/nginx/include.server.directive.common.conf;
 
     location ~ /forms(.*) {
         return 301 $1;
@@ -90,8 +90,6 @@ server {
 
     resolver 8.8.4.4 8.8.8.8 valid=300s;
     resolver_timeout 10s;
-
-    client_max_body_size 100M;
 
     include /etc/nginx/include.https_redirection.conf;
 
