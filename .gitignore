@@ -5,3 +5,5 @@ secrets/
 build
 docker-compose.yml
 .transifexrc
+.idea/
+*.override.yml
