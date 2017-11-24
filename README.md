@@ -27,7 +27,7 @@ Below is another diagram (made with [Lucidchart](lucidchart.com)) of the contain
    
 _NB: The diagram is based on AWS infrastructure, but it's not required to host your environment there._
 
-![Container diagram](./doc/aws-diagram.svg)
+![aws diagram](./doc/aws-diagram.svg)
 
 
 
