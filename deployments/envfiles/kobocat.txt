@@ -3,15 +3,19 @@ TEMPLATE_DEBUG=False
 
 DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
 ENKETO_VERSION=Express
-DATABASE_URL=postgis://kobo:kobo@postgres:5432/kobotoolbox
-KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
+
+KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit.domain.name:5672/kobocat
 
 #ENKETO_OFFLINE_SURVEYS=True
-#KOBOCAT_MONGO_HOST=mongo
-#KOBOCAT_MONGO_PORT=27017
-#KOBOCAT_MONGO_NAME=formhub
+
+# Mongo values come from mongo.txt
+
+KOBOCAT_MONGO_HOST=mongo.domain.name
+#KOBOCAT_MONGO_PORT=
+#KOBOCAT_MONGO_NAME=
 #KOBOCAT_MONGO_USER=
 #KOBOCAT_MONGO_PASS=
+
 #KOBOCAT_MEDIA_URL=media
 #KOBOCAT_ROOT_URI_PREFIX=
 #KOBOCAT_TEMPLATES_PATH=../kobocat-template

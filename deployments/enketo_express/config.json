@@ -1,0 +1,23 @@
+{
+    "app name": "Enketo Express for KoBo Toolbox",
+    "linked form and data server": {
+        "name": "KoBo Toolbox",
+        "server url": ""
+    },
+    "redis": {
+        "cache": {
+            "host": "redis-cache.domain.name",
+            "port": "6380"
+        },
+        "main": {
+            "host": "redis-main.domain.name",
+            "port": "6379"
+        }
+    },
+     "google": {
+        "analytics": {
+            "ua": "",
+            "domain": ""
+        }
+    }
+}
