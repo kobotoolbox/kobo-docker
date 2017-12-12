@@ -146,7 +146,7 @@ nginx:
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 enketo_express:
-  image: kobotoolbox/enketo-express-extra-widgets:1.55.5
+  image: kobotoolbox/enketo-express-extra-widgets:1.55.6
   # Dev: Build the image locally.
   # build: ../enketo-express/
   env_file:
