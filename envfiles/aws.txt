@@ -27,3 +27,7 @@
 #KOBOCAT_DEFAULT_FILE_STORAGE=storages.backends.s3boto.S3BotoStorage
 # To use S3 for KoBoCAT's storage, the specified bucket must already exist and the owner of your `AWS_ACCESS_KEY_ID` must have the appropriate S3 permissions.
 #KOBOCAT_AWS_STORAGE_BUCKET_NAME=
+
+# KPI also uses media file storage for users' data exports
+#KPI_DEFAULT_FILE_STORAGE=storages.backends.s3boto.S3BotoStorage
+#KPI_AWS_STORAGE_BUCKET_NAME=
