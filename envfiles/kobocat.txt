@@ -1,3 +1,7 @@
+# Uncomment the following to require authentication for viewing blank forms and
+# submitting data
+#REQUIRE_AUTHENTICATION_TO_SEE_FORMS_AND_SUBMIT_DATA_DEFAULT=True
+
 KOBOCAT_DJANGO_DEBUG=False
 TEMPLATE_DEBUG=False
 
