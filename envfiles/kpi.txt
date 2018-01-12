@@ -6,6 +6,7 @@ KPI_PREFIX=/
 KPI_BROKER_URL=amqp://kpi:kpi@rabbit:5672/kpi
 DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
 
+#TIME_ZONE=America/New_York
 #DJANGO_LANGUAGE_CODES=en
 #DKOBO_PREFIX=False
 #KPI_WHOOSH_DIR=./whoosh_index
