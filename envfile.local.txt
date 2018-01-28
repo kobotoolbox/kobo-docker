@@ -39,3 +39,7 @@ ENKETO_EXPRESS_PUBLIC_PORT=8005
 #MONGO_BACKUP_SCHEDULE=0 1 * * 0
 # Default Postgres backup schedule is weekly at 02:00 AM UTC on Sunday.
 #POSTGRES_BACKUP_SCHEDULE=0 2 * * 0
+
+# Postgres database name used in backups
+KOBO_POSTGRES_DB_NAME=kobotoolbox
+
