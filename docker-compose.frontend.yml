@@ -3,7 +3,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:2.017.46
+    image: kobotoolbox/kobocat:2.018.06a
     hostname: kobocat
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -38,7 +38,7 @@ services:
     restart: on-failure
 
   kpi:
-    image: kobotoolbox/kpi:formpack-exports-crude-backend-test
+    image: kobotoolbox/kpi:2.018.06b
     hostname: kpi
     env_file:
       - ../kobo-deployments/envfile.txt
