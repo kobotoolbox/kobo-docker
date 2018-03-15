@@ -38,7 +38,7 @@ services:
     restart: on-failure
 
   kpi:
-    image: kobotoolbox/kpi:2.018.11
+    image: kobotoolbox/kpi:2.018.11a
     hostname: kpi
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -105,7 +105,7 @@ services:
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:1.61.pre3-jnm
+    image: kobotoolbox/enketo-express-extra-widgets:1.61.4
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/enketo.txt
