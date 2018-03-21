@@ -38,7 +38,7 @@ services:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/databases.txt
     volumes:
-      - ./.vols/mongo:/srv/db
+      - ./.vols/mongo:/data/db
       - ./backups/mongo:/srv/backups
       - ./base_images/mongo/run_mongo:/etc/service/mongo/run
     restart: on-failure
