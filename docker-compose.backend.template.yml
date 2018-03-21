@@ -30,7 +30,7 @@ services:
       - 5432:5432
 
   mongo:
-    image: kobotoolbox/mongo:latest
+    image: mongo:3.4
     hostname: mongo
     environment:
       - MONGO_DATA=/srv/db
