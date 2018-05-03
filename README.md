@@ -27,7 +27,7 @@ Once this is noted, you can `docker-compose stop` and search for potentially-mis
 
 6. Pull the latest images from Docker Hub: `docker-compose pull`. **Note:** Pulling updated images doesn't remove the old ones, so if your drive is filling up, try removing outdated images with e.g. `docker rmi`.
 
-7. Edit the appropriate environment file for your instance type, [`envfile.local.txt`](./envfile.local.txt) or [`envfile.server.txt`](./envfile.server.txt), filling in **all** mandatory variables, and optional variables as needed.
+7. Edit the appropriate environment file for your instance type, [`envfile.local.txt`](./envfile.local.txt) or [`envfile.server.txt`](./envfile.server.txt), filling in **all** mandatory variables¹, and optional variables as needed.
 
 8. Optionally enable additional settings for your Google Analytics token, S3 bucket, e-mail settings, etc. by editing the files in [`envfiles/`](./envfiles).
 
@@ -61,6 +61,8 @@ docker exec -it kobodocker_postgres_1 /srv/backup_postgres.bash
 ## Basic troubleshooting
 You can confirm that your containers are running with `docker ps`. To inspect the log output from the containers, execute `docker-compose logs -f` or for a specific container use e.g. `docker-compose logs -f redis_main`.
 
+Killing (stopping) all docker containers: `docker kill $(docker ps -q)`. Useful when you ungracefully close project while working.
+
 The documentation for Docker can be found at https://docs.docker.com.
 
 ## Django debugging
@@ -73,3 +75,7 @@ Developers can use [PyDev](http://www.pydev.org/)'s [remote, graphical Python de
 5. Breakpoints can be inserted with e.g. `import pydevd; pydevd.settrace('${DEBUGGING_MACHINE_IP}')`.
 
 Remote debugging in the `kobocat` container can be accomplished in a similar manner.
+
+---
+
+¹ To find your IP on MacOS with terminal: `ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk '{print $2}'`, on Windows with command prompt: `ipconfig /all`, and on Linux with terminal: `hostname -I`.
