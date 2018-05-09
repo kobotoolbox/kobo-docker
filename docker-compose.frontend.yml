@@ -38,7 +38,7 @@ services:
     restart: on-failure
 
   kpi:
-    image: kobotoolbox/kpi:2.018.16
+    image: kobotoolbox/kpi:2.018.19
     hostname: kpi
     env_file:
       - ../kobo-deployments/envfile.txt
