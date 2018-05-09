@@ -19,3 +19,4 @@ fi
 
 export DJANGO_DEBUG="${KPI_DJANGO_DEBUG}"
 export RAVEN_DSN="${KPI_RAVEN_DSN}"
+export RAVEN_JS_DSN="${KPI_RAVEN_JS_DSN}"
