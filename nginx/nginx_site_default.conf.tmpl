@@ -39,7 +39,7 @@ server {
 # KoBoCAT HTTP.
 server {
     listen      80;
-    server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+    server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} kc.docker.internal;
 
     access_log  /var/log/nginx/kobocat.access.log;
     error_log   /var/log/nginx/kobocat.error.log;
@@ -60,7 +60,7 @@ server {
 # KoBoForm HTTP.
 server {
     listen      80;
-    server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+    server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} kf.docker.internal;
 
     include /etc/nginx/include.server_directive_common.conf;
 
@@ -86,7 +86,7 @@ server {
 
 server {
     listen 80;
-    server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+    server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ee.docker.internal;
 
     resolver 8.8.4.4 8.8.8.8 valid=300s;
     resolver_timeout 10s;

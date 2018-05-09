@@ -8,3 +8,4 @@ docker-compose.yml
 .idea/*
 *.override.yml
 start-env.sh
+stop-env.sh

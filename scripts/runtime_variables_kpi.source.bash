@@ -1,9 +1,10 @@
 if [[ ! -z "${PUBLIC_DOMAIN_NAME}" ]]; then
     export ENKETO_URL="${PUBLIC_REQUEST_SCHEME}://${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}"
     export KOBOCAT_URL="${PUBLIC_REQUEST_SCHEME}://${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}"
-    export KOBOCAT_INTERNAL_URL="${KOBOCAT_URL}" # FIXME: Use an actual internal URL.
+    # export KOBOCAT_INTERNAL_URL="${KOBOCAT_URL}" # FIXME: Use an actual internal URL.
+    export KOBOCAT_INTERNAL_URL="http://kc.docker.internal" # Always use HTTP internally.
     export CSRF_COOKIE_DOMAIN=".${PUBLIC_DOMAIN_NAME}"
-    export DJANGO_ALLOWED_HOSTS=".${PUBLIC_DOMAIN_NAME}"
+    export DJANGO_ALLOWED_HOSTS=".${PUBLIC_DOMAIN_NAME} .docker.internal"
 
 elif [[ ! -z "${HOST_ADDRESS}" ]]; then
     # Local configuration
