@@ -102,8 +102,6 @@ services:
         - ./log/nginx:/var/log/nginx
         - ./nginx/:/tmp/kobo_nginx/:ro
         - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
-        #- ./nginx/include.https_redirection.conf:/etc/nginx/include.https_redirection.conf:ro
-        #- ./nginx/include.server_directive_common.conf:/etc/nginx/include.server_directive_common.conf:ro
         - ./secrets/:/tmp/kobo_toolbox_secrets/:ro
     restart: on-failure
     networks:
