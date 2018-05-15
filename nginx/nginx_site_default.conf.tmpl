@@ -1,13 +1,9 @@
 # `envsubst` template.
-# Context: ocha
 
 charset     utf-8;
 
 perl_set $PUBLIC_REQUEST_SCHEME 'sub { return $ENV{"PUBLIC_REQUEST_SCHEME"}; }';
 
-# The ORDER of the servers is important!
-# Dumb, non-SNI clients will receive the certificate
-# for the first HTTPS server listed.
 
 # Default configuration
 server {
@@ -39,9 +35,9 @@ server {
 # KoBoCAT HTTP.
 server {
     listen      80;
-    server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+    server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOCAT_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
 
-    access_log  /var/log/nginx/kobocat.access.log;
+    access_log  /var/log/nginx/kobocat.access.log with_host;
     error_log   /var/log/nginx/kobocat.error.log;
 
     include /etc/nginx/include.server_directive_common.conf;
@@ -60,7 +56,7 @@ server {
 # KoBoForm HTTP.
 server {
     listen      80;
-    server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+    server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOFORM_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
 
     include /etc/nginx/include.server_directive_common.conf;
 
@@ -68,7 +64,7 @@ server {
         return 301 $1;
     }
 
-    access_log  /var/log/nginx/kpi.access.log;
+    access_log  /var/log/nginx/kpi.access.log with_host;
     error_log   /var/log/nginx/kpi.error.log;
 
     ${kpi_location_static}
@@ -86,7 +82,7 @@ server {
 
 server {
     listen 80;
-    server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+    server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
 
     resolver 8.8.4.4 8.8.8.8 valid=300s;
     resolver_timeout 10s;
@@ -102,7 +98,7 @@ server {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto; # Needs ELB protocol
 
-    access_log  /var/log/nginx/enketo_express.access.log;
+    access_log  /var/log/nginx/enketo_express.access.log with_host;
     error_log   /var/log/nginx/enketo_express.error.log;
 
     location / {
