@@ -22,8 +22,6 @@ services:
       - KC_UWSGI_WORKERS_COUNT=24
       - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=7516192768
       - KC_UWSGI_CHEAPER_WORKERS_COUNT=10
-    links:
-      - kpi
     volumes:
       - ./.vols/static/kobocat:/srv/static
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
@@ -36,6 +34,11 @@ services:
       - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
       - ./uwsgi/kc_uwsgi.ini:/srv/src/kobocat/docker/kobocat.ini
     restart: on-failure
+    networks:
+      kobo-fe-network:
+        aliases:
+          - kobocat
+          - kobocat.docker.container
 
   kpi:
     image: kobotoolbox/kpi:2.018.20
@@ -71,6 +74,11 @@ services:
       # Allow access to Kobocat's media uploads within KPI
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
     restart: on-failure
+    networks:
+      kobo-fe-network:
+        aliases:
+          - kpi
+          - kpi.docker.container
 
   nginx:
     image: kobotoolbox/nginx:latest
@@ -85,7 +93,7 @@ services:
       - ../kobo-deployments/envfiles/kpi.txt
     environment:
       - NGINX_CONFIG_FILE_NAME=nginx_site_default.conf
-      - TEMPLATED_VAR_REFS=$${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
+      - TEMPLATED_VAR_REFS=$${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
     ports:
       - 80:80
       - 443:443
@@ -94,14 +102,16 @@ services:
         - ./log/nginx:/var/log/nginx
         - ./nginx/:/tmp/kobo_nginx/:ro
         - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
-        - ./nginx/include.https_redirection.conf:/etc/nginx/include.https_redirection.conf:ro
-        - ./nginx/include.server_directive_common.conf:/etc/nginx/include.server_directive_common.conf:ro
         - ./secrets/:/tmp/kobo_toolbox_secrets/:ro
-    links:
-      - kobocat
-      - kpi
-      - enketo_express
     restart: on-failure
+    networks:
+      kobo-fe-network:
+        aliases:
+          # These aliases must match the concatenation of `*_PUBLIC_SUBDOMAIN` and `INTERNAL_DOMAIN_NAME` found in `../kobo-deployments/envfile.txt`
+          - nginx
+          - kc.docker.internal
+          - kf.docker.internal
+          - ee.docker.internal
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
   enketo_express:
@@ -118,3 +128,11 @@ services:
       # Override Enketo Express icons.
       - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
       - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
+    networks:
+      kobo-fe-network:
+        aliases:
+          - enketo_express
+
+networks:
+  kobo-fe-network:
+    driver: bridge

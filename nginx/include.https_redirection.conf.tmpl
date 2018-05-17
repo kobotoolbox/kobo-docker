@@ -11,6 +11,11 @@
         set $redirect_https "";
     }
 
+    # if host is internal. We don't want to be redirected to HTTPS
+    if ($host ~ ^(${KOBOCAT_PUBLIC_SUBDOMAIN}|${KOBOFORM_PUBLIC_SUBDOMAIN}|${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN})\.${INTERNAL_DOMAIN_NAME}$) {
+        set $redirect_https "";
+    }
+
     # if $PUBLIC_REQUEST_SCHEME equals http, we don't want to be redirected
     if ($PUBLIC_REQUEST_SCHEME = "http") {
         set $redirect_https "";
