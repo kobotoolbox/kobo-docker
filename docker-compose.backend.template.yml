@@ -14,8 +14,7 @@ services:
       - 5672:5672
 
   postgres:
-    #image: mdillon/postgis:9.5
-    image: kobojohn/postgis:9.4
+    image: mdillon/postgis:9.5
     hostname: postgres
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -31,15 +30,15 @@ services:
       - 5432:5432
 
   mongo:
-    image: mongo:3.4
+    image: kobotoolbox/mongo:latest
     hostname: mongo
     environment:
-      - MONGO_DATA=/data/db
+      - MONGO_DATA=/srv/db
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/databases.txt
     volumes:
-      - ./.vols/mongo:/data/db
+      - ./.vols/mongo:/srv/db
       - ./backups/mongo:/srv/backups
       - ./base_images/mongo/run_mongo:/etc/service/mongo/run
     restart: on-failure
