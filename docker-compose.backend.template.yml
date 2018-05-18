@@ -20,6 +20,7 @@ services:
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/databases.txt
+      - ../kobo-deployments/envfiles/aws.txt
     volumes:
       - ./.vols/db:/var/lib/postgresql/data
       - ./backups/postgres:/srv/backups
