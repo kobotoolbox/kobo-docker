@@ -42,7 +42,7 @@ mongo:
   restart: on-failure
 
 kobocat:
-  image: kobotoolbox/kobocat:latest
+  image: kobotoolbox/kobocat:2.018.20
   # Dev: Build the image locally.
   # build: ../kobocat
   hostname: kobocat
@@ -86,7 +86,7 @@ kobocat:
   #   - 'kf-local.kobotoolbox.org:172.17.0.1'
 
 kpi:
-  image: kobotoolbox/kpi:latest
+  image: kobotoolbox/kpi:2.018.20
   # Dev: Build the image locally.
   # build: ../kpi
   hostname: kpi
@@ -162,7 +162,7 @@ nginx:
 
 # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
 enketo_express:
-  image: kobotoolbox/enketo-express-extra-widgets:1.55.6
+  image: kobotoolbox/enketo-express-extra-widgets:1.65.5
   # Dev: Build the image locally.
   # build: ../enketo-express/
   env_file:
