@@ -29,7 +29,7 @@ server {
     server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
     ssl_certificate /tmp/kobo_toolbox_secrets/ssl.crt;
     ssl_certificate_key /tmp/kobo_toolbox_secrets/ssl.key;
-    
+
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     # ssl_ciphers prevents Forward Secrecy; requires >ie6/winxp
     # DHE-RSA-AES128-SHA provides Android 2.3 compatibility. No need
@@ -38,7 +38,7 @@ server {
     ssl_ciphers 'AES256+EECDH:AES256+EDH:DHE-RSA-AES128-SHA';
 
     # max upload size
-    client_max_body_size 75M;
+    client_max_body_size 100M;
 
     # Support bigger headers. Useful for huge cookies
     large_client_header_buffers 8 16k;
@@ -79,8 +79,8 @@ server {
     ssl_certificate /tmp/kobo_toolbox_secrets/ssl.crt;
 
     # max upload size
-    client_max_body_size 75M;
-    
+    client_max_body_size 100M;
+
     # Support bigger headers. Useful for huge cookies
     large_client_header_buffers 8 16k;
 
