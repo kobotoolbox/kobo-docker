@@ -11,7 +11,7 @@ server {
     error_log   /var/log/nginx/kobocat.error.log;
 
     # max upload size
-    client_max_body_size 75M;
+    client_max_body_size 100M;
 
     # Serve locations containing 'submission' or 'formList' via HTTP without
     # further ado, since ODK Collect makes requests containing those terms and
@@ -41,6 +41,8 @@ server {
 
     access_log  /var/log/nginx/kpi.access.log;
     error_log   /var/log/nginx/kpi.error.log;
+
+    client_max_body_size 100M;
 
     ${kpi_location_static}
 
