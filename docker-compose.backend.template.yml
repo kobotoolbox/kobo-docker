@@ -14,8 +14,7 @@ services:
       - 5672:5672
 
   postgres:
-    #image: mdillon/postgis:9.5
-    image: kobojohn/postgis:9.4
+    image: mdillon/postgis:9.5
     hostname: postgres
     env_file:
       - ../kobo-deployments/envfile.txt
