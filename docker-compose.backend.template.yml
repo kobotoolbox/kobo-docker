@@ -31,15 +31,15 @@ services:
       - 5432:5432
 
   mongo:
-    image: kobotoolbox/mongo:latest
+    image: mongo:3.4
     hostname: mongo
     environment:
-      - MONGO_DATA=/srv/db
+      - MONGO_DATA=/data/db
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/databases.txt
     volumes:
-      - ./.vols/mongo:/srv/db
+      - ./.vols/mongo:/data/db
       - ./backups/mongo:/srv/backups
       - ./base_images/mongo/run_mongo:/etc/service/mongo/run
     restart: on-failure
