@@ -43,7 +43,7 @@ MINIMUM_SIZE = 100 * 1024 ** 2
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_BUCKET = os.environ.get('BACKUP_AWS_STORAGE_BUCKET_NAME')
-CHUNK_SIZE = 10 * 1024 ** 2
+CHUNK_SIZE = 250 * 1024 ** 2
 
 ###############################################################################
 
@@ -57,13 +57,14 @@ for directory in DIRECTORIES:
     earliest_current_date = now - datetime.timedelta(days=directory['days'])
     s3keys = s3bucket.list(prefix=prefix)
     large_enough_backups = filter(lambda x: x.size >= MINIMUM_SIZE, s3keys)
+    young_enough_backup_found = False
     for backup in large_enough_backups:
         if parse_ts(backup.last_modified) >= earliest_current_date:
-            # There's already a young-enough backup in this directory
-            continue
-    # This directory doesn't have any current backups; stop here and use it as
-    # the destination
-    break
+            young_enough_backup_found = True
+    if not young_enough_backup_found:
+        # This directory doesn't have any current backups; stop here and use it
+        # as the destination
+        break
 
 # Perform the backup
 filename = ''.join((prefix, DUMPFILE))
