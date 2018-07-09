@@ -28,6 +28,10 @@ KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
 #KOBOCAT_DEFAULT_FILE_STORAGE=
 #EMAIL_FILE_PATH=./emails
 
+# Celery task time limits in seconds (affects legacy exports only)
+#CELERYD_TASK_TIME_LIMIT=2100
+#CELERYD_TASK_SOFT_TIME_LIMIT=1800
+
 # Dev: One or more mappings from PyDev remote debugging machine file paths to `kobocat` container 
 #   file paths (see https://github.com/kobotoolbox/kobocat/blob/master/docker/setup_pydev.bash).
 #KOBOCAT_PATH_FROM_ECLIPSE_TO_PYTHON_PAIRS=~/devel/kobocat -> /srv/src/kobocat | ~/.virtualenvs/kobocat/lib/python2.7/site-packages -> /usr/local/lib/python2.7/dist-packages
