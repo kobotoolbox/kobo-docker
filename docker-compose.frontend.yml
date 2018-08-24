@@ -3,7 +3,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:2.018.20
+    image: kobotoolbox/kobocat:475-fix-corrupt-zip-exports
     hostname: kobocat
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -41,7 +41,7 @@ services:
           - kobocat.docker.container
 
   kpi:
-    image: kobotoolbox/kpi:2.018.20
+    image: kobotoolbox/kpi:2.018.32
     hostname: kpi
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -115,7 +115,7 @@ services:
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:1.66.2
+    image: kobotoolbox/enketo-express-extra-widgets:1.70.1
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/enketo.txt
