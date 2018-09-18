@@ -30,9 +30,9 @@ BACKUP_COMMAND = 'pg_dump --format=c --dbname="{}"'.format(DBURL)
 
 DIRECTORIES = [
     {'name': 'yearly', 'keeps': 5, 'days': 365},
-    {'name': 'monthly', 'keeps': 18, 'days': 30},
-    {'name': 'weekly', 'keeps': 26, 'days': 7},
-    {'name': 'daily', 'keeps': 21, 'days': 1},
+    {'name': 'monthly', 'keeps': 12, 'days': 30},
+    {'name': 'weekly', 'keeps': 4, 'days': 7},
+    {'name': 'daily', 'keeps': 30, 'days': 1},
 ]
 
 # Consider backups invalid whose (compressed) size is below this number of
@@ -96,7 +96,8 @@ for directory in DIRECTORIES:
     keeps = directory['keeps']
     s3keys = s3bucket.list(prefix=prefix)
     large_enough_backups = filter(lambda x: x.size >= MINIMUM_SIZE, s3keys)
-    large_enough_backups.sort(key=lambda x: x.last_modified)
+    large_enough_backups = sorted(large_enough_backups, key=lambda x: x.last_modified, reverse=True)
+
     for l in large_enough_backups[keeps:]:
         print 'Deleting old backup "{}"...'.format(l.name)
         l.delete()
