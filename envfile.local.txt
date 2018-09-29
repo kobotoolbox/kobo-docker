@@ -8,6 +8,14 @@
 #   from other devices on your network, use the IP address of Docker's network 
 #   interface. This can usually be obtained e.g with the following command:
 #   docker-compose run --rm kpi /sbin/ip route|awk '/default/ { print $3 }'
+#   If that does not work, on Ubuntu you may also find the local machine IP by running the following command:
+#   ifconfig -a 
+#   If you are working with a limited window you can redirect the output and view it with the following command:
+#   ifconfig -a > connections; nano connections; rm connections
+#   example results
+#   docker0: flags=.....
+#           inet 172.17.0.1 netmask 255.255.0.0
+#   etc....
 HOST_ADDRESS=
 # See "api key" here: https://github.com/kobotoolbox/enketo-express/tree/master/config#linked-form-and-data-server
 ENKETO_API_TOKEN=
