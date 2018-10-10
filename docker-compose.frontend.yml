@@ -3,7 +3,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:475-fix-corrupt-zip-exports
+    image: kobotoolbox/kobocat:2.018.38
     hostname: kobocat
     env_file:
       - ../kobo-deployments/envfile.txt
