@@ -96,7 +96,6 @@ services:
       - TEMPLATED_VAR_REFS=$${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
     ports:
       - 80:80
-      - 443:443
     volumes:
         - ./.vols/static:/srv/www:ro
         - ./log/nginx:/var/log/nginx
