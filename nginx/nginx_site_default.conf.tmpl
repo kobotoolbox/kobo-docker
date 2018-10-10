@@ -94,10 +94,10 @@ server {
 
     # set public port (exposed port by docker)
     set $ee_public_port ":${ENKETO_EXPRESS_PUBLIC_PORT}";
-    if ("${ENKETO_EXPRESS_PUBLIC_PORT}" = "80") {
+    if ($ee_public_port = ":80") {
         set $ee_public_port "";
     }
-    if ("${ENKETO_EXPRESS_PUBLIC_PORT}" = "") {
+    if ($ee_public_port = ":") {
         set $ee_public_port "";
     }
 
