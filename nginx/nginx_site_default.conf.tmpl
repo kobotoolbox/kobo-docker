@@ -3,12 +3,9 @@
 charset     utf-8;
 
 perl_set $PUBLIC_REQUEST_SCHEME 'sub { return $ENV{"PUBLIC_REQUEST_SCHEME"}; }';
-perl_set $NGINX_PORT 'sub { return $ENV{"NGINX_PORT"} || 80; }';
 
 # Default configuration
 server {
-    #listen ${NGINX_PORT} default_server;
-    #listen [::]:${NGINX_PORT} default_server;
     listen 80 default_server;
     listen [::]:80 default_server;
 
@@ -36,7 +33,6 @@ server {
 
 # KoBoCAT HTTP.
 server {
-    #listen      ${NGINX_PORT};
     listen      80;
     server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOCAT_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
 
@@ -58,7 +54,6 @@ server {
 
 # KoBoForm HTTP.
 server {
-    #listen      ${NGINX_PORT};
     listen      80;
     server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOFORM_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
 
@@ -85,8 +80,7 @@ server {
 }
 
 server {
-    #listen ${NGINX_PORT};
-    #listen 80;
+    listen 80;
     server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
 
     resolver 8.8.4.4 8.8.8.8 valid=300s;
