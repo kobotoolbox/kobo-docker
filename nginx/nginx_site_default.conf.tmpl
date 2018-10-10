@@ -92,7 +92,16 @@ server {
     # add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
 
-    proxy_set_header Host $host;
+    # set public port (exposed port by docker)
+    set $ee_public_port ":${ENKETO_EXPRESS_PUBLIC_PORT}";
+    if ("${ENKETO_EXPRESS_PUBLIC_PORT}" = "80") {
+        set $ee_public_port "";
+    }
+    if ("${ENKETO_EXPRESS_PUBLIC_PORT}" = "") {
+        set $ee_public_port "";
+    }
+
+    proxy_set_header Host $host$ee_public_port;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto; # Needs ELB protocol
