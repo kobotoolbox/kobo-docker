@@ -3,6 +3,7 @@
 charset     utf-8;
 
 perl_set $PUBLIC_REQUEST_SCHEME 'sub { return $ENV{"PUBLIC_REQUEST_SCHEME"}; }';
+perl_set $ENKETO_EXPRESS_PUBLIC_PORT 'sub { return $ENV{"ENKETO_EXPRESS_PUBLIC_PORT"} || ""; }';
 
 # Default configuration
 server {
