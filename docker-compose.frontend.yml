@@ -18,10 +18,10 @@ services:
     environment:
       - ENKETO_PROTOCOL=https
       - KPI_PORT=8000
-      - KC_UWSGI_MAX_REQUESTS=2048
-      - KC_UWSGI_WORKERS_COUNT=24
-      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=7516192768
-      - KC_UWSGI_CHEAPER_WORKERS_COUNT=10
+      - KC_UWSGI_MAX_REQUESTS=512
+      - KC_UWSGI_WORKERS_COUNT=2
+      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
+      - KC_UWSGI_CHEAPER_WORKERS_COUNT=1
     volumes:
       - ./.vols/static/kobocat:/srv/static
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
@@ -56,10 +56,10 @@ services:
     environment:
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
       - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
-      - KPI_UWSGI_MAX_REQUESTS=2048
-      - KPI_UWSGI_WORKERS_COUNT=24
-      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=7516192768
-      - KPI_UWSGI_CHEAPER_WORKERS_COUNT=10
+      - KPI_UWSGI_MAX_REQUESTS=512
+      - KPI_UWSGI_WORKERS_COUNT=2
+      - KPI_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
+      - KPI_UWSGI_CHEAPER_WORKERS_COUNT=1
     volumes:
       - ./.vols/static/kpi:/srv/static
       # The Whoosh search index needs persistent storage
@@ -82,8 +82,6 @@ services:
 
   nginx:
     image: kobotoolbox/nginx:latest
-    # Dev: Build the image locally.
-    # build: ./base_images/nginx
     hostname: nginx
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -94,6 +92,10 @@ services:
     environment:
       - NGINX_CONFIG_FILE_NAME=nginx_site_default.conf
       - TEMPLATED_VAR_REFS=$${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
+    # Ports has to be declared in docker-compose.frontend.override.yml
+    # It allows `kobo-install` to specify the
+    #ports:
+    #  - 80:80
     volumes:
         - ./.vols/static:/srv/www:ro
         - ./log/nginx:/var/log/nginx
