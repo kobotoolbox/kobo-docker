@@ -1,6 +1,6 @@
 if [[ ! -z "${PUBLIC_DOMAIN_NAME}" ]]; then
-    if [[ ${NGINX_PORT} != "" && ${NGINX_PORT} != "80" ]]; then
-        PUBLIC_PORT=":${NGINX_PORT}"
+    if [[ ${$NGINX_PUBLIC_PORT} != "" && ${$NGINX_PUBLIC_PORT} != "80" ]]; then
+        PUBLIC_PORT=":${$NGINX_PUBLIC_PORT}"
     else
         PUBLIC_PORT=""
     fi
