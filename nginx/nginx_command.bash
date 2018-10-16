@@ -58,7 +58,6 @@ for container_name in "${!container_ports[@]}"; do
     web_server="${!web_server_varname}"
     if [[ "${web_server^^}" != 'UWSGI' ]] ; then
         echo "Proxying directly (debug) to \`${container_name}\` without uWSGI."
-        export container_public_port=${NGINX_PUBLIC_PORT:-80}
 
         # Create a `proxy_pass` configuration for this container.
         cat ${ORIGINAL_DIR}/proxy_pass.conf.tmpl \
