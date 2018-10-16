@@ -47,7 +47,7 @@ if [ "${NGINX_PUBLIC_PORT:-80}" != "80" ]; then
 else
     export container_public_port=""
 fi
-templated_var_refs+=" \${${container_public_port}}"
+templated_var_refs+=" \${container_public_port}"
 
 for container_name in "${!container_ports[@]}"; do
     export container_name
