@@ -3,7 +3,6 @@
 charset     utf-8;
 
 perl_set $PUBLIC_REQUEST_SCHEME 'sub { return $ENV{"PUBLIC_REQUEST_SCHEME"}; }';
-perl_set $NGINX_PUBLIC_PORT 'sub { return $ENV{"NGINX_PUBLIC_PORT"} || ""; }';
 
 # Default configuration
 server {
@@ -93,16 +92,7 @@ server {
     # add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
 
-    # set public port (exposed port by docker)
-    set $ee_public_port ":${$NGINX_PUBLIC_PORT}";
-    if ($ee_public_port = ":80") {
-        set $ee_public_port "";
-    }
-    if ($ee_public_port = ":") {
-        set $ee_public_port "";
-    }
-
-    proxy_set_header Host $host$ee_public_port;
+    proxy_set_header Host $host${container_public_port};
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto; # Needs ELB protocol
