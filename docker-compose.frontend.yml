@@ -54,7 +54,8 @@ services:
     sysctls:
       - net.core.somaxconn=2048
     environment:
-      - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
+      # `SECURE_PROXY_SSL_HEADER` should be declared in docker-compose.frontend.override.yml
+      #- SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
       - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
       - KPI_UWSGI_MAX_REQUESTS=512
       - KPI_UWSGI_WORKERS_COUNT=2
@@ -92,8 +93,8 @@ services:
     environment:
       - NGINX_CONFIG_FILE_NAME=nginx_site_default.conf
       - TEMPLATED_VAR_REFS=$${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
-    # Ports has to be declared in docker-compose.frontend.override.yml
-    # It allows `kobo-install` to specify the
+    # `ports` should to be declared in docker-compose.frontend.override.yml
+    # It allows `kobo-install` to specify the port without opening port 80 by default
     #ports:
     #  - 80:80
     volumes:
