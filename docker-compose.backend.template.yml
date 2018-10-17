@@ -60,7 +60,6 @@ services:
       - 6379:6379
     sysctls:
         - net.core.somaxconn=2048
-
     command: "/bin/bash /tmp/redis/entrypoint.sh"
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
@@ -76,5 +75,4 @@ services:
       - 6380:6380
     sysctls:
         - net.core.somaxconn=2048
-
     command: "/bin/bash /tmp/redis/entrypoint.sh"

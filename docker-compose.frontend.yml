@@ -109,7 +109,7 @@ services:
           # These aliases must match the concatenation of `*_PUBLIC_SUBDOMAIN` and `INTERNAL_DOMAIN_NAME` found in `../kobo-deployments/envfile.txt`
           - nginx
           - kc.docker.internal
-          - kf.docker.internal
+          - kpi.docker.internal
           - ee.docker.internal
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
