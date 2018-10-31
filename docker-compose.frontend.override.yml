@@ -3,7 +3,6 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:jnm-ocha-defer-submission-count
     environment:
       - KC_UWSGI_WORKERS_COUNT=24
       - KC_UWSGI_CHEAPER_WORKERS_COUNT=10
