@@ -1,0 +1,8 @@
+# For public, HTTPS servers.
+version: '2.1'
+
+services:
+
+  postgres:
+    volumes:
+      - ../kobo-deployments/postgres/slave/postgres.conf:/kobo-docker-scripts/slave/postgres.conf
