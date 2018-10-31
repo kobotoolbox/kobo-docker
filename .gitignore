@@ -6,6 +6,4 @@ build
 docker-compose.yml
 .transifexrc
 .idea/*
-*.override.yml
-start-env.sh
-stop-env.sh
+*.local.override.yml

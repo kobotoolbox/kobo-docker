@@ -1,0 +1,34 @@
+# For public, HTTPS servers.
+version: '3'
+
+services:
+  kobocat:
+    image: kobotoolbox/kobocat:jnm-ocha-defer-submission-count
+    environment:
+      - KC_UWSGI_WORKERS_COUNT=24
+      - KC_UWSGI_CHEAPER_WORKERS_COUNT=10
+      - NGINX_PUBLIC_PORT=80
+      - KC_UWSGI_MAX_REQUESTS=2048
+      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=7516192768
+
+  kpi:
+    environment:
+      - KPI_UWSGI_WORKERS_COUNT=24
+      - KPI_UWSGI_CHEAPER_WORKERS_COUNT=10
+      - NGINX_PUBLIC_PORT=80
+      - KPI_UWSGI_MAX_REQUESTS=2048
+      - KPI_UWSGI_CHEAPER_RSS_LIMIT_SOFT=7516192768
+      - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
+
+  nginx:
+    environment:
+      - NGINX_PUBLIC_PORT=80
+    ports:
+      - 80:80
+    networks:
+      kobo-fe-network:
+        aliases:
+          # These aliases must match the concatenation of `*_PUBLIC_SUBDOMAIN` and `INTERNAL_DOMAIN_NAME` found in `../kobo-deployments/envfile.txt`
+          - kobo.docker.internal
+          - kc.docker.internal
+          - ee.docker.internal

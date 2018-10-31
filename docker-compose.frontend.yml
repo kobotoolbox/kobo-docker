@@ -3,7 +3,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:jnm-ocha-defer-submission-count
+    image: kobotoolbox/kobocat:2.018.38
     hostname: kobocat
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -18,10 +18,10 @@ services:
     environment:
       - ENKETO_PROTOCOL=https
       - KPI_PORT=8000
-      - KC_UWSGI_MAX_REQUESTS=2048
-      - KC_UWSGI_WORKERS_COUNT=24
-      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=7516192768
-      - KC_UWSGI_CHEAPER_WORKERS_COUNT=10
+      - KC_UWSGI_MAX_REQUESTS=512
+      - KC_UWSGI_WORKERS_COUNT=2
+      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
+      - KC_UWSGI_CHEAPER_WORKERS_COUNT=1
     volumes:
       - ./.vols/static/kobocat:/srv/static
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
@@ -54,12 +54,13 @@ services:
     sysctls:
       - net.core.somaxconn=2048
     environment:
-      - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
+      # `SECURE_PROXY_SSL_HEADER` should be declared in docker-compose.frontend.override.yml
+      #- SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
       - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
-      - KPI_UWSGI_MAX_REQUESTS=2048
-      - KPI_UWSGI_WORKERS_COUNT=24
-      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=7516192768
-      - KPI_UWSGI_CHEAPER_WORKERS_COUNT=10
+      - KPI_UWSGI_MAX_REQUESTS=512
+      - KPI_UWSGI_WORKERS_COUNT=2
+      - KPI_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
+      - KPI_UWSGI_CHEAPER_WORKERS_COUNT=1
     volumes:
       - ./.vols/static/kpi:/srv/static
       # The Whoosh search index needs persistent storage
@@ -82,8 +83,6 @@ services:
 
   nginx:
     image: kobotoolbox/nginx:latest
-    # Dev: Build the image locally.
-    # build: ./base_images/nginx
     hostname: nginx
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -94,9 +93,10 @@ services:
     environment:
       - NGINX_CONFIG_FILE_NAME=nginx_site_default.conf
       - TEMPLATED_VAR_REFS=$${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
-    ports:
-      - 80:80
-      - 443:443
+    # `ports` should to be declared in docker-compose.frontend.override.yml
+    # It allows `kobo-install` to specify the port without opening port 80 by default
+    #ports:
+    #  - 80:80
     volumes:
         - ./.vols/static:/srv/www:ro
         - ./log/nginx:/var/log/nginx
@@ -110,7 +110,7 @@ services:
           # These aliases must match the concatenation of `*_PUBLIC_SUBDOMAIN` and `INTERNAL_DOMAIN_NAME` found in `../kobo-deployments/envfile.txt`
           - nginx
           - kc.docker.internal
-          - kf.docker.internal
+          - kpi.docker.internal
           - ee.docker.internal
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.

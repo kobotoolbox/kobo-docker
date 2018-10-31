@@ -41,6 +41,14 @@ rm -rf /etc/nginx/conf.d/*
 templated_var_refs="${TEMPLATED_VAR_REFS}"
 declare -A container_ports
 container_ports=( ['kpi']='8000' ['kobocat']='8000' )
+
+if [ "${NGINX_PUBLIC_PORT:-80}" != "80" ]; then
+    export container_public_port=":${NGINX_PUBLIC_PORT}"
+else
+    export container_public_port=""
+fi
+templated_var_refs+=" \${container_public_port}"
+
 for container_name in "${!container_ports[@]}"; do
     export container_name
     export container_port="${container_ports[${container_name}]}"
@@ -53,7 +61,7 @@ for container_name in "${!container_ports[@]}"; do
 
         # Create a `proxy_pass` configuration for this container.
         cat ${ORIGINAL_DIR}/proxy_pass.conf.tmpl \
-            | envsubst '${container_name} ${container_port}' \
+            | envsubst '${container_name} ${container_port} ${container_public_port}' \
             > ${TEMPLATES_ENABLED_DIR}/${container_name}_proxy_pass.conf
 
         # Prepare to include the generated `proxy_pass` config. and no `uwsgi_pass` config.
