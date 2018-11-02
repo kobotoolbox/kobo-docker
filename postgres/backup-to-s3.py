@@ -31,11 +31,12 @@ BACKUP_COMMAND = 'pg_dump --format=c --dbname="{}"'.format(DBURL)
 # If LifeCycle rules are enabled on bucket to move files to Glacier.
 # Keep in mind that file must stay in Glacier for (at least) 90 days.
 # Otherwise early deletion fee will be charged.
+# 7 days S3 Standard + 90 days in Glacier = 97 days
 DIRECTORIES = [
     {'name': 'yearly', 'keeps': 2, 'days': 365},
-    {'name': 'monthly', 'keeps': 3, 'days': 30},
-    {'name': 'weekly', 'keeps': 13, 'days': 7},
-    {'name': 'daily', 'keeps': 90, 'days': 1},
+    {'name': 'monthly', 'keeps': 4, 'days': 30},
+    {'name': 'weekly', 'keeps': 14, 'days': 7},
+    {'name': 'daily', 'keeps': 97, 'days': 1},
 ]
 
 # Consider backups invalid whose (compressed) size is below this number of
