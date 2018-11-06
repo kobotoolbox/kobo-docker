@@ -10,7 +10,7 @@ POSTGRES_BACKUPS_DIR=/srv/backups
 POSTGRES_FAILOVER_TRIGGER_FILE=${POSTGRES_DATA_DIR}/failover.trigger
 
 
-IS_MASTER_ALIVE=$((echo > /dev/tcp/${KOBO_POSTGRES_MASTER_ENDPOINT//\"/}/5432) >/dev/null 2>&1 && echo "1" || echo "0")
+IS_MASTER_ALIVE=$((echo > /dev/tcp/${KOBO_POSTGRES_MASTER_ENDPOINT//\"/}/${POSTGRES_PORT}) >/dev/null 2>&1 && echo "1" || echo "0")
 
 if [ "$IS_MASTER_ALIVE" == "1" ]; then
     echo "Master is alive, nothing to do"
