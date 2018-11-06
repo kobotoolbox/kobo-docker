@@ -10,13 +10,6 @@ if [[ ! -z "${PUBLIC_DOMAIN_NAME}" ]]; then
     export ENKETO_URL="${PUBLIC_REQUEST_SCHEME}://${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}${PUBLIC_PORT}"
     export CSRF_COOKIE_DOMAIN=".${PUBLIC_DOMAIN_NAME}"
     export DJANGO_ALLOWED_HOSTS=".${PUBLIC_DOMAIN_NAME} .${INTERNAL_DOMAIN_NAME}"
-elif [[ ! -z "${HOST_ADDRESS}" ]]; then
-    # Local.
-    export KOBOFORM_URL="http://${HOST_ADDRESS}:${KPI_PUBLIC_PORT}"
-    export KOBOFORM_INTERNAL_URL="${KOBOFORM_INTERNAL_URL}" # FIXME: Use an actual internal URL.
-    export ENKETO_URL="http://${HOST_ADDRESS}:${ENKETO_EXPRESS_PUBLIC_PORT}"
-    export CSRF_COOKIE_DOMAIN="${HOST_ADDRESS}"
-    export DJANGO_ALLOWED_HOSTS='*'
 else
     echo 'Please fill out your `envfile`!'
     exit 1
