@@ -75,8 +75,9 @@ services:
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_cache:/var/log/redis
     restart: on-failure
-    ports:
-      - 6380:6380
+    # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
+    #ports:
+    #  - 6380:6380
     sysctls:
         - net.core.somaxconn=2048
     command: "/bin/bash /tmp/redis/entrypoint.sh"
