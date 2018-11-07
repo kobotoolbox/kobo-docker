@@ -11,12 +11,13 @@ POSTGRES_FAILOVER_TRIGGER_FILE=${POSTGRES_DATA_DIR}/failover.trigger
 
 
 IS_MASTER_ALIVE=$((echo > /dev/tcp/${KOBO_POSTGRES_MASTER_ENDPOINT//\"/}/${POSTGRES_PORT}) >/dev/null 2>&1 && echo "1" || echo "0")
+UNHEALTHY_FILE="/tmp/${KOBO_POSTGRES_MASTER_ENDPOINT//\"/}-unhealthy-count.txt"
 
 if [ "$IS_MASTER_ALIVE" == "1" ]; then
     echo "Master is alive, nothing to do"
+    rm -rf $UNHEALTHY_FILE
 else
     UNHEALTHY_COUNT=0
-    UNHEALTHY_FILE="/tmp/${KOBO_POSTGRES_MASTER_ENDPOINT//\"/}-unhealthy-count.txt"
 
     if [ -f "$UNHEALTHY_FILE" ]; then
         UNHEALTHY_COUNT=$(cat $UNHEALTHY_FILE)
