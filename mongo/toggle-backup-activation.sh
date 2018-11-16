@@ -20,7 +20,6 @@ else
     FALSE=0
 
     # Add only non-empty variable to cron tasks
-
     if [ ! -z "${AWS_ACCESS_KEY_ID}" ]; then
         echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> /etc/cron.d/backup_mongo_crontab
     else
@@ -39,8 +38,8 @@ else
         USE_S3=$FALSE
     fi
 
-    if [ ! -z "${AWS_BACKUP_BUCKET_LIFE_CYCLE_ENABLED}" ]; then
-        echo "AWS_BACKUP_BUCKET_LIFE_CYCLE_ENABLED=${AWS_BACKUP_BUCKET_LIFE_CYCLE_ENABLED}" >> /etc/cron.d/backup_mongo_crontab
+    if [ ! -z "${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" ]; then
+        echo "AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED=${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" >> /etc/cron.d/backup_mongo_crontab
     fi
     if [ ! -z "${AWS_BACKUP_YEARLY_RETENTION}" ]; then
         echo "AWS_BACKUP_YEARLY_RETENTION=${AWS_BACKUP_YEARLY_RETENTION}" >> /etc/cron.d/backup_mongo_crontab

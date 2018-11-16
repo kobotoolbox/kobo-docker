@@ -37,5 +37,9 @@ elif [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "slave" ]; then
     mv /docker-entrypoint-initdb.d/postgis.sh /docker-entrypoint-initdb.d/postgis.sh.disabled
 fi
 
+
+BASH_PATH=$(which bash)
+$BASH_PATH $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
+
 echo "Launching official entrypoint..."
 /bin/bash /docker-entrypoint.sh postgres

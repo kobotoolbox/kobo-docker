@@ -74,7 +74,7 @@ os.system("{backup_command}|s3cmd put --multipart-chunk-size-mb={chunk_size} - s
    filename=filename
 ))
 
-aws_lifecycle = os.environ.get("AWS_BACKUP_BUCKET_LIFE_CYCLE_ENABLED", "False") == "True"
+aws_lifecycle = os.environ.get("AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED", "False") == "True"
 if not aws_lifecycle:
     ## Remove old backups beyond desired retention
     for directory in DIRECTORIES:

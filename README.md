@@ -341,8 +341,18 @@ Once this is noted, you can `docker-compose stop` and search for potentially-mis
 
 ## Backups
 
-Backups are not functional anymore.
-It will be fixed soon.
+Automatic, periodic backups of KoBoCAT media, MongoDB, and Postgres can be individually enabled by uncommenting (and optionally customizing) the *_BACKUP\_SCHEDULE variables in your envfiles. 
+
+ - `deployments/envfiles/databases.txt` (MongoDB & PostgreSQL)
+ - `deployments/envfiles/kobocat.txt` (KoBoCat media)
+
+When enabled, timestamped backups will be placed in backups/kobocat, backups/mongo, and backups/postgres, respectively. Redis backups are currently not generated, but the `redis_main` DB file is updated every 5 minutes and can always be found in `.vols/redis_main_data/`.
+
+#### AWS
+If `AWS` credentials and `AWS S3` bucket name are provided, the backups are created directly on `S3`.  
+
+Backups can also be manually triggered when kobo-docker is running by executing the the following commands:
+
 
 ## Troubleshooting
 
