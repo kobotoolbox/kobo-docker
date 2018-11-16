@@ -56,7 +56,13 @@ services:
   redis_main:
     image: redis:3.2
     # Map our "main" Redis config into the container.
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/databases.txt
+      - ../kobo-deployments/envfiles/aws.txt
     volumes:
+      - ./redis:/kobo-docker-scripts
+      - ./backups/redis:/srv/backups
       - ./.vols/redis_main_data/:/data/
       - ./redis/redis-enketo-main.conf.tmpl:/etc/redis/redis.conf.tmpl:ro
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro

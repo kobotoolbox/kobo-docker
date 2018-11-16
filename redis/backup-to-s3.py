@@ -8,13 +8,15 @@ from boto.utils import parse_ts
 
 DBDATESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
-DUMPFILE = 'mongo-{}-{}-{}.gz'.format(
-    os.environ.get('MONGO_MAJOR'),
+DUMPFILE = 'redis-{}-{}-{}.gz'.format(
+    os.environ.get('REDIS_VERSION'),
     os.environ.get('PUBLIC_DOMAIN_NAME'),
     DBDATESTAMP,
 )
 
-BACKUP_COMMAND = "mongodump --archive --gzip"
+BACKUP_COMMAND = "$(which bash) /kobo-docker-scripts/backup-to-disk.bash {}".format(
+    DUMPFILE
+)
 
 yearly_retention = int(os.environ.get("AWS_BACKUP_YEARLY_RETENTION", 2))
 monthly_retention = int(os.environ.get("AWS_BACKUP_MONTHLY_RETENTION", 12))
@@ -23,15 +25,15 @@ daily_retention = int(os.environ.get("AWS_BACKUP_DAILY_RETENTION", 30))
 
 
 DIRECTORIES = [
-    {'name': 'mongo/yearly', 'keeps': yearly_retention, 'days': 365},
-    {'name': 'mongo/monthly', 'keeps': monthly_retention, 'days': 30},
-    {'name': 'mongo/weekly', 'keeps': weekly_retention, 'days': 7},
-    {'name': 'mongo/daily', 'keeps': daily_retention, 'days': 1},
+    {'name': 'redis/yearly', 'keeps': yearly_retention, 'days': 365},
+    {'name': 'redis/monthly', 'keeps': monthly_retention, 'days': 30},
+    {'name': 'redis/weekly', 'keeps': weekly_retention, 'days': 7},
+    {'name': 'redis/daily', 'keeps': daily_retention, 'days': 1},
 ]
 
 # Consider backups invalid whose (compressed) size is below this number of
 # bytes
-MINIMUM_SIZE = int(os.environ.get("AWS_MONGO_BACKUP_MINIMUM_SIZE", 100)) * 1024 ** 2
+MINIMUM_SIZE = int(os.environ.get("AWS_REDIS_BACKUP_MINIMUM_SIZE", 100)) * 1024 ** 2
 
 # In MB
 CHUNK_SIZE = int(os.environ.get("AWS_BACKUP_CHUNK_SIZE", 250))
@@ -67,11 +69,14 @@ for directory in DIRECTORIES:
 filename = ''.join((prefix, DUMPFILE))
 print('Backing up to "{}"...'.format(filename))
 
-os.system("{backup_command}|s3cmd put --multipart-chunk-size-mb={chunk_size} - s3://{bucket}/{filename}".format(
+os.system("{backup_command} && s3cmd put --multipart-chunk-size-mb={chunk_size}"
+          " /srv/backups/{source} s3://{bucket}/{filename}"
+          " && rm -rf /srv/backups/{source}".format(
     backup_command=BACKUP_COMMAND,
     bucket=AWS_BUCKET,
     chunk_size=CHUNK_SIZE,
-    filename=filename
+    filename=filename,
+    source=DUMPFILE
 ))
 
 aws_lifecycle = os.environ.get("AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED", "False") == "True"
