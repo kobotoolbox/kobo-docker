@@ -28,11 +28,10 @@ chown -R redis:redis "$REDIS_LOG_DIR"
 chown redis:redis "$REDIS_CONF_FILE"
 chown -R redis:redis "$REDIS_DATA_DIR"
 
-
-BASH_PATH=$(which bash)
-export KOBO_DOCKER_SCRIPTS_DIR=/kobo-docker-scripts
-
-$BASH_PATH $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
-
+if [ "${KOBO_REDIS_SERVER_ROLE}" == "main" ]; then
+    BASH_PATH=$(which bash)
+    export KOBO_DOCKER_SCRIPTS_DIR=/kobo-docker-scripts
+    $BASH_PATH $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
+fi
 
 su redis -c "redis-server /etc/redis/redis.conf"
