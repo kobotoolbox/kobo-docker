@@ -6,6 +6,9 @@ ENKETO_VERSION=Express
 
 KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit.domain.name:5672/kobocat
 
+# Default KoBoCAT media backup schedule is weekly at 12:00 AM UTC on Sunday.
+#KOBOCAT_MEDIA_BACKUP_SCHEDULE=0 0 * * 0
+
 #ENKETO_OFFLINE_SURVEYS=True
 
 # Mongo values come from mongo.txt
