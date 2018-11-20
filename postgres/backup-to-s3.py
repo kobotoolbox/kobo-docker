@@ -20,9 +20,12 @@ DBDATESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 #)
 
 # `postgis://` isn't recognized by `pg_dump`; replace it with `postgres://`
-DBURL = re.sub(r'^postgis://', 'postgres://', os.getenv('DATABASE_URL')).replace(
-    os.getenv("POSTGRES_HOST"), "127.0.0.1"
-)
+DBURL = re.sub(r'^postgis://', 'postgres://', os.getenv('DATABASE_URL'))\
+# Because we are running `pg_dump` within the container,
+# we need to replace the hostname ...
+DBURL = DBURL.replace(os.getenv("POSTGRES_HOST"), "127.0.0.1")
+# ... and the port for '127.0.0.1:5432'
+DBURL = re.sub(r"\:(\d+)\/", ":5432/", DBURL)
 
 DUMPFILE = 'postgres-{}-{}-{}.pg_dump'.format(
     os.environ.get('PG_MAJOR'),

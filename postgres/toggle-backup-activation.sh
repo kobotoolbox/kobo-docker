@@ -2,7 +2,7 @@
 
 
 rm -f /etc/cron.d/backup_postgres_crontab
-if [[ -z "${POSTGRES_BACKUP_SCHEDULE}" ]]; then
+if [[ (-z "${POSTGRES_BACKUP_SCHEDULE}") || ("${POSTGRES_BACKUP_FROM_SLAVE}" == "True") ]]; then
     echo "PostgreSQL automatic backups disabled."
 else
     # Install cron in case if not present
@@ -14,6 +14,7 @@ else
     echo "PG_MAJOR=${PG_MAJOR}" >> /etc/cron.d/backup_postgres_crontab
     echo "PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}" >> /etc/cron.d/backup_postgres_crontab
     echo "POSTGRES_DB=${POSTGRES_DB}" >> /etc/cron.d/backup_postgres_crontab
+    echo "PGUSER=${POSTGRES_USER}" >> /etc/cron.d/backup_postgres_crontab
     echo "POSTGRES_HOST=${POSTGRES_HOST}" >> /etc/cron.d/backup_postgres_crontab
     echo "DATABASE_URL=${DATABASE_URL}" >> /etc/cron.d/backup_postgres_crontab
 
