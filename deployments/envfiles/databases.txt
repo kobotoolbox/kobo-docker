@@ -30,8 +30,6 @@ KOBO_POSTGRES_REPLICATION_USER=kobo_replication
 KOBO_POSTGRES_REPLICATION_PASSWORD=
 
 KOBO_POSTGRES_MASTER_ENDPOINT=primary.postgres.domain.name
-KOBO_POSTGRES_SLAVE_ENDPOINT=secondary.postgres.domain.name
-
 
 #--------------------------------------------------------------------------------
 # RABBIT
