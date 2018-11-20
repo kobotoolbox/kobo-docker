@@ -43,3 +43,9 @@ KOBO_POSTGRES_SLAVE_ENDPOINT=secondary.postgres.domain.name
 
 KOBO_RABBIT_PORT=5672
 KOBO_RABBIT_HOST=rabbit.domain.name
+
+#--------------------------------------------------------------------------------
+# REDIS
+#--------------------------------------------------------------------------------
+
+#REDIS_BACKUP_SCHEDULE=0 3 * * 0

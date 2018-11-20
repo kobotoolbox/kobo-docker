@@ -3,13 +3,24 @@ version: '2.1'
 
 services:
 
+  rabbit:
+    ports:
+      - 5672:5672
+
   postgres:
     volumes:
       - ../kobo-deployments/postgres/master/postgres.conf:/kobo-docker-scripts/master/postgres.conf
+    ports:
+      - 5432:5432
 
   mongo:
-    image: kobotoolbox/mongo:latest
-    environment:
-      - MONGO_DATA=/srv/db
-    volumes:
-      - ./.vols/mongo:/srv/db
+    ports:
+      - 27017:27017
+
+  redis_main:
+    ports:
+      - 6379:6379
+
+  redis_cache:
+    ports:
+      - 6380:6380

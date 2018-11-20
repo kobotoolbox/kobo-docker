@@ -23,7 +23,6 @@ DBDATESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 DBURL = re.sub(r'^postgis://', 'postgres://', os.getenv('DATABASE_URL')).replace(
     os.getenv("POSTGRES_HOST"), "127.0.0.1"
 )
-print(DBURL)
 
 DUMPFILE = 'postgres-{}-{}-{}.pg_dump'.format(
     os.environ.get('PG_MAJOR'),

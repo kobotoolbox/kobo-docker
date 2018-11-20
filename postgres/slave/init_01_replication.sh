@@ -20,7 +20,7 @@ if [ "$IS_OPENED" == "1" ]; then
     echo "Deleting database directory..."
     rm -rf $POSTGRES_DATA_DIR/*
     echo "Cloning master data..."
-    echo ${KOBO_POSTGRES_REPLICATION_PASSWORD} | PGUSER="${PGUSER:-postgres}" PGPASSFILE=${POSTGRES_REPO//\"/}/.pgpass pg_basebackup -h ${KOBO_POSTGRES_MASTER_ENDPOINT//\"/} -D ${POSTGRES_DATA_DIR//\"/} -U ${KOBO_POSTGRES_REPLICATION_USER//\"/} -v -P --xlog -c fast -W
+    PGUSER="${PGUSER:-postgres}" PGPASSFILE=${POSTGRES_REPO//\"/}/.pgpass pg_basebackup -h ${KOBO_POSTGRES_MASTER_ENDPOINT//\"/} -D ${POSTGRES_DATA_DIR//\"/} -U ${KOBO_POSTGRES_REPLICATION_USER//\"/} -v -P --xlog
     echo "Master data cloned!"
 
     POSTGRES_RECOVERY_FILE=${POSTGRES_DATA_DIR}/recovery.conf
