@@ -91,8 +91,7 @@ services:
       - ../kobo-deployments/envfiles/kobocat.txt
       - ../kobo-deployments/envfiles/kpi.txt
     environment:
-      - NGINX_CONFIG_FILE_NAME=nginx_site_default.conf
-      - TEMPLATED_VAR_REFS=$${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
+      - TEMPLATED_VAR_REFS=$${PUBLIC_REQUEST_SCHEME} $${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
     # `ports` should to be declared in docker-compose.frontend.override.yml
     # It allows `kobo-install` to specify the port without opening port 80 by default
     #ports:
