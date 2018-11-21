@@ -54,7 +54,7 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
 	```
 	
 	_Use the PostGIS version as a variable for later purpose_
-	
+		
 	```
 	POSTGIS_VERSION=$(apt-cache policy postgresql-9.5-postgis-2.5|grep Candidate:|awk '{print $2}')
 	```
@@ -341,8 +341,32 @@ Once this is noted, you can `docker-compose stop` and search for potentially-mis
 
 ## Backups
 
-Backups are not functional anymore.
-It will be fixed soon.
+Automatic, periodic backups of KoBoCAT media, MongoDB, PostgreSQL and Redis can be individually enabled by uncommenting (and optionally customizing) the *_BACKUP\_SCHEDULE variables in your envfiles. 
+
+ - `deployments/envfiles/databases.txt` (MongoDB, PostgreSQL, Redis)
+ - `deployments/envfiles/kobocat.txt` (KoBoCat media)
+
+When enabled, timestamped backups will be placed in backups/kobocat, backups/mongo, backups/postgres and backups/redis respectively.
+
+#### AWS
+If `AWS` credentials and `AWS S3` bucket name are provided, the backups are created directly on `S3`.
+
+Backups **on disk** can also be manually triggered when kobo-docker is running by executing the the following commands:
+
+```
+docker exec -it kobodocker_kobocat_1 /srv/src/kobocat/docker/backup_media.bash
+docker exec -it kobodocker_mongo_1 /bin/bash /kobo-docker-scripts/backup-to-disk.bash
+docker exec -it -e PGUSER=kobo kobodocker_postgres_1 /bin/bash /kobo-docker-scripts/backup-to-disk.bash
+docker exec -it kobodocker_redis_main_1 /bin/bash /kobo-docker-scripts/backup-to-disk.bash
+```
+
+#### Restore
+ Within containers.
+
+ - MongoDB: `mongorestore --archive=<path/to/mongo.backup.gz> --gzip`
+ - PostgreSQL: `pg_restore -U kobo -d kobotoolbox -c "<path/to/postgres.pg_dump>"`
+ - Redis: `gunzip <path/to/redis.rdb.gz> && mv <path/to/extracted_redis.rdb> /data/enketo-main.rdb` 
+
 
 ## Troubleshooting
 
