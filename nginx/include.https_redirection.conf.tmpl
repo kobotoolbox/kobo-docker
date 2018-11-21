@@ -5,6 +5,7 @@
     real_ip_header X-Forwarded-For;
 
     set $redirect_https "O";
+    set $public_request_scheme ${PUBLIC_REQUEST_SCHEME};
 
     # ELB check
     if ($remote_addr = "127.0.0.1") {
@@ -16,8 +17,8 @@
         set $redirect_https "";
     }
 
-    # if $PUBLIC_REQUEST_SCHEME equals http, we don't want to be redirected
-    if ($PUBLIC_REQUEST_SCHEME = "http") {
+    # if $public_request_scheme equals http, we don't want to be redirected
+    if ($public_request_scheme = "http") {
         set $redirect_https "";
     }
 

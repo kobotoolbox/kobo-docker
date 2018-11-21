@@ -111,7 +111,7 @@ for container_name in "${!container_ports[@]}"; do
 done
 
 # Do environment variable substitutions and activate the resulting config. file.
-cat ${ORIGINAL_DIR}/${NGINX_CONFIG_FILE_NAME}.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/sites-available/default
+cat ${ORIGINAL_DIR}/nginx_site_default.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/sites-available/default
 
 # Create symlink
 if [ ! -f /etc/nginx/sites-enabled/default ]; then
