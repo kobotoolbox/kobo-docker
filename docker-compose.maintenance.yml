@@ -9,7 +9,6 @@ services:
     env_file:
       - ../kobo-deployments/envfile.txt
     environment:
-      - NGINX_CONFIG_FILE_NAME=nginx_site_default.conf
       - TEMPLATED_VAR_REFS=$${PUBLIC_REQUEST_SCHEME} $${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
     ports:
       - 80:80
