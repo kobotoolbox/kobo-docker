@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -40,7 +41,7 @@
                 margin: 0 auto;
                 margin-top: 40px;
                 padding: 30px;
-                max-width: 450px;
+                max-width: 640px;
                 background: rgba(0, 0, 0, 0.65);
                 line-height: 1.4;
             }
@@ -58,14 +59,19 @@
     </head>
     <body>
         <div id="content-container">
-            <a href="https://kf.kobotoolbox.org/"><img id="kobo-logo" src="kobologo.svg"></a>
-            <p>
+            <a href="http://kpi.kobo.local"><img id="kobo-logo" src="kobologo.svg"></a>
+
+            <h2>
                 KoBoToolbox is currently under maintenance.
-            </p>
+            </h2>
+
+            <p>Hi, as announced by email and within the KoBoToolbox platform, this <b>${DATE_STR}</b> we are performing some necessary maintenance to <a href="${PUBLIC_REQUEST_SCHEME}://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}" rel="nofollow noopener noreferrer">${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}</a>.</p>
+            <p>Please <a href="https://www.timeanddate.com/worldclock/fixedtime.html?msg="${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}+server+maintenance&amp;iso=${DATE_ISO}" rel="nofollow noopener noreferrer" target="_blank">check here</a> for the exact time in your local time zone</p>
             <p>
-                We're working on getting it back online as quickly as possible.
-                We apologize for any inconvenience.
+                This may take up to <b>2 hours</b>, during which this site will be unavailable. Please note that you will not be able to submit new records during this timeframe. However, if someone tries to submit data, it will remain stored safely on their device until it can be submitted again later.
             </p>
+            <p>We will send updates on <a href="https://twitter.com/kobotoolbox" rel="nofollow noopener noreferrer" target="_blank">Twitter</a> during this maintenance to confirm there when the site is live again. We apologize for any inconvenience caused.</p>
+
             <p>
                 If you have any questions or concerns, please contact us at <a href="mailto:help@kobotoolbox.org">help@kobotoolbox.org</a>.
             </p>

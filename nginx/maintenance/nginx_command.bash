@@ -3,6 +3,8 @@ set -e
 
 ORIGINAL_DIR='/tmp/kobo_nginx'
 
+TEMPLATED_VAR_REFS="\${ETA} \${DATE_STR} \${DATE_ISO} \${PUBLIC_REQUEST_SCHEME} \${INTERNAL_DOMAIN_NAME} \${PUBLIC_DOMAIN_NAME} \${KOBOFORM_PUBLIC_SUBDOMAIN} \${KOBOCAT_PUBLIC_SUBDOMAIN} \${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}"
+
 echo "Overwrite default nginx configuration..."
 cp /tmp/kobo_nginx/nginx.conf /etc/nginx/nginx.conf
 
@@ -21,10 +23,15 @@ cat ${ORIGINAL_DIR}/include.https_redirection.conf.tmpl | envsubst "${TEMPLATED_
 echo "Creating default config..."
 cat ${ORIGINAL_DIR}/maintenance/nginx_site_default.conf.tmpl | envsubst "${TEMPLATED_VAR_REFS}" > /etc/nginx/conf.d/default.conf
 
-# Create symlink
-#if [ ! -f /etc/nginx/sites-enabled/default ]; then
-#    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-#fi
+echo "Preparing www root..."
+rm -rf /www
+mkdir /www
+cp -R ${ORIGINAL_DIR}/maintenance/www/*.* /www
+rm -rf /www/index.html.tmpl
+
+# Create index.html
+echo "Creating index.html..."
+cat ${ORIGINAL_DIR}/maintenance/www/index.html.tmpl | envsubst "${TEMPLATED_VAR_REFS}" > /www/index.html
 
 # Start Nginx.
 echo "Starting nginx..."

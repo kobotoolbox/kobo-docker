@@ -30,13 +30,25 @@ server {
 
     access_log  /var/log/nginx/maintenance.access.log with_host;
     error_log   /var/log/nginx/maintenance.error.log;
+    error_page 503 @maintenance;
 
-    root /tmp/kobo_nginx/maintenance/www;
+    root /www;
     index index.html;
 
     include /etc/nginx/include.https_redirection.conf;
 
+    location ~ \.(png|ico|jpg|svg)$ {
+        open_file_cache max=1000 inactive=30s;
+        open_file_cache_valid 5m;
+        open_file_cache_min_uses 1;
+        expires 1w;
+    }
+
     location / {
-        try_files $uri $uri/ /index.html;
+        try_files /index.html $uri $uri/ @maintenance;
+    }
+
+    location @maintenance {
+        return 503;
     }
 }
