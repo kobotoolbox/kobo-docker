@@ -349,7 +349,7 @@ Automatic, periodic backups of KoBoCAT media, MongoDB, PostgreSQL and Redis can 
 When enabled, timestamped backups will be placed in backups/kobocat, backups/mongo, backups/postgres and backups/redis respectively.
 
 #### AWS
-If `AWS` credentials and `AWS S3` bucket name are provided, the backups are created directly on `S3`.
+If `AWS` credentials and `AWS S3` backup bucket name are provided, the backups are created directly on `S3`.
 
 Backups **on disk** can also be manually triggered when kobo-docker is running by executing the the following commands:
 
@@ -367,11 +367,46 @@ docker exec -it kobodocker_redis_main_1 /bin/bash /kobo-docker-scripts/backup-to
  - PostgreSQL: `pg_restore -U kobo -d kobotoolbox -c "<path/to/postgres.pg_dump>"`
  - Redis: `gunzip <path/to/redis.rdb.gz> && mv <path/to/extracted_redis.rdb> /data/enketo-main.rdb` 
 
+## Maintenance mode
+
+There is one composer file `docker-compose.maintenance.yml` can be used to put `KoBoToolbox` in maintenance mode.
+
+`nginx` container has to be stopped before launching the maintenance container.
+
+**Start** 
+
+```
+docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] stop nginx
+docker-compose -f docker-compose.maintenance.yml up -d
+``` 
+
+**Stop** 
+
+```
+docker-compose -f docker-compose.maintenance.yml down
+docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] up -d nginx
+```
+
+There are 3 variables that can be customized in `docker-compose.maintenance.yml`
+
+- `ETA` e.g. `2 hours`
+- `DATE_STR` e.g. `Monday, November 26 at 02:00 GMT`
+- `DATE_ISO` e.g. `20181126T02`
 
 ## Troubleshooting
 
 ### Basic troubleshooting
-You can confirm that your containers are running with `docker ps`. To inspect the log output from the containers, execute `docker-compose logs -f` or for a specific container use e.g. `docker-compose logs -f redis_main`.
+You can confirm that your containers are running with `docker ps`. 
+To inspect the log output from:
+ 
+ - the frontend containers, execute `docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] logs -f`
+ - the master backend containers, execute `docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] logs -f`
+ - the slaved backend container, execute `docker-compose -f docker-compose.backend.slave.yml [-f docker-compose.backend.slave.override.yml] logs -f`
+   
+For a specific container use e.g. `docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] logs -f redis_main`.
+
+`override` YML files are optionals but strongly recommended.
+If you are using `kobo-install`, it will create those files for you.  
 
 The documentation for Docker can be found at https://docs.docker.com.
 
