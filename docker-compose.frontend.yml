@@ -102,6 +102,7 @@ services:
         - ./nginx/:/tmp/kobo_nginx/:ro
         - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
         - ./secrets/:/tmp/kobo_toolbox_secrets/:ro
+        - ./.vols/kobocat_media_uploads:/media
     restart: on-failure
     networks:
       kobo-fe-network:
