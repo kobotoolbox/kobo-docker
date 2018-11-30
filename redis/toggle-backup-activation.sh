@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-rm -f /etc/cron.d/backup_mongo_crontab
+rm -f /etc/cron.d/backup_redis_crontab
 if [[ -z "${REDIS_BACKUP_SCHEDULE}" ]]; then
     echo "Redis automatic backups disabled."
 else
@@ -11,8 +11,8 @@ else
     apt-get install -y cron --quiet=2 > /dev/null
 
     # Pass env variables to cron task
-    echo "REDIS_VERSION=${REDIS_VERSION}" >> /etc/cron.d/backup_mongo_crontab
-    echo "PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}" >> /etc/cron.d/backup_mongo_crontab
+    echo "REDIS_VERSION=${REDIS_VERSION}" >> /etc/cron.d/backup_redis_crontab
+    echo "PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}" >> /etc/cron.d/backup_redis_crontab
 
     # To use S3 as storage, AWS access key, secret key and bucket name must filled up
     USE_S3=1
@@ -21,40 +21,40 @@ else
 
     # Add only non-empty variable to cron tasks
     if [ ! -z "${AWS_ACCESS_KEY_ID}" ]; then
-        echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> /etc/cron.d/backup_mongo_crontab
+        echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> /etc/cron.d/backup_redis_crontab
     else
         USE_S3=$FALSE
     fi
 
     if [ ! -z "${AWS_SECRET_ACCESS_KEY}" ]; then
-        echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> /etc/cron.d/backup_mongo_crontab
+        echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> /etc/cron.d/backup_redis_crontab
     else
         USE_S3=$FALSE
     fi
 
     if [ ! -z "${BACKUP_AWS_STORAGE_BUCKET_NAME}" ]; then
-        echo "BACKUP_AWS_STORAGE_BUCKET_NAME=${BACKUP_AWS_STORAGE_BUCKET_NAME}" >> /etc/cron.d/backup_mongo_crontab
+        echo "BACKUP_AWS_STORAGE_BUCKET_NAME=${BACKUP_AWS_STORAGE_BUCKET_NAME}" >> /etc/cron.d/backup_redis_crontab
     else
         USE_S3=$FALSE
     fi
 
     if [ ! -z "${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" ]; then
-        echo "AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED=${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" >> /etc/cron.d/backup_mongo_crontab
+        echo "AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED=${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" >> /etc/cron.d/backup_redis_crontab
     fi
     if [ ! -z "${AWS_BACKUP_YEARLY_RETENTION}" ]; then
-        echo "AWS_BACKUP_YEARLY_RETENTION=${AWS_BACKUP_YEARLY_RETENTION}" >> /etc/cron.d/backup_mongo_crontab
+        echo "AWS_BACKUP_YEARLY_RETENTION=${AWS_BACKUP_YEARLY_RETENTION}" >> /etc/cron.d/backup_redis_crontab
     fi
     if [ ! -z "${AWS_BACKUP_MONTHLY_RETENTION}" ]; then
-        echo "AWS_BACKUP_MONTHLY_RETENTION=${AWS_BACKUP_MONTHLY_RETENTION}" >> /etc/cron.d/backup_mongo_crontab
+        echo "AWS_BACKUP_MONTHLY_RETENTION=${AWS_BACKUP_MONTHLY_RETENTION}" >> /etc/cron.d/backup_redis_crontab
     fi
     if [ ! -z "${AWS_BACKUP_WEEKLY_RETENTION}" ]; then
-        echo "AWS_BACKUP_WEEKLY_RETENTION=${AWS_BACKUP_WEEKLY_RETENTION}" >> /etc/cron.d/backup_mongo_crontab
+        echo "AWS_BACKUP_WEEKLY_RETENTION=${AWS_BACKUP_WEEKLY_RETENTION}" >> /etc/cron.d/backup_redis_crontab
     fi
     if [ ! -z "${AWS_BACKUP_DAILY_RETENTION}" ]; then
-        echo "AWS_BACKUP_DAILY_RETENTION=${AWS_BACKUP_DAILY_RETENTION}" >> /etc/cron.d/backup_mongo_crontab
+        echo "AWS_BACKUP_DAILY_RETENTION=${AWS_BACKUP_DAILY_RETENTION}" >> /etc/cron.d/backup_redis_crontab
     fi
-    if [ ! -z "${AWS_MONGO_BACKUP_MINIMUM_SIZE}" ]; then
-        echo "AWS_MONGO_BACKUP_MINIMUM_SIZE=${AWS_MONGO_BACKUP_MINIMUM_SIZE}" >> /etc/cron.d/backup_mongo_crontab
+    if [ ! -z "${AWS_REDIS_BACKUP_MINIMUM_SIZE}" ]; then
+        echo "AWS_REDIS_BACKUP_MINIMUM_SIZE=${AWS_REDIS_BACKUP_MINIMUM_SIZE}" >> /etc/cron.d/backup_redis_crontab
     fi
 
     if [ "$USE_S3" -eq "$TRUE" ]; then
@@ -74,8 +74,8 @@ else
     fi
 
     # Should we first validate the schedule e.g. with `chkcrontab`?
-    echo "${REDIS_BACKUP_SCHEDULE}  root    ${INTERPRETER} ${BACKUP_SCRIPT} > /var/log/redis/backup.log 2>&1" >> /etc/cron.d/backup_mongo_crontab
-    echo "" >> /etc/cron.d/backup_mongo_crontab
+    echo "${REDIS_BACKUP_SCHEDULE}  root    ${INTERPRETER} ${BACKUP_SCRIPT} > /var/log/redis/backup.log 2>&1" >> /etc/cron.d/backup_redis_crontab
+    echo "" >> /etc/cron.d/backup_redis_crontab
     service cron restart
     echo "Redis automatic backup schedule: ${REDIS_BACKUP_SCHEDULE}"
 fi
