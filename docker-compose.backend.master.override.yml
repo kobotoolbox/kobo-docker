@@ -2,7 +2,26 @@
 version: '2.1'
 
 services:
+
+  rabbit:
+    ports:
+      - 5672:5672
+
   postgres:
     image: kobojohn/postgis:9.4
     volumes:
       - ../kobo-deployments/postgres/master/postgres.conf:/kobo-docker-scripts/master/postgres.conf
+    ports:
+      - 5432:5432
+
+  mongo:
+    ports:
+      - 27017:27017
+
+  redis_main:
+    ports:
+      - 6379:6379
+
+  redis_cache:
+    ports:
+      - 6380:6380
