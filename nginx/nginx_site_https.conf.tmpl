@@ -55,6 +55,33 @@ server {
     }
 
     ${kobocat_location_static}
+
+    # media files
+    location /protected/ {
+        internal;
+        alias /media/;
+    }
+
+    location ~ ^/protected-s3/(.*?)/(.*) {
+        internal;
+        set $aws_access_key   'AWSAccessKeyId=$arg_AWSAccessKeyId';
+        set $url_expires      'Expires=$arg_Expires';
+        set $url_signature    'Signature=$arg_Signature';
+        set $bucket_domain_name '$1.s3.amazonaws.com';
+        set $args_full        'https://$bucket_domain_name/$2?$aws_access_key&$url_expires&$url_signature';
+        proxy_set_header       Host $bucket_domain_name;
+        proxy_http_version     1.1;
+        proxy_set_header       Authorization '';
+        proxy_hide_header      x-amz-id-2;
+        proxy_hide_header      x-amz-request-id;
+        proxy_hide_header      Set-Cookie;
+        proxy_ignore_headers   "Set-Cookie";
+        proxy_buffering        off;
+        proxy_intercept_errors off;
+        resolver               8.8.8.8 valid=300s;
+        resolver_timeout       10s;
+        proxy_pass             $args_full;
+    }
 }
 
 # KoBoForm HTTP.
