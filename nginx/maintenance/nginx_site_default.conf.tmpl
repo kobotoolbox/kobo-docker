@@ -1,0 +1,50 @@
+# `envsubst` template.
+charset     utf-8;
+
+# Default configuration
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    server_name $hostname;
+
+    location / {
+        # return empty response
+        return 204;
+    }
+
+    # Proxy ELB status
+    location ~ /elb/([^/]*)/(.*)$ {
+        return 200;
+    }
+}
+
+# Maintenance HTTP.
+server {
+    listen      80;
+    server_name  ~^(${KOBOCAT_PUBLIC_SUBDOMAIN}|${KOBOFORM_PUBLIC_SUBDOMAIN}|${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN})\.${PUBLIC_DOMAIN_NAME}$;
+
+    access_log  /var/log/nginx/maintenance.access.log with_host;
+    error_log   /var/log/nginx/maintenance.error.log;
+    error_page 503 @maintenance;
+
+    root /www;
+    index index.html;
+
+    include /etc/nginx/include.https_redirection.conf;
+
+    location ~ \.(png|ico|jpg|svg)$ {
+        open_file_cache max=1000 inactive=30s;
+        open_file_cache_valid 5m;
+        open_file_cache_min_uses 1;
+        expires 1w;
+    }
+
+    location / {
+        try_files /index.html $uri $uri/ @maintenance;
+    }
+
+    location @maintenance {
+        return 503;
+    }
+}

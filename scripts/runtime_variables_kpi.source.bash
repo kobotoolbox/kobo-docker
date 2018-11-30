@@ -10,14 +10,6 @@ if [[ ! -z "${PUBLIC_DOMAIN_NAME}" ]]; then
     export KOBOCAT_INTERNAL_URL="http://${KOBOCAT_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME}" # Always use HTTP internally.
     export CSRF_COOKIE_DOMAIN=".${PUBLIC_DOMAIN_NAME}"
     export DJANGO_ALLOWED_HOSTS=".${PUBLIC_DOMAIN_NAME} .${INTERNAL_DOMAIN_NAME}"
-
-elif [[ ! -z "${HOST_ADDRESS}" ]]; then
-    # Local configuration
-    export ENKETO_URL="http://${HOST_ADDRESS}:${ENKETO_EXPRESS_PUBLIC_PORT}"
-    export KOBOCAT_URL="http://${HOST_ADDRESS}:${KOBOCAT_PUBLIC_PORT}"
-    export KOBOCAT_INTERNAL_URL="${KOBOCAT_URL}" # FIXME: Use an actual internal URL.
-    export CSRF_COOKIE_DOMAIN="${HOST_ADDRESS}"
-    export DJANGO_ALLOWED_HOSTS='*'
 else
     echo 'Please fill out your `envfile`!'
     exit 1

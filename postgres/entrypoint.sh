@@ -31,11 +31,20 @@ chown -R postgres:postgres $POSTGRES_BACKUPS_DIR
 # if file exists. Container has already boot once
 if [ -f "$POSTGRES_DATA_DIR/kobo_first_run" ]; then
     /bin/bash $KOBO_DOCKER_SCRIPTS_DIR/shared/init_02_set_postgres_config.sh
+
+    # Update PostGIS as background task.
+    # FIXME There should be a better way to run this script
+    sleep 30 && update-postgis.sh &
+
 elif [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "slave" ]; then
     # Because slave is a replica. This script has already been run on master
     echo "Disabling postgis update..."
     mv /docker-entrypoint-initdb.d/postgis.sh /docker-entrypoint-initdb.d/postgis.sh.disabled
 fi
+
+
+BASH_PATH=$(which bash)
+$BASH_PATH $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
 
 echo "Launching official entrypoint..."
 /bin/bash /docker-entrypoint.sh postgres
