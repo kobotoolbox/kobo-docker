@@ -81,14 +81,14 @@ os.system("{backup_command} && s3cmd put --multipart-chunk-size-mb={chunk_size}"
 
 aws_lifecycle = os.environ.get("AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED", "False") == "True"
 if not aws_lifecycle:
-    ## Remove old backups beyond desired retention
+    # Remove old backups beyond desired retention
     for directory in DIRECTORIES:
-       prefix = directory['name'] + '/'
-       keeps = directory['keeps']
-       s3keys = s3bucket.list(prefix=prefix)
-       large_enough_backups = filter(lambda x: x.size >= MINIMUM_SIZE, s3keys)
-       large_enough_backups = sorted(large_enough_backups, key=lambda x: x.last_modified, reverse=True)
+        prefix = directory['name'] + '/'
+        keeps = directory['keeps']
+        s3keys = s3bucket.list(prefix=prefix)
+        large_enough_backups = filter(lambda x: x.size >= MINIMUM_SIZE, s3keys)
+        large_enough_backups = sorted(large_enough_backups, key=lambda x: x.last_modified, reverse=True)
 
-       for l in large_enough_backups[keeps:]:
-           print('Deleting old backup "{}"...'.format(l.name))
-           l.delete()
+        for l in large_enough_backups[keeps:]:
+            print('Deleting old backup "{}"...'.format(l.name))
+            l.delete()
