@@ -23,8 +23,18 @@ services:
     extends:
       file: docker-compose.backend.template.yml
       service: redis_main
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/aws.txt
+    environment:
+      - KOBO_REDIS_SERVER_ROLE=main
+    volumes:
+      - ./redis:/kobo-docker-scripts
+      - ./backups/redis:/srv/backups
 
   redis_cache:
     extends:
       file: docker-compose.backend.template.yml
       service: redis_cache
+    environment:
+      - KOBO_REDIS_SERVER_ROLE=cache
