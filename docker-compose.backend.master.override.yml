@@ -8,7 +8,6 @@ services:
       - 5672:5672
 
   postgres:
-    image: kobojohn/postgis:9.4
     volumes:
       - ../kobo-deployments/postgres/master/postgres.conf:/kobo-docker-scripts/master/postgres.conf
     ports:
