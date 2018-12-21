@@ -3,7 +3,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:2.018.45
+    image: kobotoolbox/kobocat:2.018.48
     hostname: kobocat
     env_file:
       - ../kobo-deployments/envfile.txt
