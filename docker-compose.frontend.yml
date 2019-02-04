@@ -27,10 +27,9 @@ services:
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
       - ./backups/kobocat:/srv/backups
       - ./log/kobocat:/srv/logs
-      - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
-      - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
-      - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
-      - ./scripts/wait_for_kpi.bash:/etc/my_init.d/04_wait_for_kpi.bash:ro
+      - ./scripts/wait_for_mongo.bash:/etc/my_init.d/01_wait_for_mongo.bash:ro
+      - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash:ro
+      - ./scripts/wait_for_kpi.bash:/etc/my_init.d/03_wait_for_kpi.bash:ro
       - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
       - ./uwsgi/kc_uwsgi.ini:/srv/src/kobocat/docker/kobocat.ini
     restart: on-failure
@@ -66,9 +65,8 @@ services:
       # The Whoosh search index needs persistent storage
       - ./.vols/whoosh:/srv/whoosh
       - ./log/kpi:/srv/logs
-      - ./scripts/wait_for_rabbit.bash:/etc/my_init.d/01_wait_for_rabbit.bash:ro
-      - ./scripts/wait_for_mongo.bash:/etc/my_init.d/02_wait_for_mongo.bash:ro
-      - ./scripts/wait_for_postgres.bash:/etc/my_init.d/03_wait_for_postgres.bash:ro
+      - ./scripts/wait_for_mongo.bash:/etc/my_init.d/01_wait_for_mongo.bash:ro
+      - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash:ro
       - ./scripts/create_kobo_superuser.bash:/etc/my_init.d/20_create_kobo_superuser.bash:ro
       - ./scripts/runtime_variables_kpi.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
       - ./uwsgi/kpi_uwsgi.ini:/srv/src/kpi/uwsgi.ini
