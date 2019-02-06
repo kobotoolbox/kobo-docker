@@ -42,7 +42,7 @@ mongo:
   restart: on-failure
 
 kobocat:
-  image: kobotoolbox/kobocat:2.018.48
+  image: kobotoolbox/kobocat:2.019.06
   # Dev: Build the image locally.
   # build: ../kobocat
   hostname: kobocat
