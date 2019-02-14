@@ -6,6 +6,10 @@ KPI_PREFIX=/
 KPI_BROKER_URL=amqp://kpi:kpi@rabbit:5672/kpi
 DATABASE_URL=postgres://kobo:kobo@postgres:5432/kobotoolbox
 
+# Set the variables below to your kobocat and enketo url
+#KOBOCAT_URL=
+#ENKETO_URL=
+
 DJANGO_LANGUAGE_CODES=en fr es ar zh-hans hi ku
 #DKOBO_PREFIX=False
 #KPI_WHOOSH_DIR=./whoosh_index

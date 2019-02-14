@@ -12,6 +12,10 @@ KOBO_POSTGRES_DB_NAME=kobotoolbox
 KOBO_POSTGRES_USER=kobo
 KOBOCAT_BROKER_URL=amqp://kobocat:kobocat@rabbit:5672/kobocat
 
+# Set the variables below to your kobocat and enketo url
+#KOBOCAT_URL=
+#ENKETO_URL=
+
 #KOBOCAT_UWSGI_PROCESS_COUNT=2
 #ENKETO_OFFLINE_SURVEYS=True
 #KOBOCAT_MONGO_HOST=mongo
