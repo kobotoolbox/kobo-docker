@@ -86,7 +86,7 @@ kobocat:
   #   - 'kf-local.kobotoolbox.org:172.17.0.1'
 
 kpi:
-  image: kobotoolbox/kpi:2.019.07
+  image: kobotoolbox/kpi:2.019.08
   # Dev: Build the image locally.
   # build: ../kpi
   hostname: kpi
