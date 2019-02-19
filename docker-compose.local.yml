@@ -78,7 +78,7 @@ kobocat:
   restart: on-failure
 
 kpi:
-  image: kobotoolbox/kpi:2.019.08
+  image: kobotoolbox/kpi:2.019.08a
   # Dev: Build the image locally.
   # build: ../kpi
   hostname: kpi
