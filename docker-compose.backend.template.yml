@@ -59,6 +59,7 @@ services:
     image: redis:3.2
     # Map our "cache" Redis config into the container.
     volumes:
+      - ./.vols/redis_cache_data/:/data/
       - ./redis/redis-enketo-cache.conf.tmpl:/etc/redis/redis.conf.tmpl:ro
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_cache:/var/log/redis
