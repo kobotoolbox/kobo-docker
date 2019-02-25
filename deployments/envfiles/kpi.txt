@@ -5,7 +5,7 @@ USE_X_FORWARDED_HOST=False
 
 ENKETO_VERSION=Express
 KPI_PREFIX=/
-KPI_BROKER_URL=redis://redis-main.domain.name:6379/2
+KPI_BROKER_URL=redis://redis-main.domain.name:6379/1
 INTERCOM_APP_ID=
 
 KPI_MONGO_HOST=mongo.domain.name

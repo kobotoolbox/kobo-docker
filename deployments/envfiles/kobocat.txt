@@ -6,6 +6,7 @@ DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
 ENKETO_VERSION=Express
 
 KOBOCAT_BROKER_URL=redis://redis-main.domain.name:6379/2
+KOBOCAT_CELERY_LOG_FILE=/srv/logs/celery.log
 
 #ENKETO_OFFLINE_SURVEYS=True
 
