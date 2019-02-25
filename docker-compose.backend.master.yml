@@ -2,11 +2,6 @@
 version: '2.1'
 
 services:
-  rabbit:
-    extends:
-      file: docker-compose.backend.template.yml
-      service: rabbit
-
   postgres:
     extends:
       file: docker-compose.backend.template.yml
