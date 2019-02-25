@@ -2,18 +2,6 @@
 version: '2.1'
 
 services:
-  rabbit:
-    image: kobotoolbox/rabbit:latest
-    hostname: rabbit
-    environment:
-      - RABBITMQ_LOG_BASE=/var/log/rabbitmq
-    volumes:
-      - ./log/rabbitmq:/var/log/rabbitmq
-    restart: on-failure
-    # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
-    #ports:
-    #  - 5672:5672
-
   postgres:
     image: mdillon/postgis:9.5
     hostname: postgres
@@ -80,6 +68,7 @@ services:
     image: redis:3.2
     # Map our "cache" Redis config into the container.
     volumes:
+      - ./.vols/redis_cache_data/:/data/
       - ./redis/redis-enketo-cache.conf.tmpl:/etc/redis/redis.conf.tmpl:ro
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_cache:/var/log/redis
