@@ -14,13 +14,13 @@ from boto.utils import parse_ts
 
 DBDATESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
-#DATABASE_URL_PATTERN = (
+# DATABASE_URL_PATTERN = (
 #    r'postgis:\/\/(?P<username>[^:]+):(?P<password>[^@]+)@'
 #    r'(?P<hostname>[^:]+):(?P<port>[^/]+)\/(?P<dbname>.+)$'
-#)
+# )
 
 # `postgis://` isn't recognized by `pg_dump`; replace it with `postgres://`
-DBURL = re.sub(r'^postgis://', 'postgres://', os.getenv('DATABASE_URL'))\
+DBURL = re.sub(r'^postgis://', 'postgres://', os.getenv('DATABASE_URL'))
 # Because we are running `pg_dump` within the container,
 # we need to replace the hostname ...
 DBURL = DBURL.replace(os.getenv("POSTGRES_HOST"), "127.0.0.1")
