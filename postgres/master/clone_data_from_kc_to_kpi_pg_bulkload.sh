@@ -1,5 +1,18 @@
 #!/bin/bash
 
+apt-get update
+dpkg -i pg-bulkload95_3.1.9-1.rhel5_amd64.deb
+ln -s /usr/pgsql-9.5/share/extension/pg_bulkload.control /usr/share/postgresql/9.5/extension/
+ln -s /usr/pgsql-9.5/share/extension/pg_bulkload--1.0.sql /usr/share/postgresql/9.5/extension/pg_bulkload--1.0.sql
+ln -s /usr/pgsql-9.5/share/extension/pg_bulkload--unpackaged--1.0.sql /usr/share/postgresql/9.5/extension/pg_bulkload--unpackaged--1.0.sql
+ln -s /usr/pgsql-9.5/share/extension/pg_bulkload.sql /usr/share/postgresql/9.5/extension/pg_bulkload.sql
+ln -s /usr/pgsql-9.5/share/extension/uninstall_pg_bulkload.sql /usr/share/postgresql/9.5/extension/uninstall_pg_bulkload.sql
+ln -s /usr/pgsql-9.5/bin/pg_bulkload /usr/lib/postgresql/9.5/pg_bulkload
+ln -s /usr/pgsql-9.5/lib/pg_bulkload.so /usr/lib/postgresql/9.5/lib/pg_bulkload.so
+ln -s /usr/lib/x86_64-linux-gnu/libssl.so.1.1 /lib/x86_64-linux-gnu/libssl.so.6
+ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 /lib/x86_64-linux-gnu/libcrypto.so.6
+ln -s /lib/x86_64-linux-gnu/libreadline.so.7 /lib/x86_64-linux-gnu/libreadline.so.5
+ln -s /lib/x86_64-linux-gnu/libncurses.so.5.9 /lib/x86_64-linux-gnu/libtermcap.so.2
 
 
 # Thanks to https://stackoverflow.com/questions/3685970/check-if-a-bash-array-contains-a-value
@@ -16,58 +29,7 @@ function contains() {
     return 1
 }
 
-#KPI_TABLES=($(psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -t -c "SELECT tablename FROM pg_catalog.pg_tables where schemaname='public'"))
-# We could read table from DB, but we need the order to be respected.
-# Otherwise inserts may fail because of FK not present.
-KPI_TABLES=(
- spatial_ref_sys
- django_migrations
- django_content_type
- auth_user
- auth_group
- auth_permission
- auth_group_permissions
- auth_user_groups
- auth_user_user_permissions
- constance_config
- django_celery_beat_periodictasks
- django_celery_beat_crontabschedule
- django_celery_beat_intervalschedule
- django_celery_beat_periodictask
- django_celery_beat_solarschedule
- django_admin_log
- authtoken_token
- django_digest_partialdigest
- taggit_tag
- taggit_taggeditem
- kpi_collection
- kpi_asset
- reversion_revision
- reversion_version
- kpi_assetversion
- kpi_importtask
- kpi_authorizedapplication
- kpi_taguid
- kpi_objectpermission
- kpi_assetsnapshot
- kpi_onetimeauthenticationkey
- kpi_usercollectionsubscription
- kpi_exporttask
- kpi_assetfile
- hub_sitewidemessage
- hub_configurationfile
- hub_formbuilderpreference
- hub_extrauserdetail
- oauth2_provider_application
- django_session
- oauth2_provider_accesstoken
- oauth2_provider_grant
- django_digest_usernonce
- oauth2_provider_refreshtoken
- registration_registrationprofile
- hook_hook
- hook_hooklog
-)
+KPI_TABLES=($(psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -t -c "SELECT tablename FROM pg_catalog.pg_tables where schemaname='public'"))
 
 SLEEP_TIME=0
 MESSAGE="WARNING!!! This script will wipe all the data on target database:"
@@ -108,23 +70,41 @@ done
 
 KPI_SEQUENCES=($(psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -t -c "SELECT c.relname FROM pg_class c WHERE c.relkind = 'S';"))
 
+
+
+
 for KPI_TABLE in "${KPI_TABLES[@]}"
 do
     :
+
+    echo "OUTPUT = public.${KPI_TABLE}          # [<schema_name>.]table_name" > /tmp/kc2kpi.ctl
+    echo "INPUT = stdin                         # Input data location (absolute path)" >> /tmp/kc2kpi.ctl
+    echo "TYPE = CSV                            # Input file type" >> /tmp/kc2kpi.ctl
+    echo 'QUOTE = "\""                          # Quoting character'  >> /tmp/kc2kpi.ctl
+    echo "ESCAPE = \                            # Escape character for Quoting" >> /tmp/kc2kpi.ctl
+    echo "DELIMITER = \",\"                       # Delimiter" >> /tmp/kc2kpi.ctl
+
+
     echo "Copying table ${KC_POSTGRES_DB}.public.${KPI_TABLE} to ${KPI_POSTGRES_DB}.public.${KPI_TABLE}..."
+
+    #COMMAND_COPY="psql -X -U ${POSTGRES_USER} -h localhost -d ${KC_POSTGRES_DB} -c \"\\copy ${KPI_TABLE} to stdout WITH DELIMITER ',' QUOTE \"'\" CSV \""
+    #echo $COMMAND_COPY
+    #exit
+
+
     psql \
         -X \
         -U ${POSTGRES_USER} \
         -h localhost \
         -d ${KC_POSTGRES_DB} \
-        -c "\\copy ${KPI_TABLE} to stdout" \
+        -c "\\copy ${KPI_TABLE} to stdout WITH DELIMITER ',' QUOTE '\"' ESCAPE '\\' CSV " \
     | \
-    psql \
-        -X \
+    /usr/lib/postgresql/9.5/pg_bulkload /tmp/kc2kpi.ctl \
         -U ${POSTGRES_USER} \
         -h localhost \
         -d ${KPI_POSTGRES_DB} \
-        -c "\\copy ${KPI_TABLE} from stdin"
+        -P /tmp/${KPI_TABLE}-bad-parsing.log \
+        -u /tmp/${KPI_TABLE}-duplicate.log
     sleep $SLEEP_TIME # Use to let us read the output if there are any errors
     printf "\tDone!\n"
 
