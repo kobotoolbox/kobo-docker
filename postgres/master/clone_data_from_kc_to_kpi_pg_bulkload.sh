@@ -29,6 +29,8 @@ function contains() {
     return 1
 }
 
+psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -c "CREATE EXTENSION pg_bulkload;"
+
 KPI_TABLES=($(psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -t -c "SELECT tablename FROM pg_catalog.pg_tables where schemaname='public'"))
 
 SLEEP_TIME=0
@@ -70,9 +72,6 @@ done
 
 KPI_SEQUENCES=($(psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -t -c "SELECT c.relname FROM pg_class c WHERE c.relkind = 'S';"))
 
-
-
-
 for KPI_TABLE in "${KPI_TABLES[@]}"
 do
     :
@@ -86,11 +85,6 @@ do
 
 
     echo "Copying table ${KC_POSTGRES_DB}.public.${KPI_TABLE} to ${KPI_POSTGRES_DB}.public.${KPI_TABLE}..."
-
-    #COMMAND_COPY="psql -X -U ${POSTGRES_USER} -h localhost -d ${KC_POSTGRES_DB} -c \"\\copy ${KPI_TABLE} to stdout WITH DELIMITER ',' QUOTE \"'\" CSV \""
-    #echo $COMMAND_COPY
-    #exit
-
 
     psql \
         -X \
@@ -120,6 +114,6 @@ do
         sleep $SLEEP_TIME # Use to let us read the output if there are any errors
         echo ""
     fi
-
-
 done
+
+psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -c "DROP EXTENSION pg_bulkload;"
