@@ -111,20 +111,28 @@ KPI_SEQUENCES=($(psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -t -c "SELECT c.
 for KPI_TABLE in "${KPI_TABLES[@]}"
 do
     :
+
+    # We need to keep the same order to import data correctly
+    KC_COLUMNS=$(psql -U ${POSTGRES_USER} -d ${KC_POSTGRES_DB} -X -t -c "SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+            AND table_name = '${KPI_TABLE}';")
+    KC_COLUMNS=$(echo $KC_COLUMNS | tr ' ' ',')
+
     echo "Copying table ${KC_POSTGRES_DB}.public.${KPI_TABLE} to ${KPI_POSTGRES_DB}.public.${KPI_TABLE}..."
     psql \
         -X \
         -U ${POSTGRES_USER} \
         -h localhost \
         -d ${KC_POSTGRES_DB} \
-        -c "\\copy ${KPI_TABLE} to stdout" \
+        -c "\\copy ${KPI_TABLE} to stdout WITH DELIMITER ',' QUOTE '\"' ESCAPE '\\' CSV" \
     | \
     psql \
         -X \
         -U ${POSTGRES_USER} \
         -h localhost \
         -d ${KPI_POSTGRES_DB} \
-        -c "\\copy ${KPI_TABLE} from stdin"
+        -c "\\copy ${KPI_TABLE} (${KC_COLUMNS}) from stdin WITH DELIMITER ',' QUOTE '\"' ESCAPE '\\' CSV"
     sleep $SLEEP_TIME # Use to let us read the output if there are any errors
     printf "\tDone!\n"
 
