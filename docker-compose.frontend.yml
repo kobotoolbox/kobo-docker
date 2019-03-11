@@ -115,7 +115,7 @@ services:
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:1.74.4
+    image: kobotoolbox/enketo-express-extra-widgets:1.75.3
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/enketo.txt
