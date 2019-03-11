@@ -5,5 +5,7 @@ secrets/
 build
 docker-compose.yml
 .transifexrc
-.idea/
+.idea/*
 *.override.yml
+start-env.sh
+stop-env.sh

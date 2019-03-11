@@ -1,0 +1,136 @@
+# For public, HTTPS servers.
+version: '3'
+
+services:
+  kobocat:
+    image: kobotoolbox/kobocat:2.019.07
+    hostname: kobocat
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/databases.txt
+      - ../kobo-deployments/envfiles/aws.txt
+      - ../kobo-deployments/envfiles/external_services.txt
+      - ../kobo-deployments/envfiles/kobocat.txt
+      - ../kobo-deployments/envfiles/nginx.txt
+      - ../kobo-deployments/envfiles/smtp.txt
+    sysctls:
+      - net.core.somaxconn=2048
+    environment:
+      - ENKETO_PROTOCOL=https
+      - KPI_PORT=8000
+      - KC_UWSGI_MAX_REQUESTS=512
+      - KC_UWSGI_WORKERS_COUNT=2
+      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
+      - KC_UWSGI_CHEAPER_WORKERS_COUNT=1
+    volumes:
+      - ./.vols/static/kobocat:/srv/static
+      - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
+      - ./backups/kobocat:/srv/backups
+      - ./log/kobocat:/srv/logs
+      - ./scripts/wait_for_mongo.bash:/etc/my_init.d/01_wait_for_mongo.bash:ro
+      - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash:ro
+      - ./scripts/wait_for_kpi.bash:/etc/my_init.d/03_wait_for_kpi.bash:ro
+      - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
+      - ./uwsgi/kc_uwsgi.ini:/srv/src/kobocat/docker/kobocat.ini
+    restart: on-failure
+    networks:
+      kobo-fe-network:
+        aliases:
+          - kobocat
+          - kobocat.docker.container
+
+  kpi:
+    image: kobotoolbox/kpi:2.019.08a
+    hostname: kpi
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/databases.txt
+      - ../kobo-deployments/envfiles/aws.txt
+      - ../kobo-deployments/envfiles/external_services.txt
+      - ../kobo-deployments/envfiles/kpi.txt
+      - ../kobo-deployments/envfiles/nginx.txt
+      - ../kobo-deployments/envfiles/smtp.txt
+    sysctls:
+      - net.core.somaxconn=2048
+    environment:
+      # `SECURE_PROXY_SSL_HEADER` should be declared in docker-compose.frontend.override.yml
+      #- SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
+      - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
+      - KPI_UWSGI_MAX_REQUESTS=512
+      - KPI_UWSGI_WORKERS_COUNT=2
+      - KPI_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
+      - KPI_UWSGI_CHEAPER_WORKERS_COUNT=1
+    volumes:
+      - ./.vols/static/kpi:/srv/static
+      # The Whoosh search index needs persistent storage
+      - ./.vols/whoosh:/srv/whoosh
+      - ./log/kpi:/srv/logs
+      - ./scripts/wait_for_mongo.bash:/etc/my_init.d/01_wait_for_mongo.bash:ro
+      - ./scripts/wait_for_postgres.bash:/etc/my_init.d/02_wait_for_postgres.bash:ro
+      - ./scripts/create_kobo_superuser.bash:/etc/my_init.d/20_create_kobo_superuser.bash:ro
+      - ./scripts/runtime_variables_kpi.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
+      - ./uwsgi/kpi_uwsgi.ini:/srv/src/kpi/uwsgi.ini
+      # Allow access to Kobocat's media uploads within KPI
+      - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
+    restart: on-failure
+    networks:
+      kobo-fe-network:
+        aliases:
+          - kpi
+          - kpi.docker.container
+
+  nginx:
+    image: kobotoolbox/nginx:latest
+    hostname: nginx
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/databases.txt
+      - ../kobo-deployments/envfiles/nginx.txt
+      - ../kobo-deployments/envfiles/kobocat.txt
+      - ../kobo-deployments/envfiles/kpi.txt
+    environment:
+      - TEMPLATED_VAR_REFS=$${PUBLIC_REQUEST_SCHEME} $${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
+    # `ports` should to be declared in docker-compose.frontend.override.yml
+    # It allows `kobo-install` to specify the port without opening port 80 by default
+    #ports:
+    #  - 80:80
+    volumes:
+        - ./.vols/static:/srv/www:ro
+        - ./log/nginx:/var/log/nginx
+        - ./nginx/:/tmp/kobo_nginx/:ro
+        - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
+        - ./secrets/:/tmp/kobo_toolbox_secrets/:ro
+    restart: on-failure
+    networks:
+      kobo-fe-network:
+        aliases:
+          - nginx
+          # These aliases must match the concatenation of `*_PUBLIC_SUBDOMAIN` and `INTERNAL_DOMAIN_NAME` found in `../kobo-deployments/envfile.txt`
+          # and should be declared in docker-compose.frontend.override.yml
+          #- kc.docker.internal
+          #- kf.docker.internal
+          #- ee.docker.internal
+
+  # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
+  enketo_express:
+    image: kobotoolbox/enketo-express-extra-widgets:1.74.4
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/enketo.txt
+      - ../kobo-deployments/envfiles/external_services.txt
+    restart: on-failure
+    volumes:
+      - ./scripts/runtime_variables_enketo_express.source.bash:/etc/profile.d/runtime_variables_enketo_express.source.bash.sh:ro
+      - ../kobo-deployments/enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
+      - ./scripts/enketo_express_copy_config.bash:/etc/my_init.d/01_enketo_express_copy_config.bash:ro
+      # Override Enketo Express icons.
+      - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
+      - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
+    networks:
+      kobo-fe-network:
+        aliases:
+          - enketo_express
+
+networks:
+  kobo-fe-network:
+    driver: bridge

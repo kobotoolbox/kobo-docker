@@ -1,0 +1,33 @@
+####################
+# Account settings #
+####################
+
+#AWS_ACCESS_KEY_ID=
+#AWS_SECRET_ACCESS_KEY=
+
+
+###################
+# E-mail settings #
+###################
+
+# NOTE: These and the settings from `envfiles/smtp.txt` are mutually exclusive; do not use both.
+# In order to use SES to send e-mails, you must already have SES set up on AWS, and the owner of your `AWS_ACCESS_KEY_ID` must have the appropriate SES permissions.
+#EMAIL_BACKEND=django_ses.SESBackend
+# E.g. `us-east-1`
+#AWS_SES_REGION_NAME=
+# E.g. `email.us-east-1.amazonaws.com`.
+#AWS_SES_REGION_ENDPOINT=
+#DEFAULT_FROM_EMAIL=
+
+
+####################
+# Storage settings #
+####################
+
+#KOBOCAT_DEFAULT_FILE_STORAGE=storages.backends.s3boto.S3BotoStorage
+# To use S3 for KoBoCAT's storage, the specified bucket must already exist and the owner of your `AWS_ACCESS_KEY_ID` must have the appropriate S3 permissions.
+#KOBOCAT_AWS_STORAGE_BUCKET_NAME=
+
+# KPI also uses media file storage for users' data exports
+#KPI_DEFAULT_FILE_STORAGE=storages.backends.s3boto.S3BotoStorage
+#KPI_AWS_STORAGE_BUCKET_NAME=

@@ -1,0 +1,38 @@
+    # Get real ip from ELB
+    set_real_ip_from 10.0.0.0/8;
+    set_real_ip_from 172.0.0.0/8;
+    set_real_ip_from 192.168.0.0/16;
+    real_ip_header X-Forwarded-For;
+
+    set $redirect_https "O";
+    set $public_request_scheme ${PUBLIC_REQUEST_SCHEME};
+
+    # ELB check
+    if ($remote_addr = "127.0.0.1") {
+        set $redirect_https "";
+    }
+
+    # if host is internal. We don't want to be redirected to HTTPS
+    if ($host ~ ^(${KOBOCAT_PUBLIC_SUBDOMAIN}|${KOBOFORM_PUBLIC_SUBDOMAIN}|${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN})\.${INTERNAL_DOMAIN_NAME}$) {
+        set $redirect_https "";
+    }
+
+    # if $public_request_scheme equals http, we don't want to be redirected
+    if ($public_request_scheme = "http") {
+        set $redirect_https "";
+    }
+
+    if ($http_x_forwarded_proto != "https") {
+        set $redirect_https "${redirect_https}K";
+    }
+
+    # `http://` KC URLs are somehow getting into the EE Redis, and then EE
+    # can't submit due to receiving a 301 on POST. Temporarily bypass
+    # redirection for submissions
+    if ($request_uri ~ "/submission") {
+        set $redirect_https "NOPE";
+    }
+
+    if ($redirect_https = "OK") {
+        return 301 https://$server_name$request_uri;
+    }
