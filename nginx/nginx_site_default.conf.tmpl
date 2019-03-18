@@ -84,8 +84,8 @@ server {
 
     include /etc/nginx/include.server_directive_common.conf;
 
-    location ~ /forms(.*) {
-        return 301 $1;
+    location ~ ^/forms/(.*) {
+        return 301 /$1;
     }
 
     access_log  /var/log/nginx/kpi.access.log with_host;
