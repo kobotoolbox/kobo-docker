@@ -67,7 +67,7 @@ else
         apt-get install -y python-virtualenv --quiet=2 > /dev/null
         virtualenv /tmp/backup-virtualenv
         . /tmp/backup-virtualenv/bin/activate
-        pip install --quiet humanize smart-open
+        pip install --quiet humanize smart-open==1.7.1
         deactivate
 
         INTERPRETER=/tmp/backup-virtualenv/bin/python
