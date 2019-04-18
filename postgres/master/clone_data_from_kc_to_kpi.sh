@@ -67,6 +67,7 @@ KPI_TABLES=(
  registration_registrationprofile
  hook_hook
  hook_hooklog
+ external_integrations_corsmodel
 )
 
 SLEEP_TIME=0
