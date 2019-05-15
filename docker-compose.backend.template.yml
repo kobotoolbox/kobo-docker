@@ -28,11 +28,14 @@ services:
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/databases.txt
+      - ../kobo-deployments/envfiles/aws.txt
     volumes:
       - ./.vols/mongo:/data/db
       - ./backups/mongo:/srv/backups
-      - ./base_images/mongo/run_mongo:/etc/service/mongo/run
+      - ./mongo:/kobo-docker-scripts
+      - ./log/mongo:/srv/logs
     restart: on-failure
+    command: "/bin/bash /kobo-docker-scripts/entrypoint.sh"
     # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
     #ports:
     #  - 27017:27017
@@ -41,7 +44,13 @@ services:
   redis_main:
     image: redis:3.2
     # Map our "main" Redis config into the container.
+    env_file:
+      - ../kobo-deployments/envfile.txt
+      - ../kobo-deployments/envfiles/databases.txt
+      - ../kobo-deployments/envfiles/aws.txt
     volumes:
+      - ./redis:/kobo-docker-scripts
+      - ./backups/redis:/srv/backups
       - ./.vols/redis_main_data/:/data/
       - ./redis/redis-enketo-main.conf.tmpl:/etc/redis/redis.conf.tmpl:ro
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
