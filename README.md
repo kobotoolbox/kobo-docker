@@ -3,7 +3,7 @@
 `kobo-docker` is used to run a copy of the [KoBo Toolbox](http://www.kobotoolbox.org) survey data collection platform on a machine of your choosing. It relies on [Docker](https://docker.com) to separate the different parts of KoBo into different containers (which can be thought of as lighter-weight virtual machines) and [Docker Compose](https://docs.docker.com/compose/) to configure, run, and connect those containers. 
 Below is a diagram (made with [Lucidchart](lucidchart.com)) of the containers that make up a running `kobo-docker` system and their connections. 
 
-![Container diagram](./doc/Container_diagram.png)
+![Diagram of Docker Containers](./doc/container-diagram.svg)
 
 
 ## Setup procedure:
@@ -12,8 +12,9 @@ This procedure has been simplified by using [`kobo-install`](https://github.com/
 Please use it to install `kobo-docker`.   
 Already have an existing installation? Please see below.
 
-## Upgrading from an old version of `kobo-docker` (before to Dec'2018)
-Latest version of `kobo-docker` use `PostgreSQL 9.5` and `MongoDB 3.4`. 
+## Upgrading from an old version of `kobo-docker` (before to March 2019)
+Latest version of `kobo-docker` use `PostgreSQL 9.5` and `MongoDB 3.4`.   
+**It also used `redis` as a `Celery` broker**.
 
 If you already run an older version of `kobo-docker`, you need to upgrade to these version first before using this version (or `kobo-install`).  
 This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` containers.
@@ -299,6 +300,26 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
     
 You can now use latest version `kobo-docker` (or use `kobo-install`)
 
+### Use `redis` as `Celery` broker
+
+
+The easiest way is to rely on `kobo-install` to generate the correct environment files. 
+
+If you want to change it manually, edit:
+
+- `kobo-deployments/envfiles/kpi.txt`
+
+> `KPI_BROKER_URL=amqp://kpi:kpi@rabbit.[internal domain name]:5672/kpi` 
+
+to
+> `KPI_BROKER_URL=redis://redis-main.[internal domain name]:6389/1`
+
+- `kobo-deployments/envfiles/kobocat.txt`
+
+> `KOBOCAT_BROKER_URL=amqp://kobocat: kobocat@rabbit.[internal domain name]:5672/kobocat ` 
+
+to
+> `KOBOCAT_BROKER_URL =redis://redis-main.[internal domain name]:6389/2`
 
 ## Load balancing and redundancy 
 
