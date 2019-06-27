@@ -59,9 +59,15 @@ for container_name in "${!container_ports[@]}"; do
     if [[ "${web_server^^}" != 'UWSGI' ]] ; then
         echo "Proxying directly (debug) to \`${container_name}\` without uWSGI."
 
+        if [ "${container_name}" == "kpi" ]; then
+            export container_x_forwarded_host="${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}"
+        else
+            export container_x_forwarded_host="${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}"
+        fi
+
         # Create a `proxy_pass` configuration for this container.
         cat ${ORIGINAL_DIR}/proxy_pass.conf.tmpl \
-            | envsubst '${container_name} ${container_port} ${container_public_port}' \
+            | envsubst '${container_name} ${container_port} ${container_public_port} ${container_x_forwarded_host}' \
             > ${TEMPLATES_ENABLED_DIR}/${container_name}_proxy_pass.conf
 
         # Prepare to include the generated `proxy_pass` config. and no `uwsgi_pass` config.
