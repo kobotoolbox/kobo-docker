@@ -58,6 +58,7 @@ KPI_TABLES=(
  hub_configurationfile
  hub_formbuilderpreference
  hub_extrauserdetail
+ hub_perusersetting
  oauth2_provider_application
  django_session
  oauth2_provider_accesstoken
@@ -68,6 +69,9 @@ KPI_TABLES=(
  hook_hook
  hook_hooklog
  external_integrations_corsmodel
+ help_inappmessage
+ help_inappmessagefile
+ help_inappmessageuserinteractions
 )
 
 SLEEP_TIME=0
