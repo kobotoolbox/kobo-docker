@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 # Thanks to https://stackoverflow.com/questions/3685970/check-if-a-bash-array-contains-a-value
 function contains() {
     local n=$#
@@ -14,6 +12,19 @@ function contains() {
     }
     echo "n"
     return 1
+}
+
+function prompt_to_continue() {
+    while true
+    do
+        read -p "Do you want to continue [y/N]? " yn
+        case $yn in
+            [Yy] ) break;;
+            [Nn] ) exit;;
+            '' ) exit;;
+            * ) echo "Please answer Y or N.";;
+        esac
+    done
 }
 
 #KPI_TABLES=($(psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -t -c "SELECT tablename FROM pg_catalog.pg_tables where schemaname='public'"))
@@ -85,20 +96,10 @@ printf "║ ${MESSAGE} ║\n"
 printf "║ ${KPI_POSTGRES_DB} %s ║\n" $(printf ".%.0s" $(seq 1 $LIMIT))
 printf "╚═%s═╝\n" $(printf "═%.0s" $(seq 1 $MESSAGE_LEN))
 
-while true; do
-
-    read -p "Do you want to continue [y/N]?" yn
-    case $yn in
-        [Yy]* ) break;;
-        [Nn]* ) exit;;
-        * ) echo "Please answer Y or N.";;
-    esac
-done
-
+prompt_to_continue
 
 for KPI_TABLE in "${KPI_TABLES[@]}"
 do
-    :
     echo "Truncating ${KPI_POSTGRES_DB}.public.${KPI_TABLE}..."
     psql \
         -X \
@@ -106,8 +107,15 @@ do
         -h localhost \
         -d ${KPI_POSTGRES_DB} \
         -c "TRUNCATE TABLE ${KPI_TABLE} RESTART IDENTITY CASCADE"
-    printf "\tDone!\n"
-    sleep $SLEEP_TIME # Use to let us read the output if there are any errors
+
+    if [ $? == 0 ]; then
+        printf "\tDone!\n"
+    else
+        echo "Something went wrong. Please read the output above."
+        prompt_to_continue
+    fi
+
+    sleep $SLEEP_TIME # To read the output for debugging
     echo ""
 done
 
@@ -115,8 +123,6 @@ KPI_SEQUENCES=($(psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -t -c "SELECT c.
 
 for KPI_TABLE in "${KPI_TABLES[@]}"
 do
-    :
-
     # We need to keep the same order to import data correctly
     KC_COLUMNS=$(psql -U ${POSTGRES_USER} -d ${KC_POSTGRES_DB} -X -t -c "SELECT column_name
             FROM information_schema.columns
@@ -138,8 +144,15 @@ do
         -h localhost \
         -d ${KPI_POSTGRES_DB} \
         -c "\\copy ${KPI_TABLE} (${KC_COLUMNS}) from stdin WITH DELIMITER ',' QUOTE '\"' ESCAPE '\\' CSV"
-    sleep $SLEEP_TIME # Use to let us read the output if there are any errors
-    printf "\tDone!\n"
+
+    if [ $? == 0 ]; then
+        printf "\tDone!\n"
+    else
+        echo "Something went wrong. Please read the output above."
+        prompt_to_continue
+    fi
+    sleep $SLEEP_TIME # To read the output for debugging
+    echo ""
 
     SEQUENCE_NAME="${KPI_TABLE}_id_seq"
     if [ $(contains "${KPI_SEQUENCES[@]}" "${SEQUENCE_NAME}") == "y" ]; then
@@ -150,9 +163,14 @@ do
             -h localhost \
             -d ${KPI_POSTGRES_DB} \
             -c "SELECT setval('${SEQUENCE_NAME}', (SELECT max(id) from ${KPI_TABLE}))"
-        sleep $SLEEP_TIME # Use to let us read the output if there are any errors
+
+        if [ $? == 0 ]; then
+            printf "\tDone!\n"
+        else
+            echo "Something went wrong. Please read the output above."
+            prompt_to_continue
+        fi
+        sleep $SLEEP_TIME # To read the output for debugging
         echo ""
     fi
-
-
 done
