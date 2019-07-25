@@ -3,7 +3,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:2.019.16a
+    image: kobotoolbox/kobocat:2.019.22
     hostname: kobocat
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -40,7 +40,7 @@ services:
           - kobocat.docker.container
 
   kpi:
-    image: kobotoolbox/kpi:2.019.16
+    image: kobotoolbox/kpi:2.019.23
     hostname: kpi
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -114,7 +114,7 @@ services:
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:1.75.3
+    image: kobotoolbox/enketo-express-extra-widgets:1.77.0-jnm-grunt-workaround
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/enketo.txt
