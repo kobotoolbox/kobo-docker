@@ -6,9 +6,9 @@
         <title>KoBoToolbox Temporarily Offline</title>
         <link rel="icon" type="image/x-icon" href="favicon.ico" />
         <!-- iPhone + iPad icons -->
-        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png">
-        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/apple-touch-icon-114x114.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/apple-touch-icon-72x72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png">
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
         <style>
             html, body {
@@ -17,7 +17,7 @@
             }
             body {
                 background: rgb(176, 138, 106);
-                background-image: url(background.jpg);
+                background-image: url(/background.jpg);
                 background-size: cover;
                 background-repeat: no-repeat;
                 margin: 0;
@@ -59,7 +59,7 @@
     </head>
     <body>
         <div id="content-container">
-            <a href="http://kpi.kobo.local"><img id="kobo-logo" src="kobologo.svg"></a>
+            <a href="${PUBLIC_REQUEST_SCHEME}://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}"><img id="kobo-logo" src="/kobologo.svg"></a>
 
             <h2>
                 KoBoToolbox is currently under maintenance.
