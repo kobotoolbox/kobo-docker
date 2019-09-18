@@ -1,19 +1,5 @@
 #!/bin/bash
 
-# Thanks to https://stackoverflow.com/questions/3685970/check-if-a-bash-array-contains-a-value
-function contains() {
-    local n=$#
-    local value=${!n}
-    for ((i=1;i < $#;i++)) {
-        if [ "${!i}" == "${value}" ]; then
-            echo "y"
-            return 0
-        fi
-    }
-    echo "n"
-    return 1
-}
-
 function prompt_to_continue() {
     while true
     do
@@ -86,91 +72,89 @@ KPI_TABLES=(
 )
 
 SLEEP_TIME=0
-MESSAGE="WARNING!!! This script will wipe all the data on target database:"
-TARGET_DBNAME_LEN=${#KPI_POSTGRES_DB}
-MESSAGE_LEN=${#MESSAGE}
-LIMIT=$((MESSAGE_LEN-TARGET_DBNAME_LEN-1))
+KPI_LAST_EXPECTED_MIGRATION='0022_assetfile'
 
-printf "╔═%s═╗\n" $(printf "═%.0s" $(seq 1 $MESSAGE_LEN))
-printf "║ ${MESSAGE} ║\n"
-printf "║ ${KPI_POSTGRES_DB} %s ║\n" $(printf ".%.0s" $(seq 1 $LIMIT))
-printf "╚═%s═╝\n" $(printf "═%.0s" $(seq 1 $MESSAGE_LEN))
+if [ $(psql \
+           -X \
+           -U "$POSTGRES_USER" \
+           -h localhost \
+           -d postgres \
+           -qt \
+           -c 'SELECT COUNT(*) FROM pg_database WHERE datname='"'$KPI_POSTGRES_DB';"
+       ) -eq 0 ]
+then
+    echo "Safety check: the target database $KPI_POSTGRES_DB does not exist yet (OK)"
+else
+    echo "Abort mission! The target database $KPI_POSTGRES_DB already exists."
+    echo -n "This script will not destroy an existing database; please DROP it yourself "
+    echo "if that's really what you desire."
+    echo "For more help, visit https://community.kobotoolbox.org/c/kobo-install."
+    exit 1
+fi
 
-prompt_to_continue
-
-for KPI_TABLE in "${KPI_TABLES[@]}"
-do
-    echo "Truncating ${KPI_POSTGRES_DB}.public.${KPI_TABLE}..."
+kpi_last_actual_migration=$(
     psql \
         -X \
-        -U ${POSTGRES_USER} \
+        -U "$POSTGRES_USER" \
         -h localhost \
-        -d ${KPI_POSTGRES_DB} \
-        -c "TRUNCATE TABLE ${KPI_TABLE} RESTART IDENTITY CASCADE"
+        -d "$KC_POSTGRES_DB" \
+        -qt \
+        -c "SELECT name FROM django_migrations WHERE app='kpi' ORDER BY id DESC LIMIT 1;" \
+    | sed 's/ //g'
+)
+if [ "$kpi_last_actual_migration" = "$KPI_LAST_EXPECTED_MIGRATION" ]
+then
+    echo "Safety check: the last applied KPI migration matches what we expected (OK)"
+else
+    echo -n "Your database's last KPI migration was $kpi_last_actual_migration, but "
+    echo "this script requires $KPI_LAST_EXPECTED_MIGRATION."
+    echo -n "Please make sure you are running the last single-database release of KPI, "
+    echo "and visit https://community.kobotoolbox.org/c/kobo-install if you need help."
+    exit 1
+fi
 
-    if [ $? == 0 ]; then
-        printf "\tDone!\n"
-    else
-        echo "Something went wrong. Please read the output above."
-        prompt_to_continue
-    fi
+echo "Creating ${KPI_POSTGRES_DB} with PostGIS extensions..."
 
-    sleep $SLEEP_TIME # To read the output for debugging
-    echo ""
-done
+psql \
+    -X \
+    -U "$POSTGRES_USER" \
+    -h localhost \
+    -d postgres <<EOF
+CREATE DATABASE "$KPI_POSTGRES_DB" OWNER "$POSTGRES_USER";
+\c "$KPI_POSTGRES_DB"
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS postgis_topology;
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
+CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
+EOF
 
-KPI_SEQUENCES=($(psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -t -c "SELECT c.relname FROM pg_class c WHERE c.relkind = 'S';"))
+if [ $? == 0 ]; then
+    printf "\tDone!\n"
+else
+    echo "Something went wrong. Please read the output above."
+    prompt_to_continue
+fi
 
-for KPI_TABLE in "${KPI_TABLES[@]}"
-do
-    # We need to keep the same order to import data correctly
-    KC_COLUMNS=$(psql -U ${POSTGRES_USER} -d ${KC_POSTGRES_DB} -X -t -c "SELECT column_name
-            FROM information_schema.columns
-            WHERE table_schema = 'public'
-            AND table_name = '${KPI_TABLE}';")
-    KC_COLUMNS=$(echo $KC_COLUMNS | tr ' ' ',')
+sleep $SLEEP_TIME # To read the output for debugging
+echo ""
 
-    echo "Copying table ${KC_POSTGRES_DB}.public.${KPI_TABLE} to ${KPI_POSTGRES_DB}.public.${KPI_TABLE}..."
-    psql \
-        -X \
-        -U ${POSTGRES_USER} \
-        -h localhost \
-        -d ${KC_POSTGRES_DB} \
-        -c "\\copy ${KPI_TABLE} to stdout WITH DELIMITER ',' QUOTE '\"' ESCAPE '\\' CSV" \
-    | \
-    psql \
-        -X \
-        -U ${POSTGRES_USER} \
-        -h localhost \
-        -d ${KPI_POSTGRES_DB} \
-        -c "\\copy ${KPI_TABLE} (${KC_COLUMNS}) from stdin WITH DELIMITER ',' QUOTE '\"' ESCAPE '\\' CSV"
+echo "We are now ready to copy KPI tables from $KC_POSTGRES_DB to $KPI_POSTGRES_DB."
+echo "Press enter to start, and please expect lots of output!"
+read trash
 
-    if [ $? == 0 ]; then
-        printf "\tDone!\n"
-    else
-        echo "Something went wrong. Please read the output above."
-        prompt_to_continue
-    fi
-    sleep $SLEEP_TIME # To read the output for debugging
-    echo ""
+pg_dump \
+    -U ${POSTGRES_USER} \
+    -h localhost \
+    ${KPI_TABLES[@]/#/-t } \
+    -d "$KC_POSTGRES_DB" \
+| psql \
+    -X \
+    -U "$POSTGRES_USER" \
+    -h localhost \
+    -d "$KPI_POSTGRES_DB" \
 
-    SEQUENCE_NAME="${KPI_TABLE}_id_seq"
-    if [ $(contains "${KPI_SEQUENCES[@]}" "${SEQUENCE_NAME}") == "y" ]; then
-        echo "Updating sequence for table ${KPI_POSTGRES_DB}.public.${KPI_TABLE}..."
-        psql \
-            -X \
-            -U ${POSTGRES_USER} \
-            -h localhost \
-            -d ${KPI_POSTGRES_DB} \
-            -c "SELECT setval('${SEQUENCE_NAME}', (SELECT max(id) from ${KPI_TABLE}))"
-
-        if [ $? == 0 ]; then
-            printf "\tDone!\n"
-        else
-            echo "Something went wrong. Please read the output above."
-            prompt_to_continue
-        fi
-        sleep $SLEEP_TIME # To read the output for debugging
-        echo ""
-    fi
-done
+if [ $? == 0 ]; then
+    printf "\tEverything finished successfully! Thanks for using KoBoToolbox.\n"
+else
+    echo "Something went wrong. Please read the output above."
+fi
