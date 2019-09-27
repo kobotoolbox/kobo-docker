@@ -14,7 +14,10 @@ from boto.s3.connection import S3Connection
 from boto.utils import parse_ts
 
 
-APP_CODES = ['kpi', 'kc']
+APP_CODES = {
+    'kpi': os.getenv('KPI_DATABASE_URL'),
+    'kc': os.getenv('KC_DATABASE_URL'),
+}
 
 yearly_retention = int(os.environ.get("AWS_BACKUP_YEARLY_RETENTION", 2))
 monthly_retention = int(os.environ.get("AWS_BACKUP_MONTHLY_RETENTION", 12))
@@ -55,9 +58,7 @@ def backup(app_code):
     DBDATESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
     # `postgis://` isn't recognized by `pg_dump`; replace it with `postgres://`
-    DBURL = re.sub(r'^postgis://', 'postgres://', os.getenv('{}_DATABASE_URL'.format(
-        app_code.upper()
-    )))
+    DBURL = re.sub(r'^postgis://', 'postgres://', APP_CODES.get(app_code))
     # Because we are running `pg_dump` within the container,
     # we need to replace the hostname ...
     DBURL = DBURL.replace(os.getenv("POSTGRES_HOST"), "127.0.0.1")
@@ -133,8 +134,13 @@ def cleanup():
                     l.delete()
 
 
-# ToDo: What about running those tasks in parallel?
-for app_code in APP_CODES:
-    backup(app_code)
+database_urls = set(APP_CODES.values())
+# Avoid backup twice the same DB
+if len(database_urls) == 1:
+    backup('kc')
+else:
+    # ToDo: What about running those tasks in parallel?
+    for app_code in APP_CODES.keys():
+        backup(app_code)
 
 cleanup()
