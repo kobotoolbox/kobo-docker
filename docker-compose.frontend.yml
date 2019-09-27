@@ -22,6 +22,8 @@ services:
       - KC_UWSGI_WORKERS_COUNT=2
       - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
       - KC_UWSGI_CHEAPER_WORKERS_COUNT=1
+      # `NGINX_PUBLIC_PORT` should be declared in docker-compose.frontend.override.yml
+      #- NGINX_PUBLIC_PORT=80
     volumes:
       - ./.vols/static/kobocat:/srv/static
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
@@ -60,6 +62,8 @@ services:
       - KPI_UWSGI_WORKERS_COUNT=2
       - KPI_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
       - KPI_UWSGI_CHEAPER_WORKERS_COUNT=1
+      # `NGINX_PUBLIC_PORT` should be declared in docker-compose.frontend.override.yml
+      #- NGINX_PUBLIC_PORT=80
     volumes:
       - ./.vols/static/kpi:/srv/static
       # The Whoosh search index needs persistent storage
@@ -90,6 +94,8 @@ services:
       - ../kobo-deployments/envfiles/kpi.txt
     environment:
       - TEMPLATED_VAR_REFS=$${PUBLIC_REQUEST_SCHEME} $${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
+      # `NGINX_PUBLIC_PORT` should be declared in docker-compose.frontend.override.yml
+      #- NGINX_PUBLIC_PORT=80
     # `ports` should to be declared in docker-compose.frontend.override.yml
     # It allows `kobo-install` to specify the port without opening port 80 by default
     #ports:
