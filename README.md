@@ -1,20 +1,28 @@
 # kobo-docker
 
-`kobo-docker` is used to run a copy of the [KoBo Toolbox](http://www.kobotoolbox.org) survey data collection platform on a machine of your choosing. It relies on [Docker](https://docker.com) to separate the different parts of KoBo into different containers (which can be thought of as lighter-weight virtual machines) and [Docker Compose](https://docs.docker.com/compose/) to configure, run, and connect those containers. 
-
-1. [Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier](#)
-2. [Important notice when upgrading from `[TODO: INSERT FINAL 1DB RELEASE HERE]` or earlier](#)
+1. [Introduction](#introduction)
+1. [Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier)
+2. [Important notice when upgrading from `[TODO: INSERT FINAL 1DB RELEASE HERE]` or earlier](#important-notice-when-upgrading-from-todo-insert-final-1db-release-here-or-earlier)
 3. [Architecture](#architecture)
 4. [Setup procedure](#setup-procedure)
 5. [Usage](#usage)
-6. [Backups](#backups)
+    - Start/stop
+    - Backups
+    - Restore backups
+    - Maintenance
 7. [Warning](#warning)
 8. [Troubleshooting](#troubleshooting)
 9. [Redis performance](#redis-performance)
 
+
+## Introduction 
+
+`kobo-docker` is used to run a copy of the [KoBo Toolbox](http://www.kobotoolbox.org) survey data collection platform on a machine of your choosing. It relies on [Docker](https://docker.com) to separate the different parts of KoBo into different containers (which can be thought of as lighter-weight virtual machines) and [Docker Compose](https://docs.docker.com/compose/) to configure, run, and connect those containers. 
+
+
 ## Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier 
 
-You must follow [these important instructions](./doc/March-2019-Upgrade.md). Then, please follow [these instructions](#)
+You must follow [these important instructions](./doc/March-2019-Upgrade.md). Then, please follow [next instructions](##important-notice-when-upgrading-from-todo-insert-final-1db-release-here-or-earlier)
 
 If you do not, the application may not start or your data may not be visible.
 
@@ -42,6 +50,10 @@ adjust your configuration appropriately.
 Below is a diagram (made with [Lucidchart](https://www.lucidchart.com)) of the containers that make up a running `kobo-docker` system and their connections.
 
 ![Diagram of Docker Containers](./doc/container-diagram.svg)
+
+### Secure your installation
+`kobo-docker` opens ports on all interfaces to let the `frontend` containers communicate with `backend`containers.  
+A firewall is **HIGHLY recommended**. PostgreSQL, Redis and MongoDB ports must be closed when the server is exposed publicly.
 
 
 ## Setup procedure
@@ -107,69 +119,68 @@ It's recommended to create `*.override.yml` docker-compose files to customize yo
 - `docker-compose.backend.master.override.yml`
 - `docker-compose.backend.slave.override.yml` (if a postgres replica is used)
 
-To start containers: 
-`$kobo-docker> docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] up -d`
-`$kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] up -d`
+1. **Start/start containers** 
 
-To stop containers: 
-`$kobo-docker> docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] stop`
-`$kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] stop`
+    `$kobo-docker> docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] up -d`  
+    `$kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] up -d`
+    `$kobo-docker> docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] stop`  
+    `$kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] stop`
 
 
-## Backups
+2. **Backups**
 
-Automatic, periodic backups of KoBoCAT media, MongoDB, PostgreSQL and Redis can be individually enabled by uncommenting (and optionally customizing) the *_BACKUP\_SCHEDULE variables in your envfiles. 
+    Automatic, periodic backups of KoBoCAT media, MongoDB, PostgreSQL and Redis can be individually enabled by uncommenting (and optionally customizing) the `*_BACKUP_SCHEDULE` variables in your envfiles. 
+    
+     - `deployments/envfiles/databases.txt` (MongoDB, PostgreSQL, Redis)
+     - `deployments/envfiles/kobocat.txt` (KoBoCat media)
+    
+    When enabled, timestamped backups will be placed in backups/kobocat, backups/mongo, backups/postgres and backups/redis respectively.
+    
+    If `AWS` credentials and `AWS S3` backup bucket name are provided, the backups are created directly on `S3`.
+    
+    Backups **on disk** can also be manually triggered when kobo-docker is running by executing the the following commands:
+    
+    ```
+    $kobo-docker> docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] exec kobocat /srv/src/kobocat/docker/backup_media.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] exec mongo /bin/bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] exec -e PGUSER=kobo postgres /bin/bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] exec redis_main /bin/bash /kobo-docker-scripts/backup-to-disk.bash
+    ```
 
- - `deployments/envfiles/databases.txt` (MongoDB, PostgreSQL, Redis)
- - `deployments/envfiles/kobocat.txt` (KoBoCat media)
+2. **Restore backups**
 
-When enabled, timestamped backups will be placed in backups/kobocat, backups/mongo, backups/postgres and backups/redis respectively.
+    Commands should be run within containers.
 
-#### AWS
-If `AWS` credentials and `AWS S3` backup bucket name are provided, the backups are created directly on `S3`.
+     - MongoDB: `mongorestore --archive=<path/to/mongo.backup.gz> --gzip`
+     - PostgreSQL: `pg_restore -U kobo -d kobotoolbox -c "<path/to/postgres.pg_dump>"`
+     - Redis: `gunzip <path/to/redis.rdb.gz> && mv <path/to/extracted_redis.rdb> /data/enketo-main.rdb` 
 
-Backups **on disk** can also be manually triggered when kobo-docker is running by executing the the following commands:
+3. **Maintenance mode**
 
-```
-$kobo-docker> docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] exec kobocat /srv/src/kobocat/docker/backup_media.bash
-$kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] exec mongo /bin/bash /kobo-docker-scripts/backup-to-disk.bash
-$kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] exec -e PGUSER=kobo postgres /bin/bash /kobo-docker-scripts/backup-to-disk.bash
-$kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] exec redis_main /bin/bash /kobo-docker-scripts/backup-to-disk.bash
-```
-
-#### Restore
- Within containers.
-
- - MongoDB: `mongorestore --archive=<path/to/mongo.backup.gz> --gzip`
- - PostgreSQL: `pg_restore -U kobo -d kobotoolbox -c "<path/to/postgres.pg_dump>"`
- - Redis: `gunzip <path/to/redis.rdb.gz> && mv <path/to/extracted_redis.rdb> /data/enketo-main.rdb` 
-
-## Maintenance mode
-
-There is one composer file `docker-compose.maintenance.yml` can be used to put `KoBoToolbox` in maintenance mode.
-
-`nginx` container has to be stopped before launching the maintenance container.
-
-**Start** 
-
-```
-docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] stop nginx
-docker-compose -f docker-compose.maintenance.yml up -d
-``` 
-
-**Stop** 
-
-```
-docker-compose -f docker-compose.maintenance.yml down
-docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] up -d nginx
-```
-
-There are 3 variables that can be customized in `docker-compose.maintenance.yml`
-
-- `ETA` e.g. `2 hours`
-- `DATE_STR` e.g. `Monday, November 26 at 02:00 GMT`
-- `DATE_ISO` e.g. `20181126T02`
-- `EMAIL` e.g. `support@example.com`
+    There is one composer file `docker-compose.maintenance.yml` can be used to put `KoBoToolbox` in maintenance mode.
+    
+    `nginx` container has to be stopped before launching the maintenance container.
+    
+    **Start** 
+    
+    ```
+    docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] stop nginx
+    docker-compose -f docker-compose.maintenance.yml up -d
+    ``` 
+    
+    **Stop** 
+    
+    ```
+    docker-compose -f docker-compose.maintenance.yml down
+    docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] up -d nginx
+    ```
+    
+    There are 4 variables that can be customized in `docker-compose.maintenance.yml`
+    
+    - `ETA` e.g. `2 hours`
+    - `DATE_STR` e.g. `Monday, November 26 at 02:00 GMT`
+    - `DATE_ISO` e.g. `20181126T02`
+    - `EMAIL` e.g. `support@example.com`
 
 ## Warning
 
@@ -193,9 +204,6 @@ Once this is noted, you can `docker-compose stop` and search for potentially-mis
        
     For a specific container use e.g. `docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] logs -f redis_main`.
     
-    `override` YML files are optionals but strongly recommended.
-    If you are using `kobo-install`, it will create those files for you.  
-    
     The documentation for Docker can be found at https://docs.docker.com.
 
 - ### Django debugging
@@ -208,7 +216,7 @@ Developers can use [PyDev](http://www.pydev.org/)'s [remote, graphical Python de
     5. Breakpoints can be inserted with e.g. `import pydevd; pydevd.settrace('${DEBUGGING_MACHINE_IP}')`.
 
     Remote debugging in the `kobocat` container can be accomplished in a similar manner.
-
+    
 
 ## Redis performance
 Please take a look at [https://www.techandme.se/performance-tips-for-redis-cache-server/](https://www.techandme.se/performance-tips-for-redis-cache-server/)
