@@ -12,6 +12,7 @@ services:
       - ETA=2 hours
       - DATE_STR=Monday,&nbsp;November&nbsp;26&nbsp;at&nbsp;02:00&nbsp;GMT
       - DATE_ISO=20181126T02
+      - EMAIL=support@kobotoolbox.org
     ports:
       - 80:80
     volumes:
