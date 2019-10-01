@@ -41,10 +41,15 @@ server {
     }
 
     location / {
-        try_files /index.html $uri $uri/ @maintenance;
+        return 503;
+    }
+
+    # Return 200 for monitoring scripts
+    location /service_health/ {
+        return 200;
     }
 
     location @maintenance {
-        return 503;
+        rewrite ^(.*)$ /index.html break;
     }
 }

@@ -13,10 +13,12 @@ else
     # Pass env variables to cron task
     echo "PG_MAJOR=${PG_MAJOR}" >> /etc/cron.d/backup_postgres_crontab
     echo "PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}" >> /etc/cron.d/backup_postgres_crontab
-    echo "POSTGRES_DB=${POSTGRES_DB}" >> /etc/cron.d/backup_postgres_crontab
-    echo "PGUSER=${POSTGRES_USER}" >> /etc/cron.d/backup_postgres_crontab
     echo "POSTGRES_HOST=${POSTGRES_HOST}" >> /etc/cron.d/backup_postgres_crontab
-    echo "DATABASE_URL=${DATABASE_URL}" >> /etc/cron.d/backup_postgres_crontab
+    echo "PGUSER=${POSTGRES_USER}" >> /etc/cron.d/backup_postgres_crontab
+    echo "KPI_POSTGRES_DB=${KPI_POSTGRES_DB}" >> /etc/cron.d/backup_postgres_crontab
+    echo "KC_POSTGRES_DB=${KC_POSTGRES_DB}" >> /etc/cron.d/backup_postgres_crontab
+    echo "KPI_DATABASE_URL=${KPI_DATABASE_URL}" >> /etc/cron.d/backup_postgres_crontab
+    echo "KC_DATABASE_URL=${KC_DATABASE_URL}" >> /etc/cron.d/backup_postgres_crontab
 
     # To use S3 as storage, AWS access key, secret key and bucket name must filled up
     USE_S3=1
