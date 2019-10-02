@@ -74,6 +74,8 @@ os.system("{backup_command}|s3cmd put --multipart-chunk-size-mb={chunk_size} - s
     filename=filename
 ))
 
+print('Backup `{}` successfully sent to S3.'.format(filename))
+
 aws_lifecycle = os.environ.get("AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED", "False") == "True"
 if not aws_lifecycle:
     # Remove old backups beyond desired retention
@@ -87,3 +89,5 @@ if not aws_lifecycle:
         for l in large_enough_backups[keeps:]:
             print('Deleting old backup "{}"...'.format(l.name))
             l.delete()
+
+print('Done!')

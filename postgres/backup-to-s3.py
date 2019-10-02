@@ -114,6 +114,8 @@ def backup(app_code):
                     humanize.naturalsize(chunks_done * CHUNK_SIZE)
                 ))
 
+    print('Backup `{}` successfully sent to S3.'.format(filename))
+
 
 def cleanup():
     aws_lifecycle = os.environ.get("AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED", "False") == "True"
@@ -144,3 +146,5 @@ else:
         backup(app_code)
 
 cleanup()
+
+print('Done!')
