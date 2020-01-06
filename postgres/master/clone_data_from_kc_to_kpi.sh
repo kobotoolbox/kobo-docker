@@ -214,7 +214,7 @@ pg_dump \
     -h localhost \
     ${KPI_TABLES[@]/#/-t } \
     -d "$KC_POSTGRES_DB" \
-| psql \
+| psql --single-transaction \
     -X \
     -U "$POSTGRES_USER" \
     -h localhost \
