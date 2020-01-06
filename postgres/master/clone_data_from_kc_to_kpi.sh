@@ -1,7 +1,16 @@
 #!/bin/bash
 set -eEuo pipefail
 
+SLEEP_TIME=0
 HELP_PAGE='https://community.kobotoolbox.org/c/kobo-install'
+KPI_LAST_EXPECTED_MIGRATION='0022_assetfile'
+
+if [ $# -gt 0 ] && [ "$1" = '--noinput' ]
+then
+    skip_prompts='yes'
+else
+    skip_prompts='no'
+fi
 
 function error_handler() {
     echo
@@ -11,6 +20,7 @@ function error_handler() {
 trap error_handler ERR
 
 function prompt_to_continue() {
+    if [ "$skip_prompts" = 'yes' ]; then return; fi
     while true
     do
         read -p "Do you want to continue [y/N]? " yn
@@ -83,9 +93,6 @@ KPI_TABLES=(
  help_inappmessageuserinteractions
 )
 
-SLEEP_TIME=0
-KPI_LAST_EXPECTED_MIGRATION='0022_assetfile'
-
 kpi_tables_single_quoted_csv=$(echo "${KPI_TABLES[@]}" | sed "s/^/'/;s/ /','/g;s/$/'/")
 actual_kpi_tables_count=$(
     psql -Xqt -h localhost \
@@ -136,6 +143,12 @@ else
         else
             echo -n "it contains $asset_count "
             if [ $asset_count -gt 1 ]; then echo 'assets!'; else echo 'asset!'; fi
+            if [ "$skip_prompts" = 'yes' ]
+            then
+                echo 'Re-run this script manually, without the `--noinput` option, if you want to proceed.'
+                echo "For help, visit $HELP_PAGE."
+                exit 1
+            fi
             echo
             echo '*** IF YOU HAVE ALREADY RUN THIS SCRIPT SUCCESSFULLY, PLEASE EXIT NOW. ***'
             echo
