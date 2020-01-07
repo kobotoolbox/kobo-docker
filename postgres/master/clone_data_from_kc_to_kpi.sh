@@ -2,7 +2,7 @@
 set -eEuo pipefail
 
 SLEEP_TIME=0
-HELP_PAGE='https://community.kobotoolbox.org/c/kobo-install'
+HELP_PAGE='https://community.kobotoolbox.org/t/upgrading-to-separate-databases-for-kpi-and-kobocat/7202'
 KPI_LAST_EXPECTED_MIGRATION='0022_assetfile'
 
 if [ $# -gt 0 ] && [ "$1" = '--noinput' ]
