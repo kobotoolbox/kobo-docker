@@ -223,5 +223,4 @@ pg_dump \
 
 echo
 echo
-echo "Everything finished successfully! This is a one-time operation; please DO NOT run this script again."
-echo "Thanks for using KoBoToolbox."
+echo "Everything finished successfully! Thanks for using KoBoToolbox."
