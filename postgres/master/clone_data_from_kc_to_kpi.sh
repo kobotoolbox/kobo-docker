@@ -223,4 +223,4 @@ pg_dump \
 
 echo
 echo
-echo "Everything finished successfully! Thanks for using KoBoToolbox."
+echo "The database upgrade finished successfully! Thanks for using KoBoToolbox."
