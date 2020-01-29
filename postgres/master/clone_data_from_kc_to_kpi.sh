@@ -182,7 +182,7 @@ else
     echo -n "Your source database's last KPI migration was \`$kpi_last_actual_migration\`, but "
     echo "this script requires \`$KPI_LAST_EXPECTED_MIGRATION\`."
     echo -n 'Upgrade to the last single-database release of KPI, `2.019.52-final-shared-database`, '
-    echo 'BEFORE running this script. Visit $HELP_PAGE if you need help.'
+    echo "BEFORE running this script. Visit $HELP_PAGE if you need help."
     exit 1
 fi
 
