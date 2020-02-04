@@ -27,3 +27,7 @@ services:
       service: redis_cache
     environment:
       - KOBO_REDIS_SERVER_ROLE=cache
+
+networks:
+  kobo-be-network:
+    driver: bridge

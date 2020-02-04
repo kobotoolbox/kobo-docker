@@ -25,3 +25,7 @@ services:
 #    extends:
 #      file: docker-compose.primary.backend.server.yml
 #      service: redis_cache
+
+networks:
+  kobo-be-network:
+    driver: bridge

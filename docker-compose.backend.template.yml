@@ -79,7 +79,3 @@ services:
     sysctls:
         - net.core.somaxconn=2048
     command: "/bin/bash /tmp/redis/entrypoint.sh"
-
-networks:
-  kobo-be-network:
-    driver: bridge
