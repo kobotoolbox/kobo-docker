@@ -52,8 +52,11 @@ Below is a diagram (made with [Lucidchart](https://www.lucidchart.com)) of the c
 ![Diagram of Docker Containers](./doc/container-diagram.svg)
 
 ### Secure your installation
-`kobo-docker` opens ports on all interfaces to let the `frontend` containers communicate with `backend`containers.  
-A firewall is **HIGHLY recommended**. PostgreSQL, Redis and MongoDB ports must be closed when the server is exposed publicly.
+`kobo-docker` exposes backend container ports<sup>1</sup> to let the `frontend` containers communicate with `backend`containers.  
+A firewall is **HIGHLY recommended** to grant access `frontend` containers only to `PostgreSQL`, `redis` and `MongoDB` ports.
+
+<sup>1. If you use  [`kobo-install`](https://github.com/kobotoolbox/kobo-install ""), ports are not exposed 
+unless you choose to use multi servers configuration</sup>
 
 
 ## Setup procedure
