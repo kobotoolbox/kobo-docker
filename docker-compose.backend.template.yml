@@ -67,6 +67,8 @@ services:
   redis_cache:
     image: redis:3.2
     # Map our "cache" Redis config into the container.
+    env_file:
+      - ../kobo-deployments/envfiles/databases.txt
     volumes:
       - ./.vols/redis_cache_data/:/data/
       - ./redis/redis-enketo-cache.conf.tmpl:/etc/redis/redis.conf.tmpl:ro

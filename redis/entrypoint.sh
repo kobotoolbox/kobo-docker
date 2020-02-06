@@ -23,6 +23,9 @@ cp "${REDIS_CONF_FILE}.tmpl" $REDIS_CONF_FILE
 # Create redis-server configuration file
 sed -i "s~\${CONTAINER_IP}~${CONTAINER_IP//\"/}~g" "$REDIS_CONF_FILE"
 
+# Create redis-server configuration file
+sed -i "s~\${REDIS_PASSWORD}~${REDIS_PASSWORD//\"/}~g" "$REDIS_CONF_FILE"
+
 # Make logs directory writable
 chown -R redis:redis "$REDIS_LOG_DIR"
 chown redis:redis "$REDIS_CONF_FILE"
