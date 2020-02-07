@@ -7,6 +7,7 @@ REDIS_CONF_FILE="${REDIS_CONF_DIR}/redis.conf"
 REDIS_DATA_DIR="/data/"
 
 export CONTAINER_IP=$(awk 'END{print $1}' /etc/hosts)
+export REDIS_PASSWORD=$(echo $REDIS_PASSWORD | sed 's/"/\\"/g')
 
 if [[ ! -d "$REDIS_LOG_DIR" ]]; then
     mkdir -p "$REDIS_LOG_DIR"
@@ -15,16 +16,6 @@ fi
 if [[ ! -d "$REDIS_DATA_DIR" ]]; then
     mkdir -p "$REDIS_DATA_DIR"
 fi
-
-
-# Copy config file
-#cp "${REDIS_CONF_FILE}.tmpl" $REDIS_CONF_FILE
-
-# Create redis-server configuration file
-#sed -i "s~\${CONTAINER_IP}~${CONTAINER_IP//\"/}~g" "$REDIS_CONF_FILE"
-
-# Create redis-server configuration file
-#sed -i "s~\${REDIS_PASSWORD}~${REDIS_PASSWORD//\"/}~g" "$REDIS_CONF_FILE"
 
 # install envsubst
 apt-get update && apt-get -y install gettext-base
