@@ -2,17 +2,17 @@
 
 1. [Introduction](#introduction)
 1. [Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier)
-2. [Important notice when upgrading from `[TODO: INSERT FINAL 1DB RELEASE HERE]` or earlier](#important-notice-when-upgrading-from-todo-insert-final-1db-release-here-or-earlier)
-3. [Architecture](#architecture)
-4. [Setup procedure](#setup-procedure)
-5. [Usage](#usage)
+1. [Important notice when upgrading from `2.019.52-final-shared-database` or earlier](#important-notice-when-upgrading-from-2.019.52-final-shared-database-or-earlier)
+1. [Architecture](#architecture)
+1. [Setup procedure](#setup-procedure)
+1. [Usage](#usage)
     - Start/stop
     - Backups
     - Restore backups
     - Maintenance
-7. [Warning](#warning)
-8. [Troubleshooting](#troubleshooting)
-9. [Redis performance](#redis-performance)
+1. [Warning](#warning)
+1. [Troubleshooting](#troubleshooting)
+1. [Redis performance](#redis-performance)
 
 
 ## Introduction 
@@ -20,30 +20,22 @@
 `kobo-docker` is used to run a copy of the [KoBo Toolbox](http://www.kobotoolbox.org) survey data collection platform on a machine of your choosing. It relies on [Docker](https://docker.com) to separate the different parts of KoBo into different containers (which can be thought of as lighter-weight virtual machines) and [Docker Compose](https://docs.docker.com/compose/) to configure, run, and connect those containers. 
 
 
-## Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier 
+## Important notice when upgrading from commit [`5c2ef02` (March 4, 2019)](https://github.com/kobotoolbox/kobo-docker/commit/5c2ef0273339bee5c374830f72e52945947042a8) or earlier 
 
 You must follow [these important instructions](./doc/March-2019-Upgrade.md). Then, please follow [next instructions](##important-notice-when-upgrading-from-todo-insert-final-1db-release-here-or-earlier)
 
 If you do not, the application may not start or your data may not be visible.
 
 
-## Important notice when upgrading from `[TODO: INSERT FINAL 1DB RELEASE HERE]` or earlier
+## Important notice when upgrading from [`2.019.52-final-shared-database`](https://github.com/kobotoolbox/kobo-docker/releases/tag/2.019.52-final-shared-database) or earlier
 
-If your version is older than [March 4, 2019](https://github.com/kobotoolbox/kobo-docker/commit/5c2ef0273339bee5c374830f72e52945947042a8 ""), please follow [these instructions]() **first**.
+This assumes your last upgrade was **more recent** than March 4, 2019.
 
-Up to and including release `[TODO: INSERT FINAL 1DB RELEASE HERE]`,
+Up to and including release [`2.019.52-final-shared-database`](https://github.com/kobotoolbox/kobo-docker/releases/tag/2.019.52-final-shared-database),
 [KPI](https://github.com/kobotoolbox/kpi) and
 [KoBoCAT](https://github.com/kobotoolbox/kobocat) both shared a common Postgres
-database. They now each have their own, separate databases. Please continue
-reading to learn how to migrate the (smaller) KPI tables to a new database and
-adjust your configuration appropriately.
-
-1. …
-1. `postgres/master/clone_data_from_kc_to_kpi.sh`
-1. …
-1. Even though they are no longer used, it is not yet recommended to erase the
-   KPI-only tables (e.g. `kpi_asset`) from KoBoCAT's Postgres database.
-   Instructions for doing so will be included in a later release.
+database. They now each have their own, separate databases.
+**If you are upgrading an existing single-database installation, you must follow [these instructions](https://community.kobotoolbox.org/t/upgrading-to-separate-databases-for-kpi-and-kobocat/7202)** to migrate the KPI tables to a new database and adjust your configuration appropriately.
 
 ## Architecture
 
