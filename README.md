@@ -2,7 +2,7 @@
 
 1. [Introduction](#introduction)
 1. [Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier)
-1. [Important notice when upgrading from `2.019.52-final-shared-database` or earlier](#important-notice-when-upgrading-from-2.019.52-final-shared-database-or-earlier)
+1. [Important notice when upgrading from `2.019.52-final-shared-database` or earlier](#important-notice-when-upgrading-from-201952-final-shared-database-or-earlier)
 1. [Architecture](#architecture)
 1. [Setup procedure](#setup-procedure)
 1. [Usage](#usage)
@@ -22,14 +22,14 @@
 
 ## Important notice when upgrading from commit [`5c2ef02` (March 4, 2019)](https://github.com/kobotoolbox/kobo-docker/commit/5c2ef0273339bee5c374830f72e52945947042a8) or earlier 
 
-You must follow [these important instructions](./doc/March-2019-Upgrade.md). Then, please follow [next instructions](##important-notice-when-upgrading-from-todo-insert-final-1db-release-here-or-earlier)
+Running current releases of KoBoToolbox requires you to upgrade your Postgres and Mongo databases. Please follow [these instructions](./doc/March-2019-Upgrade.md).
 
 If you do not, the application may not start or your data may not be visible.
 
 
 ## Important notice when upgrading from [`2.019.52-final-shared-database`](https://github.com/kobotoolbox/kobo-docker/releases/tag/2.019.52-final-shared-database) or earlier
 
-This assumes your last upgrade was **more recent** than March 4, 2019.
+This assumes your last upgrade was **more recent** than March 4, 2019. If not, you must [upgrade your databases](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier) before proceeding.
 
 Up to and including release [`2.019.52-final-shared-database`](https://github.com/kobotoolbox/kobo-docker/releases/tag/2.019.52-final-shared-database),
 [KPI](https://github.com/kobotoolbox/kpi) and
