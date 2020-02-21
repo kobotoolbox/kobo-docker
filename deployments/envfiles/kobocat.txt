@@ -5,7 +5,7 @@ USE_X_FORWARDED_HOST=False
 DJANGO_SETTINGS_MODULE=onadata.settings.kc_environ
 ENKETO_VERSION=Express
 
-KOBOCAT_BROKER_URL=redis://redis-main.domain.name:6379/2
+KOBOCAT_BROKER_URL=redis://:kobo@redis-main.domain.name:6379/2
 KOBOCAT_CELERY_LOG_FILE=/srv/logs/celery.log
 
 #ENKETO_OFFLINE_SURVEYS=True
