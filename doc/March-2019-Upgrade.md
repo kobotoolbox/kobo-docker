@@ -1,7 +1,7 @@
 ## Upgrading from an old version of `kobo-docker` (before March 2019)
 
-Latest version of `kobo-docker` use `PostgreSQL 9.5` and `MongoDB 3.4`.
-**It also used `redis` as a `Celery` broker**.
+Current versions of `kobo-docker` use `PostgreSQL 9.5` and `MongoDB 3.4`.
+**It also uses `redis` as a `Celery` broker**.
 
 If you already run an older version of `kobo-docker`, you need to upgrade to these version first before using this version (or `kobo-install`).
 This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` containers.

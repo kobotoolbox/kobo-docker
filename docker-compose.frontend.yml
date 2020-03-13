@@ -66,8 +66,6 @@ services:
       #- NGINX_PUBLIC_PORT=80
     volumes:
       - ./.vols/static/kpi:/srv/static
-      # The Whoosh search index needs persistent storage
-      - ./.vols/whoosh:/srv/whoosh
       - ./log/kpi:/srv/logs
       - ./scripts/wait_for_mongo.bash:/srv/init/wait_for_mongo.bash:ro
       - ./scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash:ro

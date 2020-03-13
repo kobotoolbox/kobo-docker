@@ -12,7 +12,6 @@ KPI_MONGO_HOST=mongo.domain.name
 
 DJANGO_LANGUAGE_CODES=en fr es ar zh-hans hi ku
 #DKOBO_PREFIX=False
-#KPI_WHOOSH_DIR=./whoosh_index
 #KOBO_SURVEY_PREVIEW_EXPIRATION=24
 #SKIP_CELERY=False
 #EMAIL_FILE_PATH=./emails
