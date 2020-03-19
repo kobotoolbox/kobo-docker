@@ -1,1 +1,0 @@
-export ENKETO_API_KEY="${ENKETO_API_TOKEN}"
