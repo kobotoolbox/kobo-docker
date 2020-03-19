@@ -1,4 +1,7 @@
-# For public, HTTPS servers.
+# NOTE: Generate `../kobo-deployments/` environment files using
+# https://github.com/kobotoolbox/kobo-install. You may manually customize the
+# files aftewards and stop using kobo-install if necessary.
+
 version: '3'
 
 services:
@@ -114,16 +117,16 @@ services:
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:1.77.0-jnm-grunt-workaround
+    image: kobotoolbox/enketo-express-extra-widgets:1.86.2-jnm-docker-ie11
     env_file:
       - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/envfiles/enketo.txt
-      - ../kobo-deployments/envfiles/external_services.txt
+    environment:
+      - ENKETO_BUILD_IE11=true
+    # TODO: Rename `ENKETO_API_TOKEN` in all configurations to `ENKETO_API_KEY` and stop overriding the entrypoint.
+    entrypoint: ["/bin/bash", "-c", "ENKETO_API_KEY=\"$${ENKETO_API_TOKEN}\" \"$${ENKETO_SRC_DIR}/setup/docker/start.sh\""]
     restart: on-failure
     volumes:
-      - ./scripts/runtime_variables_enketo_express.source.bash:/etc/profile.d/runtime_variables_enketo_express.source.bash.sh:ro
-      - ../kobo-deployments/enketo_express/config.json:/srv/tmp/enketo_express_config.json:ro
-      - ./scripts/enketo_express_copy_config.bash:/etc/my_init.d/01_enketo_express_copy_config.bash:ro
+      - ../kobo-deployments/enketo_express/config.json:/srv/src/enketo_express/config/config.json
       # Override Enketo Express icons.
       - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
       - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
