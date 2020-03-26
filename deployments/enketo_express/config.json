@@ -54,7 +54,7 @@
             "domain": ""
         }
     },
-    "payload limit": "100kb",
+    "payload limit": "1mb",
     "text field character limit": 1000000,
     "maps": [
         {
