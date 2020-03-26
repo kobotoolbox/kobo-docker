@@ -120,7 +120,7 @@ services:
 
   # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:1.86.2-jnm-docker-ie11
+    image: kobotoolbox/enketo-express-extra-widgets:1.86.3-jnm-docker-ie11
     env_file:
       - ../kobo-deployments/envfile.txt
     environment:
