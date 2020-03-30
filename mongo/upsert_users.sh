@@ -72,7 +72,7 @@ EOJS
 }
 
 upsert_users() {
-    user=$(_get_user $KOBO_MONGO_USERNAME $MONGO_INITDB_DATABASE)
+    user=$(get_user $KOBO_MONGO_USERNAME $MONGO_INITDB_DATABASE)
     if [[ "$user" == "null" ]]; then
         echo "Creating user for ${MONGO_INITDB_DATABASE}..."
         create_user
@@ -81,7 +81,7 @@ upsert_users() {
         update_password $KOBO_MONGO_USERNAME $KOBO_MONGO_PASSWORD $MONGO_INITDB_DATABASE
     fi
 
-    root=$(_get_user $MONGO_INITDB_ROOT_USERNAME $MONGO_ADMIN_DATABASE)
+    root=$(get_user $MONGO_INITDB_ROOT_USERNAME $MONGO_ADMIN_DATABASE)
     if [[ "$root" == "null" ]]; then
         echo "Creating super user..."
         create_root
