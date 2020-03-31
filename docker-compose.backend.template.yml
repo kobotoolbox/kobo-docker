@@ -16,9 +16,6 @@ services:
       - ./postgres:/kobo-docker-scripts
     command: "/bin/bash /kobo-docker-scripts/entrypoint.sh"
     restart: on-failure
-    # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
-    #ports:
-    #  - 5432:5432
 
   mongo:
     image: mongo:3.4
@@ -36,14 +33,9 @@ services:
       - ./log/mongo:/srv/logs
     restart: on-failure
     command: "/bin/bash /kobo-docker-scripts/entrypoint.sh"
-    # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
-    #ports:
-    #  - 27017:27017
 
-  # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
   redis_main:
     image: redis:3.2
-    # Map our "main" Redis config into the container.
     env_file:
       - ../kobo-deployments/envfile.txt
       - ../kobo-deployments/envfiles/databases.txt
@@ -56,17 +48,12 @@ services:
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_main:/var/log/redis
     restart: on-failure
-    # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
-    #ports:
-    #  - 6379:6379
     sysctls:
         - net.core.somaxconn=2048
     command: "/bin/bash /tmp/redis/entrypoint.sh"
 
-  # Adapted from https://github.com/kobotoolbox/enketo-express/blob/docker/docker-compose.yml.
   redis_cache:
     image: redis:3.2
-    # Map our "cache" Redis config into the container.
     env_file:
       - ../kobo-deployments/envfiles/databases.txt
     volumes:
@@ -75,9 +62,6 @@ services:
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_cache:/var/log/redis
     restart: on-failure
-    # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
-    #ports:
-    #  - 6380:6380
     sysctls:
         - net.core.somaxconn=2048
     command: "/bin/bash /tmp/redis/entrypoint.sh"
