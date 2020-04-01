@@ -26,40 +26,40 @@ else
     FALSE=0
 
     # Add only non-empty variable to cron tasks
-    if [ ! -z "${AWS_ACCESS_KEY_ID}" ]; then
+    if [ -n "${AWS_ACCESS_KEY_ID}" ]; then
         echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> /etc/cron.d/backup_postgres_crontab
     else
         USE_S3=$FALSE
     fi
 
-    if [ ! -z "${AWS_SECRET_ACCESS_KEY}" ]; then
+    if [ -n "${AWS_SECRET_ACCESS_KEY}" ]; then
         echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> /etc/cron.d/backup_postgres_crontab
     else
         USE_S3=$FALSE
     fi
 
-    if [ ! -z "${BACKUP_AWS_STORAGE_BUCKET_NAME}" ]; then
+    if [ -n "${BACKUP_AWS_STORAGE_BUCKET_NAME}" ]; then
         echo "BACKUP_AWS_STORAGE_BUCKET_NAME=${BACKUP_AWS_STORAGE_BUCKET_NAME}" >> /etc/cron.d/backup_postgres_crontab
     else
         USE_S3=$FALSE
     fi
 
-    if [ ! -z "${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" ]; then
+    if [ -n "${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" ]; then
         echo "AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED=${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" >> /etc/cron.d/backup_postgres_crontab
     fi
-    if [ ! -z "${AWS_BACKUP_YEARLY_RETENTION}" ]; then
+    if [ -n "${AWS_BACKUP_YEARLY_RETENTION}" ]; then
         echo "AWS_BACKUP_YEARLY_RETENTION=${AWS_BACKUP_YEARLY_RETENTION}" >> /etc/cron.d/backup_postgres_crontab
     fi
-    if [ ! -z "${AWS_BACKUP_MONTHLY_RETENTION}" ]; then
+    if [ -n "${AWS_BACKUP_MONTHLY_RETENTION}" ]; then
         echo "AWS_BACKUP_MONTHLY_RETENTION=${AWS_BACKUP_MONTHLY_RETENTION}" >> /etc/cron.d/backup_postgres_crontab
     fi
-    if [ ! -z "${AWS_BACKUP_WEEKLY_RETENTION}" ]; then
+    if [ -n "${AWS_BACKUP_WEEKLY_RETENTION}" ]; then
         echo "AWS_BACKUP_WEEKLY_RETENTION=${AWS_BACKUP_WEEKLY_RETENTION}" >> /etc/cron.d/backup_postgres_crontab
     fi
-    if [ ! -z "${AWS_BACKUP_DAILY_RETENTION}" ]; then
+    if [ -n "${AWS_BACKUP_DAILY_RETENTION}" ]; then
         echo "AWS_BACKUP_DAILY_RETENTION=${AWS_BACKUP_DAILY_RETENTION}" >> /etc/cron.d/backup_postgres_crontab
     fi
-    if [ ! -z "${AWS_POSTGRES_BACKUP_MINIMUM_SIZE}" ]; then
+    if [ -n "${AWS_POSTGRES_BACKUP_MINIMUM_SIZE}" ]; then
         echo "AWS_POSTGRES_BACKUP_MINIMUM_SIZE=${AWS_POSTGRES_BACKUP_MINIMUM_SIZE}" >> /etc/cron.d/backup_postgres_crontab
     fi
 
