@@ -61,9 +61,11 @@ else
 
     if [ "$USE_S3" -eq "$TRUE" ]; then
         echo "Installing virtualenv for Mongo backup on S3..."
-        apt-get install -y s3cmd --quiet=2 > /dev/null
-        apt-get install -y python-virtualenv --quiet=2 > /dev/null
-        virtualenv /tmp/backup-virtualenv
+        apt-get install -y python3-pip --quiet=2 > /dev/null
+        python3 -m pip install --upgrade --quiet pip
+        python3 -m pip install --upgrade --quiet virtualenv
+        python3 -m pip install --quiet s3cmd
+        virtualenv --quiet -p /usr/bin/python3 /tmp/backup-virtualenv
         . /tmp/backup-virtualenv/bin/activate
         pip install --quiet boto
         deactivate
