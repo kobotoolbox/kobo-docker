@@ -14,7 +14,18 @@ DUMPFILE = 'mongo-{}-{}-{}.gz'.format(
     DBDATESTAMP,
 )
 
-BACKUP_COMMAND = "mongodump --archive --gzip"
+MONGO_INITDB_ROOT_USERNAME = os.environ.get('MONGO_INITDB_ROOT_USERNAME')
+MONGO_INITDB_ROOT_PASSWORD = os.environ.get('MONGO_INITDB_ROOT_PASSWORD')
+
+if MONGO_INITDB_ROOT_USERNAME and MONGO_INITDB_ROOT_PASSWORD:
+    BACKUP_COMMAND = 'mongodump --archive --gzip --username="{username}"' \
+                     ' --password="{password}"'.format(
+                        username=MONGO_INITDB_ROOT_USERNAME,
+                        password=MONGO_INITDB_ROOT_PASSWORD
+                     )
+else:
+    BACKUP_COMMAND = "mongodump --archive --gzip"
+
 
 yearly_retention = int(os.environ.get("AWS_BACKUP_YEARLY_RETENTION", 2))
 monthly_retention = int(os.environ.get("AWS_BACKUP_MONTHLY_RETENTION", 12))
