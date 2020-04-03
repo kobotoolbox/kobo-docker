@@ -73,7 +73,7 @@ else
         INTERPRETER=/tmp/backup-virtualenv/bin/python
         BACKUP_SCRIPT="/kobo-docker-scripts/backup-to-s3.py"
     else
-        INTERPRETER=$(which bash)
+        INTERPRETER=$(command -v bash)
         BACKUP_SCRIPT="/kobo-docker-scripts/backup-to-disk.bash"
     fi
 

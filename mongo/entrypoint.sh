@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # set -e
 
-BASH_PATH=$(which bash)
+BASH_PATH=$(command -v bash)
 export KOBO_DOCKER_SCRIPTS_DIR=/kobo-docker-scripts
 
 $BASH_PATH $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
