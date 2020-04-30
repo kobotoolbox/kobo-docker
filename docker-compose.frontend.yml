@@ -6,7 +6,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:2.019.52-final-shared-database
+    image: kobotoolbox/kobocat:shared-database-obsolete
     hostname: kobocat
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -43,7 +43,7 @@ services:
           - kobocat.docker.container
 
   kpi:
-    image: kobotoolbox/kpi:2.019.52-final-shared-database
+    image: kobotoolbox/kpi:shared-database-obsolete
     hostname: kpi
     env_file:
       - ../kobo-deployments/envfile.txt
