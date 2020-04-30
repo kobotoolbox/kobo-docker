@@ -63,18 +63,15 @@ Already have an existing installation? Please see below.
     If you want to change it manually, edit:
 
     - `kobo-deployments/envfiles/kpi.txt`
-
-    > `KPI_BROKER_URL=amqp://kpi:kpi@rabbit.[internal domain name]:5672/kpi` 
-
-    to
-    > `KPI_BROKER_URL=redis://redis-main.[internal domain name]:6389/1`
-
+        ```diff
+        - KPI_BROKER_URL=amqp://kpi:kpi@rabbit.[internal domain name]:5672/kpi
+        + KPI_BROKER_URL=redis://redis-main.[internal domain name]:6389/1
+        ```
     - `kobo-deployments/envfiles/kobocat.txt`
-
-    > `KOBOCAT_BROKER_URL=amqp://kobocat: kobocat@rabbit.[internal domain name]:5672/kobocat ` 
-
-    to
-    > `KOBOCAT_BROKER_URL =redis://redis-main.[internal domain name]:6389/2`
+        ```diff
+        - KOBOCAT_BROKER_URL=amqp://kobocat: kobocat@rabbit.[internal domain name]:5672/kobocat
+        + KOBOCAT_BROKER_URL=redis://redis-main.[internal domain name]:6389/2`
+        ```
 
 2. **Load balancing and redundancy**
 
