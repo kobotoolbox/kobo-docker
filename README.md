@@ -71,7 +71,7 @@ Already have an existing installation? Please see below.
     - `kobo-deployments/envfiles/kobocat.txt`
         ```diff
         - KOBOCAT_BROKER_URL=amqp://kobocat: kobocat@rabbit.[internal domain name]:5672/kobocat
-        + KOBOCAT_BROKER_URL =redis://redis-main.[internal domain name]:6389/2`
+        + KOBOCAT_BROKER_URL=redis://redis-main.[internal domain name]:6389/2`
         ```
 
 2. **Load balancing and redundancy**
