@@ -1,14 +1,24 @@
-## Upgrading from an old version of `kobo-docker` (before March 2019)
+## Upgrading from an old version of kobo-docker (before March 2019)
 
-Current versions of `kobo-docker` use `PostgreSQL 9.5` and `MongoDB 3.4`.
-**It also uses `redis` as a `Celery` broker**.
+Current versions of kobo-docker require PostgreSQL 9.5 and MongoDB 3.4.
+Additionally, **Redis is now the Celery broker**, and RabbitMQ is no longer
+needed.
 
-If you already run an older version of `kobo-docker`, you need to upgrade to these version first before using this version (or `kobo-install`).
-This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` containers.
+If you are running a version of kobo-docker that was last updated prior to
+March 2019
+(i.e. commit [`5c2ef02`](https://github.com/kobotoolbox/kobo-docker/commit/5c2ef0273339bee5c374830f72e52945947042a8) or older),
+you need to upgrade your databases prior to using the current version of
+kobo-docker (this repository) or
+[kobo-install](https://github.com/kobotoolbox/kobo-install).
+
+This is a step-by-step procedure to upgrade PostgreSQL and MongoDB.
 
 ### PostgreSQL
-**To upgrade to PostgresSQL 9.5, you will need to have twice the space of the database size.**
+
 **Be sure to have enough space left on the host filesystem before upgrading.**
+Check the size of the PostgreSQL database in  `.vols/db`, e.g. with
+`sudo du -hs .vols/db`, and ensure you have _more_ than this amount of space
+free.
 
 
 1. Stop the containers
@@ -41,7 +51,7 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
 	apt-cache policy postgis
 	```
 
-	_Use the PostGIS version as a variable for later purpose_
+	_Store the PostGIS version in a variable to use later_
 
 	```
 	POSTGIS_VERSION=$(apt-cache policy postgresql-9.5-postgis-2.5|grep Candidate:|awk '{print $2}')
@@ -62,16 +72,20 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
 	```
 	Results should look like this:
 
+    > ```
 	> Success. You can now start the database server using:
 	>      /usr/lib/postgresql/9.5/bin/pg_ctl -D /var/lib/postgresql/data/ -l logfile start
+    > ```
 
 6. Start PostgreSQL 9.5 to ensure database has been initialized successfully
 
 	```
 	su - postgres -c '/usr/lib/postgresql/9.5/bin/pg_ctl -D /var/lib/postgresql/data/ start'
 	```
+    > ```
 	> ...
 	> LOG:  database system is ready to accept connections
+    > ```
 
 	Press `enter` to go back to prompt.
 
@@ -82,8 +96,10 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
 	su - postgres -c '/usr/lib/postgresql/9.5/bin/pg_ctl -D /var/lib/postgresql/data/ stop -m fast'
 	```
 
+    > ```
 	> ...
 	> server stopped
+    > ```
 
 
 8. Upgrade Postgres 9.4
@@ -144,8 +160,9 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
 	```
 	Results should look like this:
 
+    > ```
 	> Performing Consistency Checks
-	>  -----------------------------
+	> -----------------------------
 	> Checking cluster versions                                   ok
 	> Checking database user is the install user                  ok
 	> Checking database connection settings                       ok
@@ -155,8 +172,9 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
 	> Checking for presence of required libraries                 ok
 	> Checking database user is the install user                  ok
 	> Checking for prepared transactions                          ok
-
-	> \*Clusters are compatible\*
+    >
+	> *Clusters are compatible*
+    > ```
 
 12. Upgrade databases
 
@@ -165,11 +183,14 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
 	```
 
     Results should like this:
+
+    > ```
     > Upgrade Complete
-    >  ---------------
-    > Optimizer statistics are not transferred by pg\_upgrade so,
+    > ---------------
+    > Optimizer statistics are not transferred by pg_upgrade so,
     > once you start the new server, consider running:
-    > ./analyze\_new\_cluster.sh
+    > ./analyze_new_cluster.sh
+    > ```
 
 13. Prepare container to new version
 
@@ -285,5 +306,4 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
     Done!
 
 
-You can now use latest version `kobo-docker` (or use `kobo-install`)
-
+You can now use latest version of kobo-docker (or use kobo-install)
