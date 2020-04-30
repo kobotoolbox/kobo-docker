@@ -6,9 +6,9 @@
         <title>KoBoToolbox Temporarily Offline</title>
         <link rel="icon" type="image/x-icon" href="favicon.ico" />
         <!-- iPhone + iPad icons -->
-        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png">
-        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/apple-touch-icon-114x114.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/apple-touch-icon-72x72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png">
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
         <style>
             html, body {
@@ -17,7 +17,7 @@
             }
             body {
                 background: rgb(176, 138, 106);
-                background-image: url(background.jpg);
+                background-image: url(/background.jpg);
                 background-size: cover;
                 background-repeat: no-repeat;
                 margin: 0;
@@ -59,21 +59,21 @@
     </head>
     <body>
         <div id="content-container">
-            <a href="http://kpi.kobo.local"><img id="kobo-logo" src="kobologo.svg"></a>
+            <a href="${PUBLIC_REQUEST_SCHEME}://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}"><img id="kobo-logo" src="/kobologo.svg"></a>
 
             <h2>
                 KoBoToolbox is currently under maintenance.
             </h2>
 
-            <p>Hi, as announced by email and within the KoBoToolbox platform, this <b>${DATE_STR}</b> we are performing some necessary maintenance to <a href="${PUBLIC_REQUEST_SCHEME}://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}" rel="nofollow noopener noreferrer">${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}</a>.</p>
+            <p>Hi, as announced within the KoBoToolbox platform, this <b>${DATE_STR}</b> we are performing some necessary maintenance to <a href="${PUBLIC_REQUEST_SCHEME}://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}" rel="nofollow noopener noreferrer">${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}</a>.</p>
             <p>Please <a href="https://www.timeanddate.com/worldclock/fixedtime.html?msg=${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}+server+maintenance&amp;iso=${DATE_ISO}" rel="nofollow noopener noreferrer" target="_blank">check here</a> for the exact time in your local time zone</p>
             <p>
-                This may take up to <b>2 hours</b>, during which this site will be unavailable. Please note that you will not be able to submit new records during this timeframe. However, if someone tries to submit data, it will remain stored safely on their device until it can be submitted again later.
+                This may take up to <b>${ETA}</b>, during which this site will be unavailable. Please note that you will not be able to submit new records during this timeframe. However, if someone tries to submit data, it will remain stored safely on their device until it can be submitted again later.
             </p>
-            <p>We will send updates on <a href="https://twitter.com/kobotoolbox" rel="nofollow noopener noreferrer" target="_blank">Twitter</a> during this maintenance to confirm there when the site is live again. We apologize for any inconvenience caused.</p>
+            <p>We apologize for any inconvenience caused.</p>
 
             <p>
-                If you have any questions or concerns, please contact us at <a href="mailto:help@kobotoolbox.org">help@kobotoolbox.org</a>.
+                If you have any questions or concerns, please contact us at <a href="mailto:${EMAIL}">${EMAIL}</a>.
             </p>
         <div>
         <div id="photo-credit">
