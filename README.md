@@ -21,7 +21,7 @@ kobo-docker is used to run a copy of the [KoBoToolbox](http://www.kobotoolbox.or
 
 ## _Two PostgreSQL databases are now required_
 
-Up to and including release [`2.019.52-final-shared-database`](https://github.com/kobotoolbox/kobo-docker/releases/tag/2.019.52-final-shared-database),
+Prior to release [`2.020.18`](https://github.com/kobotoolbox/kobo-docker/releases/tag/2.020.18),
 [KPI](https://github.com/kobotoolbox/kpi) and
 [KoBoCAT](https://github.com/kobotoolbox/kobocat) both shared a common Postgres
 database. They now each have their own, separate databases.
