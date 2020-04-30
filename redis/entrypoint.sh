@@ -35,6 +35,6 @@ if [ "${KOBO_REDIS_SERVER_ROLE}" == "main" ]; then
 fi
 
 # `exec` and `gosu` (vs. `su`) here are important to pass signals to the
-# database server process, without them, the server will be terminated abruptly
+# database server process; without them, the server will be terminated abruptly
 # with SIGKILL (see #276)
 exec gosu redis redis-server /etc/redis/redis.conf
