@@ -47,4 +47,6 @@ BASH_PATH=$(which bash)
 $BASH_PATH $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
 
 echo "Launching official entrypoint..."
-/bin/bash /docker-entrypoint.sh postgres
+# `exec` here is important to pass signals to the database server process;
+# without `exec`, the server will be terminated abruptly with SIGKILL (see #276)
+exec /bin/bash /docker-entrypoint.sh postgres

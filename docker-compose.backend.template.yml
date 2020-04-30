@@ -16,6 +16,7 @@ services:
       - ./postgres:/kobo-docker-scripts
     command: "/bin/bash /kobo-docker-scripts/entrypoint.sh"
     restart: on-failure
+    stop_grace_period: 5m
     # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
     #ports:
     #  - 5432:5432
@@ -36,6 +37,7 @@ services:
       - ./log/mongo:/srv/logs
     restart: on-failure
     command: "/bin/bash /kobo-docker-scripts/entrypoint.sh"
+    stop_grace_period: 5m
     # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
     #ports:
     #  - 27017:27017
@@ -56,6 +58,7 @@ services:
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_main:/var/log/redis
     restart: on-failure
+    stop_grace_period: 2m30s
     # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
     #ports:
     #  - 6379:6379
@@ -73,6 +76,7 @@ services:
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_cache:/var/log/redis
     restart: on-failure
+    stop_grace_period: 2m30s
     # Ports should be declared in `docker-compose.backend.master.override.yml` and docker-compose.backend.slave.override.yml`
     #ports:
     #  - 6380:6380
