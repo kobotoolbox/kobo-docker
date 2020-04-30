@@ -28,6 +28,8 @@ database. They now each have their own, separate databases.
 **If you are upgrading an existing single-database installation, you must follow [these instructions](https://community.kobotoolbox.org/t/upgrading-to-separate-databases-for-kpi-and-kobocat/7202)** to migrate the KPI tables to a new database and adjust your configuration appropriately.
 This assumes your last upgrade was **more recent** than March 4, 2019. If not, you must [upgrade your databases](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier) before proceeding.
 
+If you do not want to upgrade at this time, please use the [`shared-database-obsolete`](https://github.com/kobotoolbox/kobo-docker/tree/shared-database-obsolete) branch instead.
+
 
 ## Important notice when upgrading from commit [`5c2ef02` (March 4, 2019)](https://github.com/kobotoolbox/kobo-docker/commit/5c2ef0273339bee5c374830f72e52945947042a8) or earlier
 
