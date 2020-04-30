@@ -34,4 +34,7 @@ if [ "${KOBO_REDIS_SERVER_ROLE}" == "main" ]; then
     $BASH_PATH $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
 fi
 
-su redis -c "redis-server /etc/redis/redis.conf"
+# `exec` and `gosu` (vs. `su`) here are important to pass signals to the
+# database server process, without them, the server will be terminated abruptly
+# with SIGKILL (see #276)
+exec gosu redis redis-server /etc/redis/redis.conf
