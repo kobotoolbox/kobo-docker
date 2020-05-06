@@ -1,7 +1,7 @@
 #!/bin/bash
 # Update users if database has been already created.
 # Users creation on init is left to `init_02_create_user.sh`
-BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+BASE_DIR="$(readlink -f $(dirname "$BASH_SOURCE"))"
 MONGO_CMD=( mongo --host 127.0.0.1 --port 27017 --quiet )
 MONGO_ADMIN_DATABASE=admin
 UPSERT_DB_USERS_TRIGGER_FILE=".upsert_db_users"
@@ -92,8 +92,8 @@ upsert_users() {
     echo 'Done!'
 }
 
-# Update credentials only if `data/db` is empty and `.upsert_db_users` exists.
-if [[ -d "${MONGO_DATA}/" ]] && [[ ! -z "$(ls -A ${MONGO_DATA})" ]]; then
+# Update credentials only if `data/db` is not empty and `.upsert_db_users` exists.
+if [[ -d "${MONGO_DATA}/" ]] && [[ -n "$(ls -A ${MONGO_DATA})" ]]; then
     # `.upsert_db_users` is created by KoBoInstall if it has detected a
     # credentials change during setup.
     if [[ -f "${BASE_DIR}/${UPSERT_DB_USERS_TRIGGER_FILE}" ]]; then

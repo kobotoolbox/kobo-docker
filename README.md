@@ -45,9 +45,10 @@ Below is a diagram (made with [Lucidchart](https://www.lucidchart.com)) of the c
 ![Diagram of Docker Containers](./doc/container-diagram.svg)
 
 ### Secure your installation
-kobo-docker does **not** expose backend container ports.
-If you want to use kobo-docker with separated servers (one for frontend containers, one for backend containers),
-you will need to expose ports. A firewall is **HIGHLY recommended** to grant access `frontend` containers only to `PostgreSQL`, `redis` and `MongoDB` ports.
+This version of kobo-docker does **not** expose backend container ports, but [previous versions did](https://github.com/kobotoolbox/kobo-docker/pull/280), relying on a firewall to prevent unauthorized access. You should always verify that your database ports (by default 5432, 27017, 6379, 6380) are not accessible to the public.
+
+If you want to use kobo-docker with separate front-end and back-end servers, you will need to expose ports, and **you MUST use a firewall**. The firewall is required to allow only the `frontend` containers to access PostgreSQL, Redis, and MongoDB.
+
 
 
 ## Setup procedure
@@ -90,7 +91,7 @@ Already have an existing installation? Please see below.
             - MongoDB
             - Redis
 
-        Docker-compose for `frontend` can be started on its own server, same thing for `backend`. Users can start as many `frontend` servers they want. A load balancer can spread the traffic between `frontend` servers.
+        Docker-compose for `frontend` can be started on its own server, same thing for `backend`. Users can start as many front-end servers they want. A load balancer can spread the traffic between front-end servers.
         kobo-docker uses (private) domain names between `frontend` and `backend`.
         It's fully customizable in configuration files. Once again, [kobo-install](https://github.com/kobotoolbox/kobo-install) does simplify the job by creating the configuration files for you.
 

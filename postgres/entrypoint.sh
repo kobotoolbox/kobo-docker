@@ -49,8 +49,7 @@ elif [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "slave" ]; then
 fi
 
 
-BASH_PATH=$(command -v bash)
-$BASH_PATH $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
+/bin/bash $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
 
 echo "Launching official entrypoint..."
 # `exec` here is important to pass signals to the database server process;
