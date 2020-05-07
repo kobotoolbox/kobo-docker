@@ -6,6 +6,11 @@
 # Please see kobocat.txt to set container variables
 KOBO_MONGO_PORT=27017
 KOBO_MONGO_HOST=mongo.domain.name
+MONGO_INITDB_ROOT_USERNAME=root
+MONGO_INITDB_ROOT_PASSWORD=kobo
+MONGO_INITDB_DATABASE=formhub
+KOBO_MONGO_USERNAME=kobo
+KOBO_MONGO_PASSWORD=kobo
 
 # Default MongoDB backup schedule is weekly at 01:00 AM UTC on Sunday.
 #MONGO_BACKUP_SCHEDULE=0 1 * * 0
@@ -20,12 +25,14 @@ KOBO_MONGO_HOST=mongo.domain.name
 # `DATABASE_URL` environment variable.
 POSTGRES_PORT=5432
 POSTGRES_HOST=postgres.domain.name
-POSTGRES_DB=kobotoolbox
 POSTGRES_USER=kobo
 POSTGRES_PASSWORD=kobo
+KC_POSTGRES_DB=kobocat
+KPI_POSTGRES_DB=koboform
 
 # Postgres database used by kpi and kobocat Django apps
-DATABASE_URL=postgis://kobo:kobo@postgres.domain.name:5432/kobotoolbox
+KC_DATABASE_URL=postgis://kobo:kobo@postgres.domain.name:5432/kobotoolbox
+KPI_DATABASE_URL=postgis://kobo:kobo@postgres.domain.name:5432/kobotoolbox
 
 # Replication. Password is mandatory
 KOBO_POSTGRES_REPLICATION_USER=kobo_replication
@@ -41,3 +48,6 @@ KOBO_POSTGRES_MASTER_ENDPOINT=primary.postgres.domain.name
 #--------------------------------------------------------------------------------
 
 #REDIS_BACKUP_SCHEDULE=0 3 * * 0
+
+REDIS_SESSION_URL=redis://:kobo@redis-cache.kobo.private:6390/2
+REDIS_PASSWORD=kobo

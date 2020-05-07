@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-
-
 if [ ! -f "$POSTGRES_CONFIG_FILE.orig" ]; then
     echo "Let's keep a copy of current configuration file!"
     cp $POSTGRES_CONFIG_FILE "$POSTGRES_CONFIG_FILE.orig"

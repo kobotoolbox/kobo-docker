@@ -2,36 +2,36 @@
 
 ORIGINAL_DIR="/tmp/redis"
 REDIS_LOG_DIR="/var/log/redis"
-REDIS_CONF_DIR="/etc/redis/"
+REDIS_CONF_DIR="/etc/redis"
 REDIS_CONF_FILE="${REDIS_CONF_DIR}/redis.conf"
 REDIS_DATA_DIR="/data/"
 
-CONTAINER_IP=$(awk 'END{print $1}' /etc/hosts)
+export CONTAINER_IP=$(awk 'END{print $1}' /etc/hosts)
+export REDIS_PASSWORD=$(echo $REDIS_PASSWORD | sed 's/"/\\"/g')
 
-if [ ! -d "$REDIS_LOG_DIR" ]; then
+if [[ ! -d "$REDIS_LOG_DIR" ]]; then
     mkdir -p "$REDIS_LOG_DIR"
 fi
 
-if [ ! -d "$REDIS_DATA_DIR" ]; then
+if [[ ! -d "$REDIS_DATA_DIR" ]]; then
     mkdir -p "$REDIS_DATA_DIR"
 fi
 
+# install envsubst
+apt-get update && apt-get -y install gettext-base
 
-# Copy config file
-cp "${REDIS_CONF_FILE}.tmpl" $REDIS_CONF_FILE
-
-# Create redis-server configuration file
-sed -i "s~\${CONTAINER_IP}~${CONTAINER_IP//\"/}~g" "$REDIS_CONF_FILE"
+cat "$REDIS_CONF_FILE.tmpl" \
+      | envsubst '${CONTAINER_IP} ${REDIS_PASSWORD}' \
+        > "$REDIS_CONF_FILE"
 
 # Make logs directory writable
 chown -R redis:redis "$REDIS_LOG_DIR"
 chown redis:redis "$REDIS_CONF_FILE"
 chown -R redis:redis "$REDIS_DATA_DIR"
 
-if [ "${KOBO_REDIS_SERVER_ROLE}" == "main" ]; then
-    BASH_PATH=$(which bash)
+if [[ "$KOBO_REDIS_SERVER_ROLE" == "main" ]]; then
     export KOBO_DOCKER_SCRIPTS_DIR=/kobo-docker-scripts
-    $BASH_PATH $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
+    /bin/bash "$KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh"
 fi
 
 # `exec` and `gosu` (vs. `su`) here are important to pass signals to the

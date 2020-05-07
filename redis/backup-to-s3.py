@@ -14,7 +14,7 @@ DUMPFILE = 'redis-{}-{}-{}.gz'.format(
     DBDATESTAMP,
 )
 
-BACKUP_COMMAND = "$(which bash) /kobo-docker-scripts/backup-to-disk.bash {}".format(
+BACKUP_COMMAND = "$(command -v bash) /kobo-docker-scripts/backup-to-disk.bash {}".format(
     DUMPFILE
 )
 

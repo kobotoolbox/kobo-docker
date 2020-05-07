@@ -1,0 +1,54 @@
+# For public, HTTPS servers.
+version: '2.2'
+
+services:
+
+  postgres:
+    #environment:
+    #  - POSTGRES_BACKUP_FROM_SLAVE=True
+    # Uncomment `ports` section if you want to expose ports (e.g. use as separated servers)
+    # Before uncommenting, be sure you have a firewall configured to prevent these ports
+    # from being publicly accessible
+    #ports:
+    #  - 5432:5432
+    # Comment out `networks` section below if you want to expose ports
+    networks:
+      kobo-be-network:
+        aliases:
+          - postgres.kobo.private
+
+  mongo:
+    # Uncomment `ports` section if you want to expose ports (e.g. use as separated servers)
+    # Before uncommenting, be sure you have a firewall configured to prevent these ports
+    # from being publicly accessible
+    #ports:
+    #  - 27017:27017
+    # Comment out section below if you want to expose ports
+    networks:
+      kobo-be-network:
+        aliases:
+          - mongo.kobo.private
+
+  redis_main:
+    # Uncomment `ports` section if you want to expose ports (e.g. use as separated servers)
+    # Before uncommenting, be sure you have a firewall configured to prevent these ports
+    # from being publicly accessible
+    #ports:
+    #  - 6379:6379
+    # Comment out `networks` section below if you want to expose ports
+    networks:
+      kobo-be-network:
+        aliases:
+          - redis-main.kobo.private
+
+  redis_cache:
+    # Uncomment `ports` section if you want to expose ports (e.g. use as separated servers)
+    # Before uncommenting, be sure you have a firewall configured to prevent these ports
+    # from being publicly accessible
+    #ports:
+    #  - 6380:6380
+    # Comment out `networks` section below if you want to expose ports
+    networks:
+      kobo-be-network:
+        aliases:
+          - redis-cache.kobo.private

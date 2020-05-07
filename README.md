@@ -44,9 +44,10 @@ Below is a diagram (made with [Lucidchart](https://www.lucidchart.com)) of the c
 
 ![Diagram of Docker Containers](./doc/container-diagram.svg)
 
-### Secure your installation!
-kobo-docker **opens ports on all interfaces** to let the `frontend` containers communicate with `backend` containers.
-A firewall is **HIGHLY recommended**. You **MUST** block PostgreSQL, Redis and MongoDB ports when the server is exposed publicly.
+### Secure your installation
+This version of kobo-docker does **not** expose backend container ports, but [previous versions did](https://github.com/kobotoolbox/kobo-docker/pull/280), relying on a firewall to prevent unauthorized access. You should always verify that your database ports (by default 5432, 27017, 6379, 6380) are not accessible to the public.
+
+If you want to use kobo-docker with separate front-end and back-end servers, you will need to expose ports, and **you MUST use a firewall**. The firewall is required to allow only the `frontend` containers to access PostgreSQL, Redis, and MongoDB.
 
 
 ## Setup procedure
@@ -70,7 +71,7 @@ Already have an existing installation? Please see below.
     - `kobo-deployments/envfiles/kobocat.txt`
         ```diff
         - KOBOCAT_BROKER_URL=amqp://kobocat: kobocat@rabbit.[internal domain name]:5672/kobocat
-        + KOBOCAT_BROKER_URL =redis://redis-main.[internal domain name]:6389/2`
+        + KOBOCAT_BROKER_URL=redis://redis-main.[internal domain name]:6389/2
         ```
 
 2. **Load balancing and redundancy**
@@ -89,7 +90,7 @@ Already have an existing installation? Please see below.
             - MongoDB
             - Redis
 
-        Docker-compose for `frontend` can be started on its own server, same thing for `backend`. Users can start as many `frontend` servers they want. A load balancer can spread the traffic between `frontend` servers.
+        Docker-compose for `frontend` can be started on its own server, same thing for `backend`. Users can start as many front-end servers they want. A load balancer can spread the traffic between front-end servers.
         kobo-docker uses (private) domain names between `frontend` and `backend`.
         It's fully customizable in configuration files. Once again, [kobo-install](https://github.com/kobotoolbox/kobo-install) does simplify the job by creating the configuration files for you.
 
@@ -103,20 +104,24 @@ Already have an existing installation? Please see below.
     ![aws diagram](./doc/aws-diagram.svg)
 
 ## Usage
-It's recommended to create `*.override.yml` docker-compose files to customize your environment. It makes easier to update.
+It's recommended to create `*.override.yml` docker-compose files to customize your environment. It makes easier to update. 
+Samples are provided. Remove `.sample` extension and update them to match your environment. 
 
 - `docker-compose.frontend.override.yml`
 - `docker-compose.backend.master.override.yml`
 - `docker-compose.backend.slave.override.yml` (if a postgres replica is used)
 
-1. **Start/start containers**
-    ```
-    $kobo-docker> docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] up -d
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] up -d
-    $kobo-docker> docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] stop
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] stop
-    ```
+1. **Start/start containers** 
 
+    ```
+    # Start
+    $kobo-docker> docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml up -d  
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml up -d
+   
+    # Stop
+    $kobo-docker> docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml stop  
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml stop
+    ```
 
 2. **Backups**
 
@@ -132,10 +137,10 @@ It's recommended to create `*.override.yml` docker-compose files to customize yo
     Backups **on disk** can also be manually triggered when kobo-docker is running by executing the the following commands:
 
     ```
-    $kobo-docker> docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] exec kobocat /srv/src/kobocat/docker/backup_media.bash
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] exec mongo /bin/bash /kobo-docker-scripts/backup-to-disk.bash
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] exec -e PGUSER=kobo postgres /bin/bash /kobo-docker-scripts/backup-to-disk.bash
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] exec redis_main /bin/bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml exec kobocat /srv/src/kobocat/docker/backup_media.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec mongo bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec -e PGUSER=kobo postgres bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec redis_main bash /kobo-docker-scripts/backup-to-disk.bash
     ```
 
 2. **Restore backups**
@@ -150,12 +155,12 @@ It's recommended to create `*.override.yml` docker-compose files to customize yo
 
     There is one composer file `docker-compose.maintenance.yml` can be used to put `KoBoToolbox` in maintenance mode.
 
-    `nginx` container has to be stopped before launching the maintenance container.
+    NGINX container has to be stopped before launching the maintenance container.
 
     **Start**
 
     ```
-    docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] stop nginx
+    docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml stop nginx
     docker-compose -f docker-compose.maintenance.yml up -d
     ```
 
@@ -163,7 +168,7 @@ It's recommended to create `*.override.yml` docker-compose files to customize yo
 
     ```
     docker-compose -f docker-compose.maintenance.yml down
-    docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] up -d nginx
+    docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml up -d nginx
     ```
 
     There are 4 variables that can be customized in `docker-compose.maintenance.yml`
@@ -178,13 +183,13 @@ It's recommended to create `*.override.yml` docker-compose files to customize yo
 - ### Basic troubleshooting
     You can confirm that your containers are running with `docker ps`.
     To inspect the log output from:
-
-     - the frontend containers, execute `docker-compose -f docker-compose.frontend.yml [-f docker-compose.frontend.override.yml] logs -f`
-     - the master backend containers, execute `docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] logs -f`
-     - the slaved backend container, execute `docker-compose -f docker-compose.backend.slave.yml [-f docker-compose.backend.slave.override.yml] logs -f`
-
-    For a specific container use e.g. `docker-compose -f docker-compose.backend.master.yml [-f docker-compose.backend.master.override.yml] logs -f redis_main`.
-
+     
+     - the frontend containers, execute `docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml logs -f`
+     - the master backend containers, execute `docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml logs -f`
+     - the slaved backend container, execute `docker-compose -f docker-compose.backend.slave.yml -f docker-compose.backend.slave.override.yml logs -f`
+       
+    For a specific container use e.g. `docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml logs -f redis_main`.
+    
     The documentation for Docker can be found at https://docs.docker.com.
 
 - ### Django debugging
