@@ -50,7 +50,6 @@ This version of kobo-docker does **not** expose backend container ports, but [pr
 If you want to use kobo-docker with separate front-end and back-end servers, you will need to expose ports, and **you MUST use a firewall**. The firewall is required to allow only the `frontend` containers to access PostgreSQL, Redis, and MongoDB.
 
 
-
 ## Setup procedure
 
 This procedure has been simplified by using [kobo-install](https://github.com/kobotoolbox/kobo-install "").
@@ -139,9 +138,9 @@ Samples are provided. Remove `.sample` extension and update them to match your e
 
     ```
     $kobo-docker> docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml exec kobocat /srv/src/kobocat/docker/backup_media.bash
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec mongo /bin/bash /kobo-docker-scripts/backup-to-disk.bash
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec -e PGUSER=kobo postgres /bin/bash /kobo-docker-scripts/backup-to-disk.bash
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec redis_main /bin/bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec mongo bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec -e PGUSER=kobo postgres bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec redis_main bash /kobo-docker-scripts/backup-to-disk.bash
     ```
 
 2. **Restore backups**

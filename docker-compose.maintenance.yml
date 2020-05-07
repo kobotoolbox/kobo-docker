@@ -18,7 +18,7 @@ services:
     volumes:
         - ./log/nginx:/var/log/nginx
         - ./nginx/:/tmp/kobo_nginx/:ro
-    command: "/bin/bash /tmp/kobo_nginx/maintenance/nginx_command.bash"
+    command: "bash /tmp/kobo_nginx/maintenance/nginx_command.bash"
     restart: on-failure
     networks:
       - kobo-maintenance-network

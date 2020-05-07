@@ -14,7 +14,7 @@ services:
       - ./backups/postgres:/srv/backups
       - ./log/postgres:/srv/logs
       - ./postgres:/kobo-docker-scripts
-    command: "/bin/bash /kobo-docker-scripts/entrypoint.sh"
+    command: "bash /kobo-docker-scripts/entrypoint.sh"
     restart: on-failure
     stop_grace_period: 5m
 
@@ -33,7 +33,7 @@ services:
       - ./mongo:/kobo-docker-scripts
       - ./log/mongo:/srv/logs
     restart: on-failure
-    command: "/bin/bash /kobo-docker-scripts/entrypoint.sh"
+    command: "bash /kobo-docker-scripts/entrypoint.sh"
     stop_grace_period: 5m
 
   redis_main:
@@ -53,7 +53,7 @@ services:
     stop_grace_period: 2m30s
     sysctls:
         - net.core.somaxconn=2048
-    command: "/bin/bash /tmp/redis/entrypoint.sh"
+    command: "bash /tmp/redis/entrypoint.sh"
 
   redis_cache:
     image: redis:3.2
@@ -68,4 +68,4 @@ services:
     stop_grace_period: 2m30s
     sysctls:
         - net.core.somaxconn=2048
-    command: "/bin/bash /tmp/redis/entrypoint.sh"
+    command: "bash /tmp/redis/entrypoint.sh"

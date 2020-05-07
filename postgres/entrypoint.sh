@@ -35,8 +35,8 @@ if [ -f "$POSTGRES_DATA_DIR/kobo_first_run" ]; then
         sleep 1
     done
 
-    /bin/bash $KOBO_DOCKER_SCRIPTS_DIR/shared/init_02_set_postgres_config.sh
-    /bin/bash $KOBO_DOCKER_SCRIPTS_DIR/shared/upsert_users.sh
+    bash $KOBO_DOCKER_SCRIPTS_DIR/shared/init_02_set_postgres_config.sh
+    bash $KOBO_DOCKER_SCRIPTS_DIR/shared/upsert_users.sh
     update-postgis.sh
 
     # Stop server
@@ -49,9 +49,9 @@ elif [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "slave" ]; then
 fi
 
 
-/bin/bash $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
+bash $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
 
 echo "Launching official entrypoint..."
 # `exec` here is important to pass signals to the database server process;
 # without `exec`, the server will be terminated abruptly with SIGKILL (see #276)
-exec /bin/bash /docker-entrypoint.sh postgres
+exec bash /docker-entrypoint.sh postgres
