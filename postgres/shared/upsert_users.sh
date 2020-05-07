@@ -1,6 +1,6 @@
 #!/bin/bash
 # Update users if database has been already created.
-BASE_DIR="$(dirname -f $(readlink -f $(dirname "$BASH_SOURCE")))"
+BASE_DIR="$(readlink -f $(dirname $(dirname "$BASH_SOURCE")))"
 UPSERT_DB_USERS_TRIGGER_FILE=".upsert_db_users"
 PSQL_CMD=""
 
