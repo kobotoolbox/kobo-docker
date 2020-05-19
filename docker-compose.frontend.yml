@@ -103,7 +103,7 @@ services:
           - nginx
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:2.3.2
+    image: kobotoolbox/enketo-express-extra-widgets:2.3.3
     env_file:
       - ../kobo-deployments/envfile.txt
     environment:
