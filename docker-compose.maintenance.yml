@@ -4,7 +4,7 @@ version: '3'
 services:
 
   maintenance:
-    image: nginx:latest
+    image: nginx:stable
     hostname: maintenance
     env_file:
       - ../kobo-deployments/envfile.txt

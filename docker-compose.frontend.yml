@@ -79,7 +79,7 @@ services:
           - kpi.docker.container
 
   nginx:
-    image: kobotoolbox/nginx:latest
+    image: nginx:1.18
     hostname: nginx
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -92,11 +92,13 @@ services:
     volumes:
         - ./.vols/static:/srv/www:ro
         - ./log/nginx:/var/log/nginx
-        - ./nginx/:/tmp/kobo_nginx/:ro
-        - ./nginx/nginx_command.bash:/etc/service/nginx/run:ro
-        - ./secrets/:/tmp/kobo_toolbox_secrets/:ro
         - ./.vols/kobocat_media_uploads:/media
+        - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
+        - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
+        - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh # Remove after updating to 1.19+
     restart: on-failure
+    entrypoint: ["/bin/bash", "/docker-entrypoint.sh"]
+    command: ["nginx", "-g", "daemon off;"]
     networks:
       kobo-fe-network:
         aliases:
