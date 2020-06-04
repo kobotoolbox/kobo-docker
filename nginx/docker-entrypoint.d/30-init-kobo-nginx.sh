@@ -38,7 +38,7 @@ echo "Overwrite default nginx configuration"
 cp ${ORIGINAL_DIR}/nginx.conf /etc/nginx/nginx.conf
 
 echo "Clearing out any default configurations."
-# rm -rf /etc/nginx/conf.d/*
+rm -rf /etc/nginx/conf.d/*
 
 templated_var_refs="${TEMPLATED_VAR_REFS}"
 declare -A container_ports
@@ -121,17 +121,6 @@ done
 # Do environment variable substitutions and activate the resulting config. file.
 cat ${ORIGINAL_DIR}/templates/nginx_site_default.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/conf.d/default.conf
 
-## Create symlink
-#if [ ! -f /etc/nginx/sites-enabled/default ]; then
-#    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-#fi
-
 # Copy includes files
 cat ${ORIGINAL_DIR}/templates/include.https_redirection.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/includes/https_redirection.conf
 cp ${ORIGINAL_DIR}/include.server_directive_common.conf /etc/nginx/includes/server_directive_common.conf
-
-## Copy extra logs config.
-#cp ${ORIGINAL_DIR}/logs_with_host.conf /etc/nginx/conf.d/logs_with_host.conf
-
-# Start Nginx.
-#exec nginx
