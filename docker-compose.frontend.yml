@@ -79,7 +79,7 @@ services:
           - kpi.docker.container
 
   nginx:
-    image: nginx:1.18
+    image: nginx:1.19
     hostname: nginx
     env_file:
       - ../kobo-deployments/envfile.txt
@@ -95,10 +95,7 @@ services:
         - ./.vols/kobocat_media_uploads:/media
         - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
         - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
-        - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh # Remove after updating to 1.19+
     restart: on-failure
-    entrypoint: ["/bin/bash", "/docker-entrypoint.sh"]
-    command: ["nginx", "-g", "daemon off;"]
     networks:
       kobo-fe-network:
         aliases:
