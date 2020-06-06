@@ -47,8 +47,6 @@ prompt_to_continue
 # Otherwise inserts may fail because of FK not present.
 KPI_TABLES=(
  constance_config
- taggit_taggeditem
- taggit_tag
  kpi_objectpermission
  kpi_assetsnapshot
  kpi_assetfile
@@ -66,7 +64,6 @@ KPI_TABLES=(
  hub_formbuilderpreference
  hub_extrauserdetail
  hub_perusersetting
- registration_registrationprofile
  hook_hooklog
  hook_hook
  external_integrations_corsmodel
