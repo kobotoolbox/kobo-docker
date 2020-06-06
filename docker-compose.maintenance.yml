@@ -4,7 +4,9 @@ version: '3'
 services:
 
   maintenance:
-    image: nginx:stable
+    #image: nginx:stable
+    # set to match `docker-compose.frontend.yml` and avoid pulling different image
+    image: nginx:1.19
     hostname: maintenance
     env_file:
       - ../kobo-deployments/envfile.txt
