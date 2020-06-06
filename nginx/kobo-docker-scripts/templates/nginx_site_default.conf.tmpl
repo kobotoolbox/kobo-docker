@@ -37,7 +37,7 @@ server {
     access_log  /var/log/nginx/kobocat.access.log with_host;
     error_log   /var/log/nginx/kobocat.error.log;
 
-    include /etc/nginx/include.server_directive_common.conf;
+    include /etc/nginx/includes/server_directive_common.conf;
 
     location / {
         # Proxy through uWSGI.
@@ -92,7 +92,7 @@ server {
     listen      80;
     server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOFORM_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
 
-    include /etc/nginx/include.server_directive_common.conf;
+    include /etc/nginx/includes/server_directive_common.conf;
 
     location ~ ^/forms/(.*) {
         return 301 /$1;
@@ -121,7 +121,7 @@ server {
     resolver 8.8.4.4 8.8.8.8 valid=300s;
     resolver_timeout 10s;
 
-    include /etc/nginx/include.server_directive_common.conf;
+    include /etc/nginx/includes/server_directive_common.conf;
 
     # add_header Strict-Transport-Security max-age=63072000;
     # add_header X-Frame-Options DENY;

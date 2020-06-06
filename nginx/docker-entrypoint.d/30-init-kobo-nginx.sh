@@ -1,11 +1,13 @@
 #!/bin/bash
 set -e
 
-ORIGINAL_DIR='/tmp/kobo_nginx'
-TEMPLATES_ENABLED_DIR='/tmp/nginx_templates_activated'
+ORIGINAL_DIR='/kobo-docker-scripts'
+INCLUDES_DIR='/etc/nginx/includes'
+
 KOBOCAT_PRODUCTION_LOCATION_STATIC='location /static {
         alias /srv/www/kobocat;
     }'
+
 KPI_PRODUCTION_LOCATION_STATIC='location /static {
         alias /srv/www/kpi;
 
@@ -30,10 +32,10 @@ KPI_PRODUCTION_LOCATION_STATIC='location /static {
             application/xml+rss;
     }'
 
-mkdir -p ${TEMPLATES_ENABLED_DIR}
+mkdir -p ${INCLUDES_DIR}
 
 echo "Overwrite default nginx configuration"
-cp /tmp/kobo_nginx/nginx.conf /etc/nginx/nginx.conf
+cp ${ORIGINAL_DIR}/nginx.conf /etc/nginx/nginx.conf
 
 echo "Clearing out any default configurations."
 rm -rf /etc/nginx/conf.d/*
@@ -66,24 +68,24 @@ for container_name in "${!container_ports[@]}"; do
         fi
 
         # Create a `proxy_pass` configuration for this container.
-        cat ${ORIGINAL_DIR}/proxy_pass.conf.tmpl \
+        cat ${ORIGINAL_DIR}/templates/proxy_pass.conf.tmpl \
             | envsubst '${container_name} ${container_port} ${container_public_port} ${container_x_forwarded_host}' \
-            > ${TEMPLATES_ENABLED_DIR}/${container_name}_proxy_pass.conf
+            > ${INCLUDES_DIR}/${container_name}_proxy_pass.conf
 
         # Prepare to include the generated `proxy_pass` config. and no `uwsgi_pass` config.
-        include_proxy_pass="include ${TEMPLATES_ENABLED_DIR}/${container_name}_proxy_pass.conf;"
+        include_proxy_pass="include ${INCLUDES_DIR}/${container_name}_proxy_pass.conf;"
         include_uwsgi_pass=''
     else
         echo "Proxying to \`${container_name}\` through uWSGI."
 
         # Create a `uwsgi_pass` configuration for this container.
-        cat ${ORIGINAL_DIR}/uwsgi_pass.conf.tmpl \
+        cat ${ORIGINAL_DIR}/templates/uwsgi_pass.conf.tmpl \
             | envsubst '${container_name} ${container_port}' \
-            > ${TEMPLATES_ENABLED_DIR}/${container_name}_uwsgi_pass.conf
+            > ${INCLUDES_DIR}/${container_name}_uwsgi_pass.conf
  
         # Prepare to include the generated `uwsgi_pass` config. and no `proxy_pass` config.
         include_proxy_pass=''
-        include_uwsgi_pass="include ${TEMPLATES_ENABLED_DIR}/${container_name}_uwsgi_pass.conf;"
+        include_uwsgi_pass="include ${INCLUDES_DIR}/${container_name}_uwsgi_pass.conf;"
     fi
     include_proxy_pass_varname="${container_name}_include_proxy_pass"
     export ${include_proxy_pass_varname}="${include_proxy_pass}"
@@ -117,19 +119,8 @@ for container_name in "${!container_ports[@]}"; do
 done
 
 # Do environment variable substitutions and activate the resulting config. file.
-cat ${ORIGINAL_DIR}/nginx_site_default.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/sites-available/default
-
-# Create symlink
-if [ ! -f /etc/nginx/sites-enabled/default ]; then
-    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-fi
+cat ${ORIGINAL_DIR}/templates/nginx_site_default.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/conf.d/default.conf
 
 # Copy includes files
-cat ${ORIGINAL_DIR}/include.https_redirection.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/include.https_redirection.conf
-cp ${ORIGINAL_DIR}/include.server_directive_common.conf /etc/nginx/include.server_directive_common.conf
-
-# Copy extra logs config.
-cp ${ORIGINAL_DIR}/logs_with_host.conf /etc/nginx/conf.d/logs_with_host.conf
-
-# Start Nginx.
-exec nginx
+cat ${ORIGINAL_DIR}/templates/include.https_redirection.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/includes/https_redirection.conf
+cp ${ORIGINAL_DIR}/include.server_directive_common.conf /etc/nginx/includes/server_directive_common.conf
