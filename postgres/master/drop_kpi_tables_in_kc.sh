@@ -1,10 +1,7 @@
 #!/bin/bash
 set -eEuo pipefail
 
-SLEEP_TIME=0
 HELP_PAGE='https://community.kobotoolbox.org/t/upgrading-to-separate-databases-for-kpi-and-kobocat/7202'
-KPI_LAST_EXPECTED_MIGRATION='0024_alter_jsonfield_to_jsonbfield'
-KPI_LATEST_RELEASE='master'
 
 if [ $# -gt 0 ] && [ "$1" = '--noinput' ]
 then
@@ -34,17 +31,14 @@ function prompt_to_continue() {
     done
 }
 
-function lines_to_dots() { while read trash; do echo -n '.'; done }
-
 
 echo -e "\e[31m\e[1mWARNING! \e[21mThis script is destructive.\e[0m"
 echo "It is STRONGLY recommended to backup your database \`$KC_POSTGRES_DB\` before proceeding."
 prompt_to_continue
 
 
-#KPI_TABLES=($(psql -U ${POSTGRES_USER} -d ${KPI_POSTGRES_DB} -t -c "SELECT tablename FROM pg_catalog.pg_tables where schemaname='public'"))
-# We could read table from DB, but we need the order to be respected.
-# Otherwise inserts may fail because of FK not present.
+# Developers take note: make sure *none* of these tables appears in a
+# freshly-created KoBoCAT database!
 KPI_TABLES=(
  constance_config
  kpi_objectpermission
@@ -61,7 +55,6 @@ KPI_TABLES=(
  kpi_exporttask
  hub_sitewidemessage
  hub_configurationfile
- hub_formbuilderpreference
  hub_extrauserdetail
  hub_perusersetting
  hook_hooklog
@@ -71,17 +64,27 @@ KPI_TABLES=(
  help_inappmessagefile
  help_inappmessage
 )
-
 kpi_tables_single_quoted_csv=$(echo "${KPI_TABLES[@]}" | sed "s/^/'/;s/ /','/g;s/$/'/")
-actual_kpi_tables_count=$(
+
+# Some tables no longer exist in KPI; don't freak out about them
+KPI_OBSOLETE_TABLES=(
+ hub_formbuilderpreference
+)
+kpi_obsolete_tables_single_quoted_csv=$(echo "${KPI_OBSOLETE_TABLES[@]}" | sed "s/^/'/;s/ /','/g;s/$/'/")
+
+
+kpi_tables_in_kobocat_db_count=$(
     psql -Xqt -h localhost \
         -U "$POSTGRES_USER" \
         -d "$KC_POSTGRES_DB" \
-        -c "SELECT COUNT(*) FROM pg_tables WHERE tablename in ($kpi_tables_single_quoted_csv);"
+        -c "SELECT COUNT(*) FROM pg_tables WHERE tablename in ($kpi_tables_single_quoted_csv);" \
+    | sed 's/ //g'
 )
-if [ "$actual_kpi_tables_count" -ne ${#KPI_TABLES[@]} ]
+if [ "$kpi_tables_in_kobocat_db_count" -eq ${#KPI_TABLES[@]} ]
 then
-    echo -n "The KoBoCAT database, \`$KC_POSTGRES_DB\`, does not contain the needed KPI tables. "
+    echo "The KoBoCAT database, \`$KC_POSTGRES_DB\`, contains the expected KPI tables (OK)"
+else
+    echo -n "The KoBoCAT database, \`$KC_POSTGRES_DB\`, does not contain the expected KPI tables. "
     echo -n 'If this installation never used a single, shared database for both KPI and KoBoCAT, '
     echo 'then this script is not needed. Otherwise, the database configuration may be incorrect.'
     echo "For help, visit $HELP_PAGE."
@@ -92,70 +95,89 @@ matching_dbs_count=$(
     psql -Xqt -h localhost \
         -U "$POSTGRES_USER" \
         -d postgres \
-        -c 'SELECT COUNT(*) FROM pg_database WHERE datname='"'$KPI_POSTGRES_DB';"
+        -c 'SELECT COUNT(*) FROM pg_database WHERE datname='"'$KPI_POSTGRES_DB';" \
+    | sed 's/ //g'
 )
 if [ "$matching_dbs_count" -eq 1 ]
 then
-    echo "Safety check: the KPI database \`$KPI_POSTGRES_DB\` exists (OK), "
-    asset_count=$(
-        psql -Xqt -h localhost \
-            -U "$POSTGRES_USER" \
-            -d "$KPI_POSTGRES_DB" \
-            -c 'SELECT COUNT(*) FROM kpi_asset;' \
-        | sed 's/ //g'
-    )
-    if [ $asset_count -eq 0 ]
-    then
-        echo "The KPI database \`$KPI_POSTGRES_DB\` appears to be empty because it contains no assets."
-        echo "This script cannot continue with an empty assets table in KPI database \`$KPI_POSTGRES_DB\`."
-        exit 1
-    fi
+    echo "Safety check: the KPI database \`$KPI_POSTGRES_DB\` exists (OK)"
 else
-    echo -n "The KPI database \`$KPI_POSTGRES_DB\` does not exist, or "
-    matching_tables_count=$(
-        psql -Xqt -h localhost \
-            -U "$POSTGRES_USER" \
-            -d "$KPI_POSTGRES_DB" \
-            -c 'SELECT COUNT(*) FROM pg_tables WHERE tablename='"'kpi_asset';"
-    )
-    if [ "$matching_tables_count" -eq 0 ]
-    then
-        echo "it appears to be empty because it does not contain an assets table."
-        echo "This script cannot continue with an empty KPI database \`$KPI_POSTGRES_DB\`."
-        exit 1
-    fi
-fi
-
-kpi_last_actual_migration=$(
-    psql -Xqt -h localhost \
-        -U "$POSTGRES_USER" \
-        -d "$KPI_POSTGRES_DB" \
-        -c "SELECT name FROM django_migrations WHERE app='kpi' ORDER BY id DESC LIMIT 1;" \
-    | sed 's/ //g'
-)
-if [ "$kpi_last_actual_migration" = "$KPI_LAST_EXPECTED_MIGRATION" ]
-then
-    echo "Safety check: the last applied KPI migration matches what we expected (OK)"
-else
-    echo -n "Your KPI database's last KPI migration was \`$kpi_last_actual_migration\`, but "
-    echo "this script requires \`$KPI_LAST_EXPECTED_MIGRATION\`."
-    echo -n 'Upgrade to the latest release of KPI, `$KPI_LATEST_RELEASE`, '
-    echo "BEFORE running this script. Visit $HELP_PAGE if you need help."
+    echo -n "The KPI database \`$KPI_POSTGRES_DB\` does not exist. "
+    echo 'KPI must have its own database before this script can proceed.'
+    echo "To avoid data loss, this script cannot continue. Visit $HELP_PAGE for help."
     exit 1
 fi
 
-sleep $SLEEP_TIME # To read the output for debugging
-echo
+kpi_tables_in_kpi_db_count=$(
+    psql -Xqt -h localhost \
+        -U "$POSTGRES_USER" \
+        -d "$KPI_POSTGRES_DB" \
+        -c "SELECT COUNT(*) FROM pg_tables WHERE tablename in ($kpi_tables_single_quoted_csv);" \
+    | sed 's/ //g'
+)
+if [ "$kpi_tables_in_kpi_db_count" -eq ${#KPI_TABLES[@]} ]
+then
+    echo "Safety check: The KPI database, \`$KPI_POSTGRES_DB\`, contains the expected KPI tables (OK)"
+else
+    echo -n "The KPI database, \`$KPI_POSTGRES_DB\`, does not contain the expected tables. "
+    echo 'This may indicate a failed migration from a single, shared database.'
+    echo "To avoid data loss, this script cannot continue. Visit $HELP_PAGE for help."
+    exit 1
+fi
+
+max_kpi_asset_id_in_kpi_db=$(
+    psql -Xqt -h localhost \
+        -U "$POSTGRES_USER" \
+        -d "$KPI_POSTGRES_DB" \
+        -c 'SELECT MAX(id) FROM kpi_asset;' \
+    | sed 's/ //g'
+)
+if [ -z "$max_kpi_asset_id_in_kpi_db" ]
+then
+    # an empty `kpi_asset` table
+    max_kpi_asset_id_in_kpi_db=0
+fi
+
+max_kpi_asset_id_in_kobocat_db=$(
+    psql -Xqt -h localhost \
+        -U "$POSTGRES_USER" \
+        -d "$KC_POSTGRES_DB" \
+        -c 'SELECT MAX(id) FROM kpi_asset;' \
+    | sed 's/ //g'
+)
+if [ -z "$max_kpi_asset_id_in_kobocat_db" ]
+then
+    # an empty `kpi_asset` table
+    max_kpi_asset_id_in_kobocat_db=0
+fi
+
+if [ "$max_kpi_asset_id_in_kpi_db" -ge "$max_kpi_asset_id_in_kobocat_db" ]
+then
+    echo -n 'Safety check: the `kpi_asset` table pending removal does not have '
+    echo 'content more recent than the one being kept (OK)'
+else
+    echo -n "The \`kpi_asset\` table in the KoBoCAT database, \`$KC_POSTGRES_DB\`, "
+    echo -n 'which we intend to remove, appears to have been updated more recently '
+    echo -n "than the \`kpi_asset\` table in the KPI database, \`$KPI_POSTGRES_DB\`. "
+    echo 'This probably indicates a database misconfiguration.'
+    echo "To avoid data loss, this script cannot continue. Visit $HELP_PAGE for help."
+    exit 1
+fi
+
 
 echo "We are now dropping KPI tables from \`$KC_POSTGRES_DB\`."
-
-for KPI_TABLE in "${KPI_TABLES[@]}"
-do
-    psql -Xqt -h localhost \
+kpi_tables_unquoted_csv=$(echo "${KPI_TABLES[@]}" | sed 's/ /,/g')
+psql -Xqt -h localhost \
     -U "$POSTGRES_USER" \
     -d "$KC_POSTGRES_DB" \
-    -c "DROP TABLE $KPI_TABLE CASCADE;"
-done
+    -c "DROP TABLE $kpi_tables_unquoted_csv;"
+
+echo "We are now dropping obsolete KPI tables (if any) from \`$KC_POSTGRES_DB\`."
+kpi_obsolete_tables_unquoted_csv=$(echo "${KPI_OBSOLETE_TABLES[@]}" | sed 's/ /,/g')
+psql -Xqt -h localhost \
+    -U "$POSTGRES_USER" \
+    -d "$KC_POSTGRES_DB" \
+    -c "DROP TABLE IF EXISTS $kpi_obsolete_tables_unquoted_csv;"
 
 echo
 echo
