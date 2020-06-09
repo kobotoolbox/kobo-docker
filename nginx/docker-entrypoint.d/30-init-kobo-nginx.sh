@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-ORIGINAL_DIR='/kobo-docker-scripts'
+KOBO_DOCKER_SCRIPTS_DIR='/kobo-docker-scripts'
 INCLUDES_DIR='/etc/nginx/includes'
 
 KOBOCAT_PRODUCTION_LOCATION_STATIC='location /static {
@@ -32,12 +32,13 @@ KPI_PRODUCTION_LOCATION_STATIC='location /static {
             application/xml+rss;
     }'
 
+echo "Creating includes directory"
 mkdir -p ${INCLUDES_DIR}
 
-echo "Overwrite default nginx configuration"
-cp ${ORIGINAL_DIR}/nginx.conf /etc/nginx/nginx.conf
+echo "Overwriting default nginx configuration"
+cp ${KOBO_DOCKER_SCRIPTS_DIR}/nginx.conf /etc/nginx/nginx.conf
 
-echo "Clearing out any default configurations."
+echo "Clearing out any default configurations"
 rm -rf /etc/nginx/conf.d/*
 
 templated_var_refs="${TEMPLATED_VAR_REFS}"
@@ -68,7 +69,7 @@ for container_name in "${!container_ports[@]}"; do
         fi
 
         # Create a `proxy_pass` configuration for this container.
-        cat ${ORIGINAL_DIR}/templates/proxy_pass.conf.tmpl \
+        cat ${KOBO_DOCKER_SCRIPTS_DIR}/templates/proxy_pass.conf.tmpl \
             | envsubst '${container_name} ${container_port} ${container_public_port} ${container_x_forwarded_host}' \
             > ${INCLUDES_DIR}/${container_name}_proxy_pass.conf
 
@@ -79,7 +80,7 @@ for container_name in "${!container_ports[@]}"; do
         echo "Proxying to \`${container_name}\` through uWSGI."
 
         # Create a `uwsgi_pass` configuration for this container.
-        cat ${ORIGINAL_DIR}/templates/uwsgi_pass.conf.tmpl \
+        cat ${KOBO_DOCKER_SCRIPTS_DIR}/templates/uwsgi_pass.conf.tmpl \
             | envsubst '${container_name} ${container_port}' \
             > ${INCLUDES_DIR}/${container_name}_uwsgi_pass.conf
  
@@ -119,8 +120,8 @@ for container_name in "${!container_ports[@]}"; do
 done
 
 # Do environment variable substitutions and activate the resulting config. file.
-cat ${ORIGINAL_DIR}/templates/nginx_site_default.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/conf.d/default.conf
+cat ${KOBO_DOCKER_SCRIPTS_DIR}/templates/nginx_site_default.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/conf.d/default.conf
 
 # Copy includes files
-cat ${ORIGINAL_DIR}/templates/include.https_redirection.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/includes/https_redirection.conf
-cp ${ORIGINAL_DIR}/include.server_directive_common.conf /etc/nginx/includes/server_directive_common.conf
+cat ${KOBO_DOCKER_SCRIPTS_DIR}/templates/include.https_redirection.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/includes/https_redirection.conf
+cp ${KOBO_DOCKER_SCRIPTS_DIR}/include.server_directive_common.conf /etc/nginx/includes/server_directive_common.conf

@@ -9,3 +9,4 @@ docker-compose.yml
 *.override.yml
 start-env.sh
 stop-env.sh
+nginx/maintenance/index.html
