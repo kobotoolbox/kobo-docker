@@ -13,6 +13,8 @@ services:
       #- KC_UWSGI_CHEAPER_WORKERS_COUNT=1
       #- KC_UWSGI_MAX_REQUESTS=512
       #- KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
+      #- KC_UWSGI_HARAKIRI=120
+      #- KC_UWSGI_WORKER_RELOAD_MERCY=120
     networks:
       kobo-be-network:
         aliases:
@@ -28,6 +30,8 @@ services:
       #- KPI_UWSGI_CHEAPER_WORKERS_COUNT=1
       #- KPI_UWSGI_MAX_REQUESTS=512
       #- KPI_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
+      #- KPI_UWSGI_HARAKIRI=120
+      #- KPI_UWSGI_WORKER_RELOAD_MERCY=120
       # Comment out the line below if HTTPS is not used
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO, https
     networks:
