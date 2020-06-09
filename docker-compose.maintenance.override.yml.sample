@@ -1,0 +1,15 @@
+# For public, HTTPS servers.
+version: '3'
+
+services:
+
+  maintenance:
+    environment:
+      - ETA=2 hours
+      - DATE_STR=January 1, 1970 at 00:00 GMT
+      - DATE_ISO=19700101T0000
+      - EMAIL=support@kobotoolbox.org
+    ports:
+      # <proxy_port>:80 . If no proxies, `proxy_port` should be the same as `NGINX_PUBLIC_PORT`
+      # in `docker-compose.frontend.override.yml`
+      - 80:80

@@ -31,7 +31,7 @@ server {
     root /www;
     index index.html;
 
-    include /etc/nginx/include.https_redirection.conf;
+    include /etc/nginx/includes/https_redirection.conf;
 
     location ~ \.(png|ico|jpg|svg)$ {
         open_file_cache max=1000 inactive=30s;

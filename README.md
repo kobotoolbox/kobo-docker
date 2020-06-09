@@ -153,7 +153,16 @@ Samples are provided. Remove `.sample` extension and update them to match your e
 
 3. **Maintenance mode**
 
-    There is one composer file `docker-compose.maintenance.yml` can be used to put `KoBoToolbox` in maintenance mode.
+    There is one composer file `docker-compose.maintenance.yml` can be used to put `KoBoToolbox` in maintenance mode.  
+    Like front-end or back-end containers, a `docker-compose.maintenance.yml.sample` file is provided to help you to customize your settings.
+    First, copy `docker-compose.maintenance.yml.sample` to `docker-compose.maintenance.yml`.
+
+    There are 4 variables that can be customized in `docker-compose.maintenance.override.yml`:
+
+    - `ETA` e.g. `2 hours`
+    - `DATE_STR` e.g. `Monday, November 26 at 02:00 GMT`
+    - `DATE_ISO` e.g. `20181126T02`
+    - `EMAIL` e.g. `support@example.com`
 
     NGINX container has to be stopped before launching the maintenance container.
 
@@ -161,22 +170,15 @@ Samples are provided. Remove `.sample` extension and update them to match your e
 
     ```
     docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml stop nginx
-    docker-compose -f docker-compose.maintenance.yml up -d
+    docker-compose -f docker-compose.maintenance.yml -f docker-compose.maintenance.override.yml up -d
     ```
 
     **Stop**
 
     ```
-    docker-compose -f docker-compose.maintenance.yml down
+    docker-compose -f docker-compose.maintenance.yml -f docker-compose.maintenance.override.yml down
     docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml up -d nginx
     ```
-
-    There are 4 variables that can be customized in `docker-compose.maintenance.yml`
-
-    - `ETA` e.g. `2 hours`
-    - `DATE_STR` e.g. `Monday, November 26 at 02:00 GMT`
-    - `DATE_ISO` e.g. `20181126T02`
-    - `EMAIL` e.g. `support@example.com`
 
 ## Troubleshooting
 
