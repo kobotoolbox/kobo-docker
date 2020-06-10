@@ -92,6 +92,7 @@ services:
       - ../kobo-deployments/envfiles/kobocat.txt
       - ../kobo-deployments/envfiles/kpi.txt
     environment:
+      - UWSGI_PASS_TIMEOUT=130
       - TEMPLATED_VAR_REFS=$${PUBLIC_REQUEST_SCHEME} $${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
     volumes:
         - ./.vols/static:/srv/www:ro

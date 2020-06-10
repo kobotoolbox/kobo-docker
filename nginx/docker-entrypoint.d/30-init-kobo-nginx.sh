@@ -81,7 +81,7 @@ for container_name in "${!container_ports[@]}"; do
 
         # Create a `uwsgi_pass` configuration for this container.
         cat ${KOBO_DOCKER_SCRIPTS_DIR}/templates/uwsgi_pass.conf.tmpl \
-            | envsubst '${container_name} ${container_port}' \
+            | envsubst '${container_name} ${container_port} ${UWSGI_PASS_TIMEOUT}' \
             > ${INCLUDES_DIR}/${container_name}_uwsgi_pass.conf
  
         # Prepare to include the generated `uwsgi_pass` config. and no `proxy_pass` config.
@@ -94,7 +94,7 @@ for container_name in "${!container_ports[@]}"; do
     export ${include_uwsgi_pass_varname}="${include_uwsgi_pass}"
 
     # Register the include directive variables (e.g. `kpi_include_proxy_pass` and `kpi_include_uwsgi_pass`)
-    #   for template substitution.
+    # for template substitution.
     templated_var_refs+=" \${${include_proxy_pass_varname}} \${${include_uwsgi_pass_varname}}"
 
     # Set up serving of static files.
