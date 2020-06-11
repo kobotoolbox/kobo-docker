@@ -1,8 +1,8 @@
 # `envsubst` template.
 # Context: location
 
-uwsgi_read_timeout 130;
-uwsgi_send_timeout 130;
+uwsgi_read_timeout ${UWSGI_PASS_TIMEOUT};
+uwsgi_send_timeout ${UWSGI_PASS_TIMEOUT};
 uwsgi_pass ${container_name}:${container_port};
 # For setting HTTP headers, see http://stackoverflow.com/a/14133533/1877326.
 uwsgi_param HTTP_X_REAL_IP $remote_addr;
