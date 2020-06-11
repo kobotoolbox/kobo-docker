@@ -24,6 +24,10 @@ cat "$REDIS_CONF_FILE.tmpl" \
       | envsubst '${CONTAINER_IP} ${REDIS_PASSWORD}' \
         > "$REDIS_CONF_FILE"
 
+if [[ -z "$REDIS_PASSWORD" ]]; then
+    sed -i 's/requirepass ""//g' "$REDIS_CONF_FILE"
+fi
+
 # Make logs directory writable
 chown -R redis:redis "$REDIS_LOG_DIR"
 chown redis:redis "$REDIS_CONF_FILE"
