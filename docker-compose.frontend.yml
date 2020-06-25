@@ -1,4 +1,4 @@
-# NOTE: Generate `../kobo-deployments/` environment files using
+# NOTE: Generate `../kobo-env/` environment files using
 # https://github.com/kobotoolbox/kobo-install. You may manually customize the
 # files afterwards and stop using kobo-install if necessary.
 version: '3'
@@ -8,13 +8,13 @@ services:
     image: kobotoolbox/kobocat:2.020.25
     hostname: kobocat
     env_file:
-      - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/envfiles/databases.txt
-      - ../kobo-deployments/envfiles/aws.txt
-      - ../kobo-deployments/envfiles/external_services.txt
-      - ../kobo-deployments/envfiles/kobocat.txt
-      - ../kobo-deployments/envfiles/nginx.txt
-      - ../kobo-deployments/envfiles/smtp.txt
+      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/databases.txt
+      - ../kobo-env/envfiles/aws.txt
+      - ../kobo-env/envfiles/external_services.txt
+      - ../kobo-env/envfiles/kobocat.txt
+      - ../kobo-env/envfiles/nginx.txt
+      - ../kobo-env/envfiles/smtp.txt
     sysctls:
       - net.core.somaxconn=2048
     environment:
@@ -47,13 +47,13 @@ services:
     image: kobotoolbox/kpi:2.020.25
     hostname: kpi
     env_file:
-      - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/envfiles/databases.txt
-      - ../kobo-deployments/envfiles/aws.txt
-      - ../kobo-deployments/envfiles/external_services.txt
-      - ../kobo-deployments/envfiles/kpi.txt
-      - ../kobo-deployments/envfiles/nginx.txt
-      - ../kobo-deployments/envfiles/smtp.txt
+      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/databases.txt
+      - ../kobo-env/envfiles/aws.txt
+      - ../kobo-env/envfiles/external_services.txt
+      - ../kobo-env/envfiles/kpi.txt
+      - ../kobo-env/envfiles/nginx.txt
+      - ../kobo-env/envfiles/smtp.txt
     sysctls:
       - net.core.somaxconn=2048
     environment:
@@ -86,11 +86,11 @@ services:
     image: nginx:1.19
     hostname: nginx
     env_file:
-      - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/envfiles/databases.txt
-      - ../kobo-deployments/envfiles/nginx.txt
-      - ../kobo-deployments/envfiles/kobocat.txt
-      - ../kobo-deployments/envfiles/kpi.txt
+      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/databases.txt
+      - ../kobo-env/envfiles/nginx.txt
+      - ../kobo-env/envfiles/kobocat.txt
+      - ../kobo-env/envfiles/kpi.txt
     environment:
       - UWSGI_PASS_TIMEOUT=130
       - TEMPLATED_VAR_REFS=$${PUBLIC_REQUEST_SCHEME} $${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
@@ -109,14 +109,14 @@ services:
   enketo_express:
     image: kobotoolbox/enketo-express-extra-widgets:2.3.5
     env_file:
-      - ../kobo-deployments/envfile.txt
+      - ../kobo-env/envfile.txt
     environment:
       - ENKETO_BUILD_IE11=true
     # TODO: Rename `ENKETO_API_TOKEN` in all configurations to `ENKETO_API_KEY` and stop overriding the entrypoint.
     entrypoint: ["/bin/bash", "-c", "ENKETO_API_KEY=\"$${ENKETO_API_TOKEN}\" \"$${ENKETO_SRC_DIR}/setup/docker/start.sh\""]
     restart: on-failure
     volumes:
-      - ../kobo-deployments/enketo_express/config.json:/srv/src/enketo_express/config/config.json
+      - ../kobo-env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
       # Override Enketo Express icons.
       - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
       - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro

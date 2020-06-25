@@ -1,6 +1,6 @@
 # Environment variables
 
-**All files within `./deployments` folder should be copied to `../kobo-deployments`.** 
+**All files within `./env` folder should be copied to `../kobo-env`.** 
 They are only templates and must be modified to fit your needs.
 
 

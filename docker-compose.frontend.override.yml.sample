@@ -53,7 +53,7 @@ services:
         aliases:
           - nginx
           # These aliases must match the concatenation of `*_PUBLIC_SUBDOMAIN` and `INTERNAL_DOMAIN_NAME`
-          # found in `../kobo-deployments/envfile.txt`
+          # found in `../kobo-env/envfile.txt`
           - kf.docker.internal
           - kc.docker.internal
           - ee.docker.internal
