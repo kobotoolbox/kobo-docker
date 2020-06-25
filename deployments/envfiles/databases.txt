@@ -38,7 +38,7 @@ KPI_DATABASE_URL=postgis://kobo:kobo@postgres.domain.name:5432/kobotoolbox
 KOBO_POSTGRES_REPLICATION_USER=kobo_replication
 KOBO_POSTGRES_REPLICATION_PASSWORD=
 
-KOBO_POSTGRES_MASTER_ENDPOINT=primary.postgres.domain.name
+KOBO_POSTGRES_PRIMARY_ENDPOINT=primary.postgres.domain.name
 
 # Default Postgres backup schedule is weekly at 02:00 AM UTC on Sunday.
 #POSTGRES_BACKUP_SCHEDULE=0 2 * * 0

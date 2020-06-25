@@ -10,11 +10,11 @@ POSTGRES_BACKUPS_DIR=/srv/backups
 POSTGRES_FAILOVER_TRIGGER_FILE=${POSTGRES_DATA_DIR}/failover.trigger
 
 
-IS_MASTER_ALIVE=$((echo > /dev/tcp/${KOBO_POSTGRES_MASTER_ENDPOINT//\"/}/${POSTGRES_PORT}) >/dev/null 2>&1 && echo "1" || echo "0")
-UNHEALTHY_FILE="/tmp/${KOBO_POSTGRES_MASTER_ENDPOINT//\"/}-unhealthy-count.txt"
+IS_PRIMARY_ALIVE=$((echo > /dev/tcp/${KOBO_POSTGRES_PRIMARY_ENDPOINT//\"/}/${POSTGRES_PORT}) >/dev/null 2>&1 && echo "1" || echo "0")
+UNHEALTHY_FILE="/tmp/${KOBO_POSTGRES_PRIMARY_ENDPOINT//\"/}-unhealthy-count.txt"
 
-if [ "$IS_MASTER_ALIVE" == "1" ]; then
-    echo "Master is alive, nothing to do"
+if [ "$IS_PRIMARY_ALIVE" == "1" ]; then
+    echo "Primary is alive, nothing to do"
     rm -rf $UNHEALTHY_FILE
 else
     UNHEALTHY_COUNT=0

@@ -95,7 +95,7 @@ Already have an existing installation? Please see below.
         It's fully customizable in configuration files. Once again, [kobo-install](https://github.com/kobotoolbox/kobo-install) does simplify the job by creating the configuration files for you.
 
     2. Redundancy
-        `Backend` containers not redundant yet. Only `PostgreSQL` can be configured in `Master/Slave` mode where `Slave` is a real-time read-only replica.
+        `Backend` containers not redundant yet. Only `PostgreSQL` can be configured in `Primary/Secondary` mode where `Secondary` is a real-time read-only replica.
 
     This is a diagram that shows how kobo-docker can be used for a load-balanced/(almost) redundant solution.
 
@@ -108,19 +108,19 @@ It's recommended to create `*.override.yml` docker-compose files to customize yo
 Samples are provided. Remove `.sample` extension and update them to match your environment. 
 
 - `docker-compose.frontend.override.yml`
-- `docker-compose.backend.master.override.yml`
-- `docker-compose.backend.slave.override.yml` (if a postgres replica is used)
+- `docker-compose.backend.primary.override.yml`
+- `docker-compose.backend.secondary.override.yml` (if a postgres replica is used)
 
 1. **Start/start containers** 
 
     ```
     # Start
     $kobo-docker> docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml up -d  
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml up -d
+    $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml up -d
    
     # Stop
     $kobo-docker> docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml stop  
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml stop
+    $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml stop
     ```
 
 2. **Backups**
@@ -138,9 +138,9 @@ Samples are provided. Remove `.sample` extension and update them to match your e
 
     ```
     $kobo-docker> docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml exec kobocat /srv/src/kobocat/docker/backup_media.bash
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec mongo bash /kobo-docker-scripts/backup-to-disk.bash
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec -e PGUSER=kobo postgres bash /kobo-docker-scripts/backup-to-disk.bash
-    $kobo-docker> docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml exec redis_main bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml exec mongo bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml exec -e PGUSER=kobo postgres bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml exec redis_main bash /kobo-docker-scripts/backup-to-disk.bash
     ```
 
 2. **Restore backups**
@@ -187,10 +187,10 @@ Samples are provided. Remove `.sample` extension and update them to match your e
     To inspect the log output from:
      
      - the frontend containers, execute `docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml logs -f`
-     - the master backend containers, execute `docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml logs -f`
-     - the slaved backend container, execute `docker-compose -f docker-compose.backend.slave.yml -f docker-compose.backend.slave.override.yml logs -f`
+     - the primary backend containers, execute `docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml logs -f`
+     - the secondary backend container, execute `docker-compose -f docker-compose.backend.secondary.yml -f docker-compose.backend.secondary.override.yml logs -f`
        
-    For a specific container use e.g. `docker-compose -f docker-compose.backend.master.yml -f docker-compose.backend.master.override.yml logs -f redis_main`.
+    For a specific container use e.g. `docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml logs -f redis_main`.
     
     The documentation for Docker can be found at https://docs.docker.com.
 

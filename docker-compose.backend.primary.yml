@@ -7,7 +7,7 @@ services:
       file: docker-compose.backend.template.yml
       service: postgres
     environment:
-      - KOBO_POSTGRES_DB_SERVER_ROLE=master
+      - KOBO_POSTGRES_DB_SERVER_ROLE=primary
 
   mongo:
     extends:

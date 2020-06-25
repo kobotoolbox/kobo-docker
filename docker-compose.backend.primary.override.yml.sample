@@ -5,7 +5,7 @@ services:
 
   postgres:
     #environment:
-    #  - POSTGRES_BACKUP_FROM_SLAVE=True
+    #  - POSTGRES_BACKUP_FROM_SECONDARY=True
     # Uncomment `ports` section if you want to expose ports (e.g. use as separated servers)
     # Before uncommenting, be sure you have a firewall configured to prevent these ports
     # from being publicly accessible
