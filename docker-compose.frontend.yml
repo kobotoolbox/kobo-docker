@@ -112,8 +112,6 @@ services:
       - ../kobo-env/envfile.txt
     environment:
       - ENKETO_BUILD_IE11=true
-    # TODO: Rename `ENKETO_API_TOKEN` in all configurations to `ENKETO_API_KEY` and stop overriding the entrypoint.
-    entrypoint: ["/bin/bash", "-c", "ENKETO_API_KEY=\"$${ENKETO_API_TOKEN}\" \"$${ENKETO_SRC_DIR}/setup/docker/start.sh\""]
     restart: on-failure
     volumes:
       - ../kobo-env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
