@@ -74,7 +74,7 @@ else
     fi
 
     # Should we first validate the schedule e.g. with `chkcrontab`?
-    echo "${REDIS_BACKUP_SCHEDULE}  root    ${INTERPRETER} ${BACKUP_SCRIPT} > /var/log/redis/backup.log 2>&1" >> /etc/cron.d/backup_redis_crontab
+    echo "${REDIS_BACKUP_SCHEDULE}  root    /usr/bin/nice -n 19 /usr/bin/ionice -c2 -n7 ${INTERPRETER} ${BACKUP_SCRIPT} > /var/log/redis/backup.log 2>&1" >> /etc/cron.d/backup_redis_crontab
     echo "" >> /etc/cron.d/backup_redis_crontab
     service cron restart
     echo "Redis automatic backup schedule: ${REDIS_BACKUP_SCHEDULE}"

@@ -78,7 +78,7 @@ else
     fi
 
     # Should we first validate the schedule e.g. with `chkcrontab`?
-    echo "${MONGO_BACKUP_SCHEDULE}  root    ${INTERPRETER} ${BACKUP_SCRIPT} > /srv/logs/backup.log 2>&1" >> /etc/cron.d/backup_mongo_crontab
+    echo "${MONGO_BACKUP_SCHEDULE}  root    /usr/bin/nice -n 19 /usr/bin/ionice -c2 -n7 ${INTERPRETER} ${BACKUP_SCRIPT} > /srv/logs/backup.log 2>&1" >> /etc/cron.d/backup_mongo_crontab
     echo "" >> /etc/cron.d/backup_mongo_crontab
     service cron restart
     echo "MongoDB automatic backup schedule: ${MONGO_BACKUP_SCHEDULE}"

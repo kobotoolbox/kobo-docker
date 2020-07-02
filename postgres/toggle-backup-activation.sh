@@ -81,7 +81,7 @@ else
     fi
 
     # Should we first validate the schedule e.g. with `chkcrontab`?
-    echo "${POSTGRES_BACKUP_SCHEDULE}  root    ${INTERPRETER} ${BACKUP_SCRIPT} > /srv/logs/backup.log 2>&1" >> /etc/cron.d/backup_postgres_crontab
+    echo "${POSTGRES_BACKUP_SCHEDULE}  root    /usr/bin/nice -n 19 /usr/bin/ionice -c2 -n7 ${INTERPRETER} ${BACKUP_SCRIPT} > /srv/logs/backup.log 2>&1" >> /etc/cron.d/backup_postgres_crontab
     echo "" >> /etc/cron.d/backup_postgres_crontab
     service cron restart
     echo "PostgreSQL automatic backup schedule: ${POSTGRES_BACKUP_SCHEDULE}"

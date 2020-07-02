@@ -48,15 +48,16 @@ CHUNK_SIZE = int(os.environ.get("AWS_BACKUP_CHUNK_SIZE", 250)) * 1024 ** 2
 class Backup(Thread):
 
     def __init__(self, app_code_):
+        """
+        Args:
+            app_code_ (str): `kc` or `kpi`
+        """
         self.__app_code = app_code_
         super().__init__()
 
     def run(self):
         """
         Backup postgres database for specific `app_code`.
-
-        Args:
-                app_code (str): `kc` or `kpi`
         """
 
         s3connection = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
