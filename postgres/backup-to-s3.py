@@ -7,6 +7,7 @@ import os
 import re
 import subprocess
 import sys
+from threading import Thread
 
 import humanize
 import smart_open
@@ -43,82 +44,93 @@ CHUNK_SIZE = int(os.environ.get("AWS_BACKUP_CHUNK_SIZE", 250)) * 1024 ** 2
 
 ###############################################################################
 
-s3connection = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
-s3bucket = s3connection.get_bucket(AWS_BUCKET)
 
+class Backup(Thread):
 
-def backup(app_code):
-    """
-    Backup postgres database for specific `app_code`.
+    def __init__(self, app_code_):
+        self.__app_code = app_code_
+        super().__init__()
 
-    Args:
-            app_code (str): `kc` or `kpi`
-    """
+    def run(self):
+        """
+        Backup postgres database for specific `app_code`.
 
-    DBDATESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        Args:
+                app_code (str): `kc` or `kpi`
+        """
 
-    # `postgis://` isn't recognized by `pg_dump`; replace it with `postgres://`
-    DBURL = re.sub(r'^postgis://', 'postgres://', APP_CODES.get(app_code))
-    # Because we are running `pg_dump` within the container,
-    # we need to replace the hostname ...
-    DBURL = DBURL.replace(os.getenv("POSTGRES_HOST"), "127.0.0.1")
-    # ... and the port for '127.0.0.1:5432'
-    DBURL = re.sub(r"\:(\d+)\/", ":5432/", DBURL)
+        s3connection = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+        s3bucket = s3connection.get_bucket(AWS_BUCKET)
 
-    DUMPFILE = 'postgres-{}-{}-{}-{}.pg_dump'.format(
-        app_code,
-        os.environ.get('PG_MAJOR'),
-        os.environ.get('PUBLIC_DOMAIN_NAME'),
-        DBDATESTAMP,
-    )
+        DBDATESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
-    BACKUP_COMMAND = 'pg_dump --format=c --dbname="{}"'.format(DBURL)
+        # `postgis://` isn't recognized by `pg_dump`; replace it with `postgres://`
+        DBURL = re.sub(r'^postgis://', 'postgres://', APP_CODES.get(self.__app_code))
+        # Because we are running `pg_dump` within the container,
+        # we need to replace the hostname ...
+        DBURL = DBURL.replace(os.getenv("POSTGRES_HOST"), "127.0.0.1")
+        # ... and the port for '127.0.0.1:5432'
+        DBURL = re.sub(r"\:(\d+)\/", ":5432/", DBURL)
 
-    # Determine where to put this backup
-    now = datetime.datetime.now()
-    for directory in DIRECTORIES:
-        prefix = directory['name'] + '/'
-        earliest_current_date = now - datetime.timedelta(days=directory['days'])
-        s3keys = s3bucket.list(prefix=prefix)
-        large_enough_backups = filter(lambda x: x.size >= MINIMUM_SIZE, s3keys)
-        young_enough_backup_found = False
-        for backup in large_enough_backups:
-            if parse_ts(backup.last_modified) >= earliest_current_date:
-                young_enough_backup_found = True
-        if not young_enough_backup_found:
-            # This directory doesn't have any current backups; stop here and use it
-            # as the destination
-            break
+        DUMPFILE = 'postgres-{}-{}-{}-{}.pg_dump'.format(
+            self.__app_code,
+            os.environ.get('PG_MAJOR'),
+            os.environ.get('PUBLIC_DOMAIN_NAME'),
+            DBDATESTAMP,
+        )
 
-    # Perform the backup
-    filename = ''.join((prefix, DUMPFILE))
-    print('Backing up to "{}"...'.format(filename))
-    upload = s3bucket.new_key(filename)
-    chunks_done = 0
-    with smart_open.smart_open(upload, 'wb') as s3backup:
-        process = subprocess.Popen(
-            BACKUP_COMMAND, shell=True, stdout=subprocess.PIPE)
-        while True:
-            chunk = process.stdout.read(CHUNK_SIZE)
-            if not len(chunk):
-                print('Finished! Wrote {} chunks; {}'.format(
-                    chunks_done,
-                    humanize.naturalsize(chunks_done * CHUNK_SIZE)
-                ))
+        BACKUP_COMMAND = 'pg_dump --format=c --dbname="{}"'.format(DBURL)
+
+        # Determine where to put this backup
+        now = datetime.datetime.now()
+        for directory in DIRECTORIES:
+            prefix = directory['name'] + '/'
+            earliest_current_date = now - datetime.timedelta(days=directory['days'])
+            s3keys = s3bucket.list(prefix=prefix)
+            large_enough_backups = filter(lambda x: x.size >= MINIMUM_SIZE, s3keys)
+            young_enough_backup_found = False
+            for backup in large_enough_backups:
+                if parse_ts(backup.last_modified) >= earliest_current_date:
+                    young_enough_backup_found = True
+            if not young_enough_backup_found:
+                # This directory doesn't have any current backups; stop here and use it
+                # as the destination
                 break
-            s3backup.write(chunk)
-            chunks_done += 1
-            if '--hush' not in sys.argv:
-                print('Wrote {} chunks; {}'.format(
-                    chunks_done,
-                    humanize.naturalsize(chunks_done * CHUNK_SIZE)
-                ))
 
-    print('Backup `{}` successfully sent to S3.'.format(filename))
+        # Perform the backup
+        filename = ''.join((prefix, DUMPFILE))
+        print('Backing up to "{}"...'.format(filename))
+        upload = s3bucket.new_key(filename)
+        chunks_done = 0
+        with smart_open.smart_open(upload, 'wb') as s3backup:
+            process = subprocess.Popen(
+                BACKUP_COMMAND, shell=True, stdout=subprocess.PIPE)
+            while True:
+                chunk = process.stdout.read(CHUNK_SIZE)
+                if not len(chunk):
+                    print('Finished! Wrote {} chunks; {}'.format(
+                        chunks_done,
+                        humanize.naturalsize(chunks_done * CHUNK_SIZE)
+                    ))
+                    break
+                s3backup.write(chunk)
+                chunks_done += 1
+                if '--hush' not in sys.argv:
+                    print('Wrote {} chunks; {}'.format(
+                        chunks_done,
+                        humanize.naturalsize(chunks_done * CHUNK_SIZE)
+                    ))
+
+        print('Backup `{}` successfully sent to S3.'.format(filename))
+        return  # Close thread
 
 
 def cleanup():
     aws_lifecycle = os.environ.get("AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED", "False") == "True"
+
+    s3connection = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+    s3bucket = s3connection.get_bucket(AWS_BUCKET)
+
     if not aws_lifecycle:
         # Remove old backups beyond desired retention
         for directory in DIRECTORIES:
@@ -139,11 +151,17 @@ def cleanup():
 database_urls = set(APP_CODES.values())
 # Avoid backup twice the same DB
 if len(database_urls) == 1:
-    backup('kc')
+    backup = Backup('kc')
+    backup.start()
 else:
-    # ToDo: What about running those tasks in parallel?
+    threads = []
     for app_code in APP_CODES.keys():
-        backup(app_code)
+        backup = Backup(app_code)
+        backup.start()
+        threads.append(backup)
+
+    for thread_ in threads:
+        thread_.join()
 
 cleanup()
 
