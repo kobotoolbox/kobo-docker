@@ -63,12 +63,12 @@ Already have an existing installation? Please see below.
 
     If you want to change it manually, edit:
 
-    - `kobo-deployments/envfiles/kpi.txt`
+    - `kobo-env/envfiles/kpi.txt`
         ```diff
         - KPI_BROKER_URL=amqp://kpi:kpi@rabbit.[internal domain name]:5672/kpi
         + KPI_BROKER_URL=redis://redis-main.[internal domain name]:6389/1
         ```
-    - `kobo-deployments/envfiles/kobocat.txt`
+    - `kobo-env/envfiles/kobocat.txt`
         ```diff
         - KOBOCAT_BROKER_URL=amqp://kobocat: kobocat@rabbit.[internal domain name]:5672/kobocat
         + KOBOCAT_BROKER_URL=redis://redis-main.[internal domain name]:6389/2

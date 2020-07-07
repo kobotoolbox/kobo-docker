@@ -8,7 +8,7 @@ services:
     image: nginx:1.19
     hostname: maintenance
     env_file:
-      - ../kobo-deployments/envfile.txt
+      - ../kobo-env/envfile.txt
     volumes:
         - ./log/nginx:/var/log/nginx
         - ./nginx/docker-entrypoint.d/30-init-maintenance-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh

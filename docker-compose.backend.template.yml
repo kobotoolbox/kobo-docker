@@ -6,9 +6,9 @@ services:
     image: postgis/postgis:9.5-2.5
     hostname: postgres
     env_file:
-      - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/envfiles/databases.txt
-      - ../kobo-deployments/envfiles/aws.txt
+      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/databases.txt
+      - ../kobo-env/envfiles/aws.txt
     volumes:
       - ./.vols/db:/var/lib/postgresql/data
       - ./backups/postgres:/srv/backups
@@ -24,9 +24,9 @@ services:
     environment:
       - MONGO_DATA=/data/db
     env_file:
-      - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/envfiles/databases.txt
-      - ../kobo-deployments/envfiles/aws.txt
+      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/databases.txt
+      - ../kobo-env/envfiles/aws.txt
     volumes:
       - ./.vols/mongo:/data/db
       - ./backups/mongo:/srv/backups
@@ -39,9 +39,9 @@ services:
   redis_main:
     image: redis:3.2
     env_file:
-      - ../kobo-deployments/envfile.txt
-      - ../kobo-deployments/envfiles/databases.txt
-      - ../kobo-deployments/envfiles/aws.txt
+      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/databases.txt
+      - ../kobo-env/envfiles/aws.txt
     volumes:
       - ./redis:/kobo-docker-scripts
       - ./backups/redis:/srv/backups
@@ -58,7 +58,7 @@ services:
   redis_cache:
     image: redis:3.2
     env_file:
-      - ../kobo-deployments/envfiles/databases.txt
+      - ../kobo-env/envfiles/databases.txt
     volumes:
       - ./.vols/redis_cache_data/:/data/
       - ./redis/redis-enketo-cache.conf.tmpl:/etc/redis/redis.conf.tmpl:ro
