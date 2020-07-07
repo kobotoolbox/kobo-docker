@@ -1,0 +1,14 @@
+# For public, HTTPS servers.
+version: '2.2'
+
+services:
+  postgres:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: postgres
+    environment:
+      - KOBO_POSTGRES_DB_SERVER_ROLE=secondary
+
+networks:
+  kobo-be-network:
+    driver: bridge

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 rm -f /etc/cron.d/backup_postgres_crontab
-if [[ (-z "${POSTGRES_BACKUP_SCHEDULE}") || ("${POSTGRES_BACKUP_FROM_SLAVE}" == "True") ]]; then
+if [[ (-z "${POSTGRES_BACKUP_SCHEDULE}") || ("${POSTGRES_BACKUP_FROM_SECONDARY}" == "True") ]]; then
     echo "PostgreSQL automatic backups disabled."
 else
     # Install cron in case if not present

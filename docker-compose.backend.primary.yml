@@ -1,0 +1,33 @@
+# For public, HTTPS servers.
+version: '2.2'
+
+services:
+  postgres:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: postgres
+    environment:
+      - KOBO_POSTGRES_DB_SERVER_ROLE=primary
+
+  mongo:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: mongo
+
+  redis_main:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: redis_main
+    environment:
+      - KOBO_REDIS_SERVER_ROLE=main
+
+  redis_cache:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: redis_cache
+    environment:
+      - KOBO_REDIS_SERVER_ROLE=cache
+
+networks:
+  kobo-be-network:
+    driver: bridge

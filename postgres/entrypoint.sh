@@ -42,8 +42,8 @@ if [ -f "$POSTGRES_DATA_DIR/kobo_first_run" ]; then
     # Stop server
     su - postgres -c "$(command -v pg_ctl) -D \"$PGDATA\" -m fast -w stop"
 
-elif [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "slave" ]; then
-    # Because slave is a replica. This script has already been run on master
+elif [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "secondary" ]; then
+    # Because secondary is a replica. This script has already been run on primary server
     echo "Disabling postgis update..."
     mv /docker-entrypoint-initdb.d/postgis.sh /docker-entrypoint-initdb.d/postgis.sh.disabled
 fi
