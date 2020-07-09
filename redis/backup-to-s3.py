@@ -69,9 +69,11 @@ for directory in DIRECTORIES:
 filename = ''.join((prefix, DUMPFILE))
 print('Backing up to "{}"...'.format(filename))
 
-os.system("{backup_command} && s3cmd put --multipart-chunk-size-mb={chunk_size}"
+s3cmd = os.path.join(os.path.dirname(sys.executable), 's3cmd')
+os.system("{backup_command} && {s3cmd} put --multipart-chunk-size-mb={chunk_size}"
           " /srv/backups/{source} s3://{bucket}/{filename}"
           " && rm -rf /srv/backups/{source}".format(
+    s3cmd=s3cmd,
     backup_command=BACKUP_COMMAND,
     bucket=AWS_BUCKET,
     chunk_size=CHUNK_SIZE,
