@@ -61,7 +61,16 @@ else
         echo "Installing virtualenv for Redis backup on S3..."
         apt-get install -y s3cmd --quiet=2 > /dev/null
         apt-get install -y python-virtualenv --quiet=2 > /dev/null
-        virtualenv /tmp/backup-virtualenv
+        counter=1
+        max_retries=3
+        # Under certain circumstances a race condition occurs. Virtualenv creation
+        # fails because python cannot find `wheel` package folder
+        # e.g. `FileNotFoundError: [Errno 2] No such file or directory: '/root/.local/share/virtualenv/wheel/3.5/embed/1/wheel.json'`
+        until $(virtualenv --quiet -p /usr/bin/python3 /tmp/backup-virtualenv > /dev/null)
+        do
+            [[ "$counter" -eq "$max_retries" ]] && echo "Virtual environment creation failed!" && exit 1
+            ((counter++))
+        done
         . /tmp/backup-virtualenv/bin/activate
         pip install --quiet boto
         deactivate
