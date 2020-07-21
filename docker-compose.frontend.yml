@@ -5,7 +5,8 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:2.020.30
+    # FIXME: add correct tag once kobotoolbox/kobocat#630 is merged and a new image is built
+    image: kobotoolbox/kobocat:THIS-MUST-BE-UPDATED
     hostname: kobocat
     env_file:
       - ../kobo-env/envfile.txt
