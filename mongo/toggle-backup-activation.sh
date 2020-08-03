@@ -67,6 +67,7 @@ else
         python3 -m pip install --quiet s3cmd
         virtualenv --quiet -p /usr/bin/python3 /tmp/backup-virtualenv
         . /tmp/backup-virtualenv/bin/activate
+        pip install --quiet humanize smart-open==1.7.1
         pip install --quiet boto
         deactivate
 
