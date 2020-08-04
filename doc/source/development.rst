@@ -39,7 +39,7 @@ Then start the dev server. E.G, for kobocat:
 .. code-block:: bash
 
     cd /srv/src/kobocat # go to the project dir
-    python ./manage.py runserver 0.0.0.0:8000 # 0.0.0.0 so it listen to all interfaces
+    python ./manage.py runserver 0.0.0.0:8001 # 0.0.0.0 so it listen to all interfaces
 
 By default nginx is configured to proxy requests to uswsgi, but you now run the dev server so you need to set the NGINX_DEBUG_kobocat env var to True. You can do in your compose file "environment" sub-section.
 
@@ -47,7 +47,7 @@ You can also run them all at once:
 
 .. code-block:: bash
 
-  sv stop wsgi && killall -s INT uwsgi && cd /srv/src/kobocat && python ./manage.py runserver 0.0.0.0:8000
+  sv stop wsgi && killall -s INT uwsgi && cd /srv/src/kobocat && python ./manage.py runserver 0.0.0.0:8001
 
 E.g, for kobocat edit docker-compose.local.yml, go to the "nginx" section and then:
 
