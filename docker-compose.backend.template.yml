@@ -15,7 +15,7 @@ services:
       - ./log/postgres:/srv/logs
       - ./postgres:/kobo-docker-scripts
     command: "bash /kobo-docker-scripts/entrypoint.sh"
-    restart: on-failure
+    restart: always
     stop_grace_period: 5m
 
   mongo:
@@ -32,7 +32,7 @@ services:
       - ./backups/mongo:/srv/backups
       - ./mongo:/kobo-docker-scripts
       - ./log/mongo:/srv/logs
-    restart: on-failure
+    restart: always
     command: "bash /kobo-docker-scripts/entrypoint.sh"
     stop_grace_period: 5m
 
@@ -49,7 +49,7 @@ services:
       - ./redis/redis-enketo-main.conf.tmpl:/etc/redis/redis.conf.tmpl:ro
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_main:/var/log/redis
-    restart: on-failure
+    restart: always
     stop_grace_period: 2m30s
     sysctls:
         - net.core.somaxconn=2048
@@ -64,7 +64,7 @@ services:
       - ./redis/redis-enketo-cache.conf.tmpl:/etc/redis/redis.conf.tmpl:ro
       - ./redis/entrypoint.sh:/tmp/redis/entrypoint.sh:ro
       - ./log/redis_cache:/var/log/redis
-    restart: on-failure
+    restart: always
     stop_grace_period: 2m30s
     sysctls:
         - net.core.somaxconn=2048
