@@ -78,8 +78,8 @@ else
             ((counter++))
         done
         . /tmp/backup-virtualenv/bin/activate
-        pip install --quiet boto
         pip install --quiet humanize smart-open==1.7.1
+        pip install --quiet boto
         deactivate
 
         INTERPRETER=/tmp/backup-virtualenv/bin/python

@@ -75,7 +75,7 @@ else
             ((counter++))
         done
         . /tmp/backup-virtualenv/bin/activate
-        pip install --quiet s3cmd
+        pip install --quiet humanize smart-open==1.7.1
         pip install --quiet boto
         deactivate
 
