@@ -44,7 +44,7 @@ services:
           - kobocat.docker.container
 
   kpi:
-    image: kobotoolbox/kpi:2.020.30
+    image: kobotoolbox/kpi:2.020.30-hotfix-2450
     hostname: kpi
     env_file:
       - ../kobo-env/envfile.txt
@@ -107,7 +107,7 @@ services:
           - nginx
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:2.3.5
+    image: kobotoolbox/enketo-express-extra-widgets:2.3.10
     env_file:
       - ../kobo-env/envfile.txt
     environment:
