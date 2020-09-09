@@ -65,6 +65,7 @@ def run():
 
     # Determine where to put this backup
     now = datetime.datetime.now()
+
     for directory in DIRECTORIES:
         prefix = directory['name'] + '/'
         earliest_current_date = now - datetime.timedelta(days=directory['days'])

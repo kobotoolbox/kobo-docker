@@ -3,7 +3,8 @@
 
 export KOBO_DOCKER_SCRIPTS_DIR=/kobo-docker-scripts
 
-bash $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
+# Send backup installation process in background to avoid blocking MongoDB startup
+bash $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh &
 
 echo "Copying init scripts ..."
 cp $KOBO_DOCKER_SCRIPTS_DIR/init_* /docker-entrypoint-initdb.d/

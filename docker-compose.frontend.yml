@@ -5,7 +5,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:2.020.30
+    image: kobotoolbox/kobocat:2.020.31
     hostname: kobocat
     env_file:
       - ../kobo-env/envfile.txt
@@ -36,7 +36,7 @@ services:
       - ./scripts/wait_for_kpi.bash:/etc/my_init.d/03_wait_for_kpi.bash:ro
       - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
       - ./uwsgi/kc_uwsgi.ini:/srv/src/kobocat/docker/kobocat.ini
-    restart: on-failure
+    restart: always
     networks:
       kobo-fe-network:
         aliases:
@@ -44,7 +44,7 @@ services:
           - kobocat.docker.container
 
   kpi:
-    image: kobotoolbox/kpi:2.020.30
+    image: kobotoolbox/kpi:2.020.30-hotfix-2450
     hostname: kpi
     env_file:
       - ../kobo-env/envfile.txt
@@ -75,7 +75,7 @@ services:
       - ./.vols/kpi_media:/srv/src/kpi/media
       # Allow access to KoBoCAT media uploads within KPI
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
-    restart: on-failure
+    restart: always
     networks:
       kobo-fe-network:
         aliases:
@@ -100,19 +100,19 @@ services:
         - ./.vols/kobocat_media_uploads:/media
         - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
         - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
-    restart: on-failure
+    restart: always
     networks:
       kobo-fe-network:
         aliases:
           - nginx
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:2.3.5
+    image: kobotoolbox/enketo-express-extra-widgets:2.3.10
     env_file:
       - ../kobo-env/envfile.txt
     environment:
       - ENKETO_BUILD_IE11=true
-    restart: on-failure
+    restart: always
     volumes:
       - ../kobo-env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
       # Override Enketo Express icons.

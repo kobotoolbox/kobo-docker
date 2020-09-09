@@ -29,27 +29,32 @@ chown -R postgres:postgres $POSTGRES_BACKUPS_DIR
 
 # if file exists. Container has already boot once
 if [ -f "$POSTGRES_DATA_DIR/kobo_first_run" ]; then
-    # Start server locally.
-    su - postgres -c "$(command -v pg_ctl) -D \"$PGDATA\" -o \"-c listen_addresses='127.0.0.1'\" -w start"
-    until pg_isready -h 127.0.0.1 ; do
-        sleep 1
-    done
-
+    # Recreate config first
     bash $KOBO_DOCKER_SCRIPTS_DIR/shared/init_02_set_postgres_config.sh
-    bash $KOBO_DOCKER_SCRIPTS_DIR/shared/upsert_users.sh
-    update-postgis.sh
 
-    # Stop server
-    su - postgres -c "$(command -v pg_ctl) -D \"$PGDATA\" -m fast -w stop"
+    if [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "primary" ]; then
+        # Start server locally.
+        su - postgres -c "$(command -v pg_ctl) -D \"$PGDATA\" -o \"-c listen_addresses='127.0.0.1'\" -w start"
+        until pg_isready -h 127.0.0.1 ; do
+            sleep 1
+        done
+        # Update users if needed
+        bash $KOBO_DOCKER_SCRIPTS_DIR/shared/upsert_users.sh
+        # Update PostGIS extension
+        update-postgis.sh
+        # Stop server
+        su - postgres -c "$(command -v pg_ctl) -D \"$PGDATA\" -m fast -w stop"
+    fi
 
 elif [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "secondary" ]; then
     # Because secondary is a replica. This script has already been run on primary server
     echo "Disabling postgis update..."
-    mv /docker-entrypoint-initdb.d/postgis.sh /docker-entrypoint-initdb.d/postgis.sh.disabled
+    mv /docker-entrypoint-initdb.d/10_postgis.sh /docker-entrypoint-initdb.d/10_postgis.sh.disabled
 fi
 
 
-bash $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh
+# Send backup installation process in background to avoid blocking PostgreSQL startup
+bash $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh &
 
 echo "Launching official entrypoint..."
 # `exec` here is important to pass signals to the database server process;
