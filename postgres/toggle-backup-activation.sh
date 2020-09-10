@@ -67,10 +67,19 @@ else
         apt-get install -y python3-pip --quiet=2 > /dev/null
         python3 -m pip install --upgrade --quiet pip
         python3 -m pip install --upgrade --quiet virtualenv
-        python3 -m pip install --quiet s3cmd
-        virtualenv --quiet -p /usr/bin/python3 /tmp/backup-virtualenv
+        counter=1
+        max_retries=3
+        # Under certain circumstances a race condition occurs. Virtualenv creation
+        # fails because python cannot find `wheel` package folder
+        # e.g. `FileNotFoundError: [Errno 2] No such file or directory: '/root/.local/share/virtualenv/wheel/3.5/embed/1/wheel.json'`
+        until $(virtualenv --quiet -p /usr/bin/python3 /tmp/backup-virtualenv > /dev/null)
+        do
+            [[ "$counter" -eq "$max_retries" ]] && echo "Virtual environment creation failed!" && exit 1
+            ((counter++))
+        done
         . /tmp/backup-virtualenv/bin/activate
         pip install --quiet humanize smart-open==1.7.1
+        pip install --quiet boto
         deactivate
 
         INTERPRETER=/tmp/backup-virtualenv/bin/python

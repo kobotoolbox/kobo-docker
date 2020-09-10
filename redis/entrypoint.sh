@@ -34,8 +34,9 @@ chown redis:redis "$REDIS_CONF_FILE"
 chown -R redis:redis "$REDIS_DATA_DIR"
 
 if [[ "$KOBO_REDIS_SERVER_ROLE" == "main" ]]; then
+    # Send backup installation process in background to avoid blocking redis startup
     export KOBO_DOCKER_SCRIPTS_DIR=/kobo-docker-scripts
-    /bin/bash "$KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh"
+    /bin/bash "$KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh" &
 fi
 
 # `exec` and `gosu` (vs. `su`) here are important to pass signals to the
