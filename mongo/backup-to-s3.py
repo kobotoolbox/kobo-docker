@@ -6,8 +6,7 @@ import sys
 
 import humanize
 import smart_open
-from boto.s3.connection import S3Connection
-from boto.utils import parse_ts
+from boto3 import client
 
 
 yearly_retention = int(os.environ.get("AWS_BACKUP_YEARLY_RETENTION", 2))
@@ -39,9 +38,12 @@ def run():
     """
     Backup postgres database for specific `app_code`.
     """
+    s3connection = client(
+                    's3',
+                    aws_access_key_id=AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+    )
 
-    s3connection = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
-    s3bucket = s3connection.get_bucket(AWS_BUCKET)
 
     DBDATESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
@@ -69,7 +71,7 @@ def run():
     for directory in DIRECTORIES:
         prefix = directory['name'] + '/'
         earliest_current_date = now - datetime.timedelta(days=directory['days'])
-        s3keys = s3bucket.list(prefix=prefix)
+        s3keys = s3connection.list_objects(Bucket=AWS_BUCKET, Prefix='prefix')
         large_enough_backups = filter(lambda x: x.size >= MINIMUM_SIZE, s3keys)
         young_enough_backup_found = False
         for backup in large_enough_backups:
@@ -110,15 +112,19 @@ def run():
 def cleanup():
     aws_lifecycle = os.environ.get("AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED", "False") == "True"
 
-    s3connection = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
-    s3bucket = s3connection.get_bucket(AWS_BUCKET)
+    s3connection = client(
+                   's3',
+                   aws_access_key_id=AWS_ACCESS_KEY_ID,
+                   aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+    )
+
 
     if not aws_lifecycle:
         # Remove old backups beyond desired retention
         for directory in DIRECTORIES:
             prefix = directory['name'] + '/'
             keeps = directory['keeps']
-            s3keys = s3bucket.list(prefix=prefix)
+            s3keys = s3connection.list_objects(Bucket=AWS_BUCKET, Prefix='prefix')
             large_enough_backups = filter(lambda x: x.size >= MINIMUM_SIZE, s3keys)
             large_enough_backups = sorted(large_enough_backups, key=lambda x: x.last_modified, reverse=True)
 
