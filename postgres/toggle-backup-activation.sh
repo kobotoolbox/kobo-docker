@@ -94,4 +94,32 @@ else
     echo "" >> /etc/cron.d/backup_postgres_crontab
     service cron restart
     echo "PostgreSQL automatic backup schedule: ${POSTGRES_BACKUP_SCHEDULE}"
+
+    if [[ ${USE_WAL_E} -eq "$TRUE") ]]; then
+        echo "Installing envdir and Wal-e for PostgreSQL backup on S3..."
+        apt-get install -y libevent-dev python-all-dev daemontools lzop pv curl --quiet=2 > /dev/null
+        python3 -m pip install wal-e aws --quiet pip
+
+        # Find EC2 region
+        EC2_AVAIL_ZONE=$(/usr/bin/curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone) #AWS zone
+        EC2_REGION=$(echo $EC2_AVAIL_ZONE | sed 's/[a-z]$//') #AWS region
+
+        # Add envdir for Wal-e backup
+        mkdir -p ${POSTGRES_DATA_DIR}/wal-e.d/env
+        echo "${AWS_SECRET_ACCESS_KEY}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_SECRET_ACCESS_KEY
+        echo "${AWS_ACCESS_KEY_ID}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_ACCESS_KEY_ID
+        echo "${BACKUP_AWS_STORAGE_BUCKET_NAME}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/WALE_S3_PREFIX
+        echo "${EC2_REGION}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_REGION
+        chown -R postgres:postgres ${POSTGRES_DATA_DIR}/wal-e.d
+
+        # Add archive_command PostgreSQL
+        sed -i "s#\$PGDATA#"$PGDATA"#g" ${POSTGRES_DATA_DIR}/postgresql.conf
+
+        # Add crontab Wal-e backup to S3
+        echo "${POSTGRES_BACKUP_SCHEDULE}  postgres   envdir ${POSTGRES_DATA_DIR}/wal-e.d/env/ /usr/local/bin/wal-e backup-push ${POSTGRES_DATA_DIR} > /srv/logs/backup_wal_e.log 2>&1" >> /etc/cron.d/backup_postgres_wal_e
+        echo "" >> /etc/cron.d/backup_postgres_wal_e
+        service cron restart
+        echo "PostgreSQL automatic Wal-e backup schedule: ${POSTGRES_BACKUP_SCHEDULE}"    
+    fi
+
 fi
