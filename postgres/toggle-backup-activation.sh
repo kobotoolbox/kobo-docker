@@ -63,63 +63,60 @@ else
     fi
 
     if [ "$USE_S3" -eq "$TRUE" ]; then
-        echo "Installing virtualenv for PostgreSQL backup on S3..."
-        apt-get install -y python3-pip --quiet=2 > /dev/null
-        python3 -m pip install --upgrade --quiet pip
-        python3 -m pip install --upgrade --quiet virtualenv
-        counter=1
-        max_retries=3
-        # Under certain circumstances a race condition occurs. Virtualenv creation
-        # fails because python cannot find `wheel` package folder
-        # e.g. `FileNotFoundError: [Errno 2] No such file or directory: '/root/.local/share/virtualenv/wheel/3.5/embed/1/wheel.json'`
-        until $(virtualenv --quiet -p /usr/bin/python3 /tmp/backup-virtualenv > /dev/null)
-        do
-            [[ "$counter" -eq "$max_retries" ]] && echo "Virtual environment creation failed!" && exit 1
-            ((counter++))
-        done
-        . /tmp/backup-virtualenv/bin/activate
-        pip install --quiet humanize smart-open==1.7.1
-        pip install --quiet boto
-        deactivate
 
-        INTERPRETER=/tmp/backup-virtualenv/bin/python
-        BACKUP_SCRIPT="/kobo-docker-scripts/backup-to-s3.py"
+        if [[ ${USE_WAL_E} -eq "$TRUE") ]]; then
+            echo "Installing envdir and Wal-e for PostgreSQL backup on S3..."
+            apt-get install -y libevent-dev daemontools lzop pv curl --quiet=2 > /dev/null
+            python3 -m pip install wal-e aws --quiet pip
+
+            # Find EC2 region
+            EC2_AVAIL_ZONE=$(/usr/bin/curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone) #AWS zone
+            EC2_REGION=$(echo $EC2_AVAIL_ZONE | sed 's/[a-z]$//') #AWS region
+
+            # Add envdir for Wal-e backup
+            mkdir -p ${POSTGRES_DATA_DIR}/wal-e.d/env
+            echo "${AWS_SECRET_ACCESS_KEY}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_SECRET_ACCESS_KEY
+            echo "${AWS_ACCESS_KEY_ID}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_ACCESS_KEY_ID
+            echo "${BACKUP_AWS_STORAGE_BUCKET_NAME}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/WALE_S3_PREFIX
+            echo "${EC2_REGION}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_REGION
+            chown -R postgres:postgres ${POSTGRES_DATA_DIR}/wal-e.d
+
+            # Add archive_command PostgreSQL
+            sed -i "s#\$PGDATA#"$PGDATA"#g" ${POSTGRES_DATA_DIR}/postgresql.conf
+
+            # Add crontab Wal-e backup to S3
+            CRON_CMD="${POSTGRES_BACKUP_SCHEDULE}  postgres   envdir ${POSTGRES_DATA_DIR}/wal-e.d/env/ /usr/local/bin/wal-e backup-push ${POSTGRES_DATA_DIR} > /srv/logs/backup.log 2>&1"
+            
+        else
+            echo "Installing virtualenv for PostgreSQL backup on S3..."
+            apt-get install -y python3-pip --quiet=2 > /dev/null
+            python3 -m pip install --upgrade --quiet pip
+            python3 -m pip install --upgrade --quiet virtualenv
+            counter=1
+            max_retries=3
+            # Under certain circumstances a race condition occurs. Virtualenv creation
+            # fails because python cannot find `wheel` package folder
+            # e.g. `FileNotFoundError: [Errno 2] No such file or directory: '/root/.local/share/virtualenv/wheel/3.5/embed/1/wheel.json'`
+            until $(virtualenv --quiet -p /usr/bin/python3 /tmp/backup-virtualenv > /dev/null)
+            do
+                [[ "$counter" -eq "$max_retries" ]] && echo "Virtual environment creation failed!" && exit 1
+                ((counter++))
+            done
+            . /tmp/backup-virtualenv/bin/activate
+            pip install --quiet humanize smart-open==1.7.1
+            pip install --quiet boto
+            deactivate
+
+            CRON_CMD="${POSTGRES_BACKUP_SCHEDULE}  root    /usr/bin/nice -n 19 /usr/bin/ionice -c2 -n7 /tmp/backup-virtualenv/bin/python /kobo-docker-scripts/backup-to-s3.py > /srv/logs/backup.log 2>&1"
+        if
     else
-        INTERPRETER=$(command -v bash)
-        BACKUP_SCRIPT="/kobo-docker-scripts/backup-to-disk.bash"
+        CRON_CMD="${POSTGRES_BACKUP_SCHEDULE}  root    /usr/bin/nice -n 19 /usr/bin/ionice -c2 -n7 /bin/bash /kobo-docker-scripts/backup-to-disk.bash > /srv/logs/backup.log 2>&1"
     fi
 
     # Should we first validate the schedule e.g. with `chkcrontab`?
-    echo "${POSTGRES_BACKUP_SCHEDULE}  root    /usr/bin/nice -n 19 /usr/bin/ionice -c2 -n7 ${INTERPRETER} ${BACKUP_SCRIPT} > /srv/logs/backup.log 2>&1" >> /etc/cron.d/backup_postgres_crontab
+    echo "${CRON_CMD}" >> /etc/cron.d/backup_postgres_crontab
     echo "" >> /etc/cron.d/backup_postgres_crontab
     service cron restart
     echo "PostgreSQL automatic backup schedule: ${POSTGRES_BACKUP_SCHEDULE}"
-
-    if [[ ${USE_WAL_E} -eq "$TRUE") ]]; then
-        echo "Installing envdir and Wal-e for PostgreSQL backup on S3..."
-        apt-get install -y libevent-dev python-all-dev daemontools lzop pv curl --quiet=2 > /dev/null
-        python3 -m pip install wal-e aws --quiet pip
-
-        # Find EC2 region
-        EC2_AVAIL_ZONE=$(/usr/bin/curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone) #AWS zone
-        EC2_REGION=$(echo $EC2_AVAIL_ZONE | sed 's/[a-z]$//') #AWS region
-
-        # Add envdir for Wal-e backup
-        mkdir -p ${POSTGRES_DATA_DIR}/wal-e.d/env
-        echo "${AWS_SECRET_ACCESS_KEY}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_SECRET_ACCESS_KEY
-        echo "${AWS_ACCESS_KEY_ID}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_ACCESS_KEY_ID
-        echo "${BACKUP_AWS_STORAGE_BUCKET_NAME}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/WALE_S3_PREFIX
-        echo "${EC2_REGION}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_REGION
-        chown -R postgres:postgres ${POSTGRES_DATA_DIR}/wal-e.d
-
-        # Add archive_command PostgreSQL
-        sed -i "s#\$PGDATA#"$PGDATA"#g" ${POSTGRES_DATA_DIR}/postgresql.conf
-
-        # Add crontab Wal-e backup to S3
-        echo "${POSTGRES_BACKUP_SCHEDULE}  postgres   envdir ${POSTGRES_DATA_DIR}/wal-e.d/env/ /usr/local/bin/wal-e backup-push ${POSTGRES_DATA_DIR} > /srv/logs/backup_wal_e.log 2>&1" >> /etc/cron.d/backup_postgres_wal_e
-        echo "" >> /etc/cron.d/backup_postgres_wal_e
-        service cron restart
-        echo "PostgreSQL automatic Wal-e backup schedule: ${POSTGRES_BACKUP_SCHEDULE}"    
-    fi
 
 fi
