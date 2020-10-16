@@ -69,7 +69,7 @@ else
         if [[ ${USE_WAL_E} -eq "$TRUE") ]]; then
             echo "Installing envdir and WAL-E for PostgreSQL backup on S3..."
             apt-get install -y libevent-dev daemontools lzop pv curl --quiet=2 > /dev/null
-            python3 -m pip install wal-e aws --quiet pip
+            python3 -m pip install --quiet wal-e aws
 
             # Find EC2 region
             EC2_AVAIL_ZONE=$(/usr/bin/curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone) #AWS zone
@@ -91,8 +91,6 @@ else
             
         else
             echo "Installing virtualenv for PostgreSQL backup on S3..."
-            apt-get install -y python3-pip --quiet=2 > /dev/null
-            python3 -m pip install --upgrade --quiet pip
             python3 -m pip install --upgrade --quiet virtualenv
             counter=1
             max_retries=3
