@@ -63,9 +63,11 @@ else
     fi
 
     if [ "$USE_S3" -eq "$TRUE" ]; then
+        apt-get install -y python3-pip --quiet=2 > /dev/null
+        python3 -m pip install --upgrade --quiet pip
 
         if [[ ${USE_WAL_E} -eq "$TRUE") ]]; then
-            echo "Installing envdir and Wal-e for PostgreSQL backup on S3..."
+            echo "Installing envdir and WAL-E for PostgreSQL backup on S3..."
             apt-get install -y libevent-dev daemontools lzop pv curl --quiet=2 > /dev/null
             python3 -m pip install wal-e aws --quiet pip
 
