@@ -66,7 +66,7 @@ else
         apt-get install -y python3-pip --quiet=2 > /dev/null
         python3 -m pip install --upgrade --quiet pip
 
-        if [[ ${USE_WAL_E} -eq "$TRUE") ]]; then
+        if [[ ${USE_WAL_E} -eq "$TRUE" ]]; then
             echo "Installing envdir and WAL-E for PostgreSQL backup on S3..."
             apt-get install -y libevent-dev daemontools lzop pv curl --quiet=2 > /dev/null
             python3 -m pip install --quiet wal-e aws
@@ -108,7 +108,7 @@ else
             deactivate
 
             CRON_CMD="${POSTGRES_BACKUP_SCHEDULE}  root    /usr/bin/nice -n 19 /usr/bin/ionice -c2 -n7 /tmp/backup-virtualenv/bin/python /kobo-docker-scripts/backup-to-s3.py > /srv/logs/backup.log 2>&1"
-        if
+        fi
     else
         CRON_CMD="${POSTGRES_BACKUP_SCHEDULE}  root    /usr/bin/nice -n 19 /usr/bin/ionice -c2 -n7 /bin/bash /kobo-docker-scripts/backup-to-disk.bash > /srv/logs/backup.log 2>&1"
     fi
