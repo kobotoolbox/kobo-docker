@@ -11,6 +11,10 @@ cp $KOBO_DOCKER_SCRIPTS_DIR/shared/postgres.conf $POSTGRES_CONFIG_FILE
 if [ -f "$KOBO_DOCKER_SCRIPTS_DIR/$KOBO_POSTGRES_DB_SERVER_ROLE/postgres.conf" ]; then
     echo "Appending role specific configuration..."
     cat $KOBO_DOCKER_SCRIPTS_DIR/$KOBO_POSTGRES_DB_SERVER_ROLE/postgres.conf >> $POSTGRES_CONFIG_FILE
+
+    if grep -q "\$PGDATA" "$POSTGRES_CONFIG_FILE"; then
+        sed -i "s#\$PGDATA#"$PGDATA"#g" $POSTGRES_CONFIG_FILE
+    fi
 fi
 
 if [ ! -f "$POSTGRES_CLIENT_AUTH_FILE.orig" ]; then

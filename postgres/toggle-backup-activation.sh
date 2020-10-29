@@ -83,9 +83,6 @@ else
             echo "${EC2_REGION}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_REGION
             chown -R postgres:postgres ${POSTGRES_DATA_DIR}/wal-e.d
 
-            # Add archive_command PostgreSQL
-            sed -i "s#\$PGDATA#"$PGDATA"#g" ${POSTGRES_DATA_DIR}/postgresql.conf
-
             # Add crontab Wal-e backup to S3
             CRON_CMD="${POSTGRES_BACKUP_SCHEDULE}  postgres   envdir ${POSTGRES_DATA_DIR}/wal-e.d/env/ /usr/local/bin/wal-e backup-push ${POSTGRES_DATA_DIR} > /srv/logs/backup.log 2>&1"
             
