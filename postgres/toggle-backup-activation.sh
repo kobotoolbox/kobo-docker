@@ -79,7 +79,7 @@ else
             mkdir -p ${POSTGRES_DATA_DIR}/wal-e.d/env
             echo "${AWS_SECRET_ACCESS_KEY}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_SECRET_ACCESS_KEY
             echo "${AWS_ACCESS_KEY_ID}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_ACCESS_KEY_ID
-            echo "${BACKUP_AWS_STORAGE_BUCKET_NAME}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/WALE_S3_PREFIX
+            echo "s3://${BACKUP_AWS_STORAGE_BUCKET_NAME}/postgres/" > ${POSTGRES_DATA_DIR}/wal-e.d/env/WALE_S3_PREFIX
             echo "${EC2_REGION}" > ${POSTGRES_DATA_DIR}/wal-e.d/env/AWS_REGION
             chown -R postgres:postgres ${POSTGRES_DATA_DIR}/wal-e.d
 
