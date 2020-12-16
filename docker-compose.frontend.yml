@@ -5,7 +5,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:2.020.49
+    image: kobotoolbox/kobocat:2.020.50
     hostname: kobocat
     env_file:
       - ../kobo-env/envfile.txt
@@ -44,7 +44,7 @@ services:
           - kobocat.docker.container
 
   kpi:
-    image: kobotoolbox/kpi:2.020.30-hotfix-2908
+    image: kobotoolbox/kpi:2.020.50
     hostname: kpi
     env_file:
       - ../kobo-env/envfile.txt
