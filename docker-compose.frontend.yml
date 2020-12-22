@@ -107,11 +107,9 @@ services:
           - nginx
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:2.3.10
+    image: kobotoolbox/enketo-express-extra-widgets:2.5.4
     env_file:
       - ../kobo-env/envfile.txt
-    environment:
-      - ENKETO_BUILD_IE11=true
     restart: always
     volumes:
       - ../kobo-env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
