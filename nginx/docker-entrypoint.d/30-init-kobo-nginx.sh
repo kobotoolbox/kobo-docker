@@ -52,6 +52,13 @@ else
 fi
 templated_var_refs+=" \${container_public_port}"
 
+# Get docker range to allow access in nginx to *.domain.internal only between
+# containers
+CONTAINER_IP=$(hostname -I)
+read A B C D <<<"${CONTAINER_IP//./ }"
+export DOCKER_NETWORK_RANGE="$A.$B.$C.0/24"
+templated_var_refs+=" \${DOCKER_NETWORK_RANGE}"
+
 for container_name in "${!container_ports[@]}"; do
     export container_name
     export container_port="${container_ports[${container_name}]}"
