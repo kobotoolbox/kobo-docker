@@ -78,21 +78,6 @@ for container_name in "${!container_ports[@]}"; do
     templated_var_refs+=" \${${include_proxy_pass_varname}} \${${include_uwsgi_pass_varname}}"
 
     # Set up serving of static files.
-    static_files_server_varname="${container_name^^}_STATIC_FILES_SERVER"
-    static_files_server="${!static_files_server_varname}"
-    django_debug_varname="${container_name^^}_DJANGO_DEBUG"
-    django_debug="${!django_debug_varname}"
-    if [[ "${static_files_server^^}" == "NGINX" ]]; then
-        echo "Serving static files for container ${container_name} from Nginx."
-        production_location_static_varname="${container_name^^}_PRODUCTION_LOCATION_STATIC"
-        location_static="${!production_location_static_varname}"
-    elif [[ "${static_files_server^^}" == "DJANGO" && "${django_debug^^}" == "TRUE" ]]; then
-        echo "Serving static files for container ${container_name} from Django."
-        location_static=''
-    elif [[ "${static_files_server^^}" == "DJANGO" && "${django_debug^^}" != "TRUE" ]]; then
-        echo "Cannot serve static files from Django for container \`${container_name}\` unless \`${django_debug_varname}\` set to \"True\" in \`/envfiles/${container_name}.txt\`."
-        exit 1
-    fi
     location_static_varname="${container_name}_location_static"
     export ${location_static_varname}="${location_static}"
     templated_var_refs+=" \${$location_static_varname}}"
