@@ -10,26 +10,6 @@ KOBOCAT_PRODUCTION_LOCATION_STATIC='location /static {
 
 KPI_PRODUCTION_LOCATION_STATIC='location /static {
         alias /srv/www/kpi;
-
-        # gzip configs from here
-        # http://stackoverflow.com/a/12644530/3088435
-        gzip on;
-        gzip_disable "msie6";
-        gzip_comp_level 6;
-        gzip_min_length 1100;
-        gzip_buffers 16 8k;
-        gzip_proxied any;
-        gzip_types
-            text/plain
-            text/css
-            text/js
-            text/xml
-            text/javascript
-            application/javascript
-            application/x-javascript
-            application/json
-            application/xml
-            application/xml+rss;
     }'
 
 echo "Creating includes directory"
