@@ -4,14 +4,6 @@ set -e
 KOBO_DOCKER_SCRIPTS_DIR='/kobo-docker-scripts'
 INCLUDES_DIR='/etc/nginx/includes'
 
-KOBOCAT_PRODUCTION_LOCATION_STATIC='location /static {
-        alias /srv/www/kobocat;
-    }'
-
-KPI_PRODUCTION_LOCATION_STATIC='location /static {
-        alias /srv/www/kpi;
-    }'
-
 echo "Creating includes directory"
 mkdir -p ${INCLUDES_DIR}
 
@@ -76,11 +68,6 @@ for container_name in "${!container_ports[@]}"; do
     # Register the include directive variables (e.g. `kpi_include_proxy_pass` and `kpi_include_uwsgi_pass`)
     # for template substitution.
     templated_var_refs+=" \${${include_proxy_pass_varname}} \${${include_uwsgi_pass_varname}}"
-
-    # Set up serving of static files.
-    location_static_varname="${container_name}_location_static"
-    export ${location_static_varname}="${location_static}"
-    templated_var_refs+=" \${$location_static_varname}}"
 
 done
 

@@ -47,7 +47,9 @@ server {
         ${kobocat_include_proxy_pass}
     }
 
-    ${kobocat_location_static}
+    location /static {
+        alias /srv/www/kobocat;
+    }
 
     # media files
     location /protected/ {
@@ -101,7 +103,9 @@ server {
     access_log  /var/log/nginx/kpi.access.log with_host;
     error_log   /var/log/nginx/kpi.error.log;
 
-    ${kpi_location_static}
+    location /static {
+        alias /srv/www/kpi;
+    }
 
     error_page 418 = /static/html/Offline.html;
 
