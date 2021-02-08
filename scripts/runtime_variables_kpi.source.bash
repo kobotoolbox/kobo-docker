@@ -22,7 +22,6 @@ if [[ ! -z "${PUBLIC_DOMAIN_NAME}" ]]; then
     export DJANGO_DEBUG="${KPI_DJANGO_DEBUG}"
     export RAVEN_DSN="${KPI_RAVEN_DSN}"
     export RAVEN_JS_DSN="${KPI_RAVEN_JS_DSN}"
-    export KPI_URL="${KOBOFORM_URL}"
 
 else
     echo 'Please fill out your `envfile`!'
