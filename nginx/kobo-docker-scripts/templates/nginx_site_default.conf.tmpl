@@ -107,7 +107,9 @@ server {
     access_log  /var/log/nginx/kpi.access.log with_host;
     error_log   /var/log/nginx/kpi.error.log;
 
-    ${kpi_location_static}
+    location /static {
+        alias /srv/www/kpi;
+    }
 
     location / {
         # Proxy through uWSGI.
