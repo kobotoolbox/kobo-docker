@@ -89,41 +89,10 @@ server {
     }
 }
 
-# KoBoForm internal HTTP
-server {
-    listen      80;
-    server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
-
-    # Only allow traffic between containers;
-    allow ${DOCKER_NETWORK_RANGE};
-    deny all;
-
-    include /etc/nginx/includes/server_directive_common.conf;
-
-    location ~ ^/forms/(.*) {
-        return 301 /$1;
-    }
-
-    access_log  /var/log/nginx/kpi.access.log with_host;
-    error_log   /var/log/nginx/kpi.error.log;
-
-    location /static {
-        alias /srv/www/kpi;
-    }
-
-    location / {
-        # Proxy through uWSGI.
-        ${kpi_include_uwsgi_pass}
-
-        # Debug proxying directly to container.
-        ${kpi_include_proxy_pass}
-    }
-}
-
 # KoBoForm public HTTP
 server {
     listen      80;
-    server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME};
+    server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOFORM_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
 
     include /etc/nginx/includes/server_directive_common.conf;
 
