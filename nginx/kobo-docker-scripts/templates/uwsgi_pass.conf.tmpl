@@ -7,7 +7,6 @@ uwsgi_pass ${container_name}:${container_port};
 # For setting HTTP headers, see http://stackoverflow.com/a/14133533/1877326.
 uwsgi_param HTTP_X_REAL_IP $remote_addr;
 uwsgi_param HTTP_X_FORWARDED_FOR $remote_addr;
-# uwsgi_param HTTP_X_FORWARDED_PROTO $scheme;
 include /etc/nginx/uwsgi_params;
 
 # Support longer query strings. See issue #147

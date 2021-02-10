@@ -41,6 +41,7 @@ services:
         aliases:
           - kobocat
           - kobocat.docker.container
+          - kobocat.internal
 
   kpi:
     image: kobotoolbox/kpi:2.021.05
@@ -80,6 +81,7 @@ services:
         aliases:
           - kpi
           - kpi.docker.container
+          - kpi.internal
 
   nginx:
     image: nginx:1.19
@@ -104,6 +106,7 @@ services:
       kobo-fe-network:
         aliases:
           - nginx
+          - nginx.internal
 
   enketo_express:
     image: kobotoolbox/enketo-express-extra-widgets:2.5.6
@@ -125,6 +128,7 @@ services:
       kobo-fe-network:
         aliases:
           - enketo_express
+          - enketo_express.internal
 
 networks:
   kobo-fe-network:
