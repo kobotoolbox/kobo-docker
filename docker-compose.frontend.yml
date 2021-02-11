@@ -98,6 +98,7 @@ services:
         - ./.vols/static:/srv/www:ro
         - ./log/nginx:/var/log/nginx
         - ./.vols/kobocat_media_uploads:/media
+        - ./.vols/kpi_media/__public:/srv/kpi_media/__public:ro
         - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
         - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
     restart: always
