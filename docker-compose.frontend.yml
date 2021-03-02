@@ -44,7 +44,7 @@ services:
           - kobocat.docker.container
 
   kpi:
-    image: kobotoolbox/kpi:2.021.06a
+    image: kobotoolbox/kpi:2.021.09
     hostname: kpi
     env_file:
       - ../kobo-env/envfile.txt
