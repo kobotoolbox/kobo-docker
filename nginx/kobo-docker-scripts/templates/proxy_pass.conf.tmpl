@@ -8,3 +8,7 @@ proxy_set_header X-Forwarded-For $remote_addr;
 proxy_set_header X-Forwarded-Proto $scheme;
 proxy_set_header X-Forwarded-Host ${container_x_forwarded_host}${container_public_port};
 proxy_redirect off;
+
+# Add ranges support.
+# Useful to enable fast calculation for hash of content accessible by URL
+proxy_force_ranges on;
