@@ -107,6 +107,11 @@ server {
         alias /srv/www/kpi;
     }
 
+    # public media, e.g. custom logos (KPI `ConfigurationFile`s)
+    location /media/__public {
+        alias /srv/kpi_media/__public;
+    }
+
     error_page 418 = /static/html/Offline.html;
 
     location / {

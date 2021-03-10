@@ -44,7 +44,7 @@ services:
           - kobocat.internal
 
   kpi:
-    image: kobotoolbox/kpi:2.021.05
+    image: kobotoolbox/kpi:2.021.09
     hostname: kpi
     env_file:
       - ../kobo-env/envfile.txt
@@ -99,6 +99,7 @@ services:
         - ./.vols/static:/srv/www:ro
         - ./log/nginx:/var/log/nginx
         - ./.vols/kobocat_media_uploads:/media
+        - ./.vols/kpi_media/__public:/srv/kpi_media/__public:ro
         - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
         - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
     restart: always
@@ -109,7 +110,7 @@ services:
           - nginx.internal
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:2.5.6
+    image: kobotoolbox/enketo-express-extra-widgets:2.6.2
     env_file:
       - ../kobo-env/envfile.txt
     environment:
