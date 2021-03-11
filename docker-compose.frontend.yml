@@ -108,7 +108,7 @@ services:
           - nginx
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:2.6.2
+    image: kobotoolbox/enketo-express-extra-widgets:2.5.6
     env_file:
       - ../kobo-env/envfile.txt
     environment:
