@@ -5,7 +5,7 @@ version: '3'
 
 services:
   kobocat:
-    image: nikolaik/python-nodejs:python3.8-nodejs10  # ToDo change to new KoBo image of KoBoKITTEN
+    image: kobotoolbox/kobocat:beta-f3f9638
     hostname: kobocat
     env_file:
       - ../kobo-env/envfile.txt
