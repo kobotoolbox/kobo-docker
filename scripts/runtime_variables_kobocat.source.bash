@@ -19,8 +19,6 @@ if [[ ! -z "${PUBLIC_DOMAIN_NAME}" ]]; then
     # OTHER
     export KOBOCAT_AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
     export KOBOCAT_AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
-    export KPI_URL="${KOBOFORM_URL}"
-    export KPI_INTERNAL_URL="${KOBOFORM_INTERNAL_URL}"  # Copy the same logic as before but why do we need another variable?
     export DJANGO_DEBUG="${KOBOCAT_DJANGO_DEBUG}"
     export RAVEN_DSN="${KOBOCAT_RAVEN_DSN}"
 else
