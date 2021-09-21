@@ -44,7 +44,7 @@ services:
           - kobocat.internal
 
   kpi:
-    image: kobotoolbox/kpi:2.021.34c
+    image: kobotoolbox/kpi:2.021.34d
     hostname: kpi
     env_file:
       - ../kobo-env/envfile.txt
