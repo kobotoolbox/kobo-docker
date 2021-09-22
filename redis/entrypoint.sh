@@ -28,6 +28,11 @@ if [[ -z "$REDIS_PASSWORD" ]]; then
     sed -i 's/requirepass ""//g' "$REDIS_CONF_FILE"
 fi
 
+if [[ -z "$REDIS_CACHE_MAX_MEMORY" ]]; then
+    sed -i 's/maxmemory mb//g' "$REDIS_CONF_FILE"
+    sed -i 's/maxmemory-policy volatile-ttl//g' "$REDIS_CONF_FILE"
+fi
+
 # Make logs directory writable
 chown -R redis:redis "$REDIS_LOG_DIR"
 chown redis:redis "$REDIS_CONF_FILE"
