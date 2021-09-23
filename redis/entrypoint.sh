@@ -21,7 +21,7 @@ fi
 apt-get update && apt-get -y install gettext-base
 
 cat "$REDIS_CONF_FILE.tmpl" \
-      | envsubst '${CONTAINER_IP} ${REDIS_PASSWORD}' \
+      | envsubst '${CONTAINER_IP} ${REDIS_PASSWORD} ${REDIS_CACHE_MAX_MEMORY}' \
         > "$REDIS_CONF_FILE"
 
 if [[ -z "$REDIS_PASSWORD" ]]; then
