@@ -17,4 +17,4 @@ bash $KOBO_DOCKER_SCRIPTS_DIR/post_startup.sh &
 echo "Launching official entrypoint..."
 # `exec` here is important to pass signals to the database server process;
 # without `exec`, the server will be terminated abruptly with SIGKILL (see #276)
-exec bash /entrypoint.sh mongod
+exec docker-entrypoint.sh mongod
