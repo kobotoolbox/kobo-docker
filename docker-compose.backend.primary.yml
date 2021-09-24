@@ -1,4 +1,4 @@
-# For public, HTTPS servers.
+# For primary back-end server
 version: '2.2'
 
 services:
@@ -13,21 +13,3 @@ services:
     extends:
       file: docker-compose.backend.template.yml
       service: mongo
-
-  redis_main:
-    extends:
-      file: docker-compose.backend.template.yml
-      service: redis_main
-    environment:
-      - KOBO_REDIS_SERVER_ROLE=main
-
-  redis_cache:
-    extends:
-      file: docker-compose.backend.template.yml
-      service: redis_cache
-    environment:
-      - KOBO_REDIS_SERVER_ROLE=cache
-
-networks:
-  kobo-be-network:
-    driver: bridge

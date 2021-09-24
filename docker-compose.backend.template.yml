@@ -42,6 +42,8 @@ services:
       - ../kobo-env/envfile.txt
       - ../kobo-env/envfiles/databases.txt
       - ../kobo-env/envfiles/aws.txt
+    environment:
+      - KOBO_REDIS_SERVER_ROLE=main
     volumes:
       - ./redis:/kobo-docker-scripts
       - ./backups/redis:/srv/backups
@@ -59,6 +61,8 @@ services:
     image: redis:3.2
     env_file:
       - ../kobo-env/envfiles/databases.txt
+    environment:
+      - KOBO_REDIS_SERVER_ROLE=cache
     volumes:
       - ./.vols/redis_cache_data/:/data/
       - ./redis/redis-enketo-cache.conf.tmpl:/etc/redis/redis.conf.tmpl:ro

@@ -1,0 +1,28 @@
+# Override for secondary back-end server
+
+services:
+  postgres:
+    volumes:
+      - ../kobo-env/postgres/secondary/postgres.conf:/kobo-docker-scripts/secondary/postgres.conf
+    ports:
+      - 5432:5432
+    extra_hosts:
+      # Change `x.x.x.x` for the primary back-end server
+      - postgres.kobo.private:x.x.x.x
+      - primary.postgres.kobo.private:x.x.x.x
+
+# Uncomment the section below if you want to start redis containers from
+# the secondary back-end server
+#  redis_main:
+#    extends:
+#      file: docker-compose.backend.template.yml
+#      service: redis_main
+#    ports:
+#      - 6379:6379
+#
+#  redis_cache:
+#    extends:
+#      file: docker-compose.backend.template.yml
+#      service: redis_cache
+#    ports:
+#      - 6380:6380
