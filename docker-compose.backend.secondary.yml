@@ -1,4 +1,4 @@
-# For public, HTTPS servers.
+# For secondary back-end server
 version: '2.2'
 
 services:
@@ -8,7 +8,3 @@ services:
       service: postgres
     environment:
       - KOBO_POSTGRES_DB_SERVER_ROLE=secondary
-
-networks:
-  kobo-be-network:
-    driver: bridge

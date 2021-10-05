@@ -1,4 +1,4 @@
-# For public, HTTPS servers.
+# Override for primary back-end server
 version: '2.2'
 
 services:
@@ -29,7 +29,12 @@ services:
         aliases:
           - mongo.kobo.private
 
+  # Comment out section (`redis_main` and `redis_cache`) below if you want to
+  # start redis containers from the secondary back-end server
   redis_main:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: redis_main
     # Uncomment `ports` section if you want to expose ports (e.g. use as separated servers)
     # Before uncommenting, be sure you have a firewall configured to prevent these ports
     # from being publicly accessible
@@ -42,6 +47,9 @@ services:
           - redis-main.kobo.private
 
   redis_cache:
+    extends:
+      file: docker-compose.backend.template.yml
+      service: redis_cache
     # Uncomment `ports` section if you want to expose ports (e.g. use as separated servers)
     # Before uncommenting, be sure you have a firewall configured to prevent these ports
     # from being publicly accessible
@@ -52,3 +60,8 @@ services:
       kobo-be-network:
         aliases:
           - redis-cache.kobo.private
+
+# Comment out section below if you want to expose ports
+networks:
+  kobo-be-network:
+    driver: bridge

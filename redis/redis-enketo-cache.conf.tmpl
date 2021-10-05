@@ -62,5 +62,7 @@ hz 10
 aof-rewrite-incremental-fsync yes
 
 requirepass "${REDIS_PASSWORD}"
+maxmemory ${REDIS_CACHE_MAX_MEMORY}mb
+maxmemory-policy volatile-ttl
 
 #include /etc/redis/conf.d/local.conf
