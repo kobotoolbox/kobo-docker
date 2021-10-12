@@ -21,11 +21,16 @@ fi
 apt-get update && apt-get -y install gettext-base
 
 cat "$REDIS_CONF_FILE.tmpl" \
-      | envsubst '${CONTAINER_IP} ${REDIS_PASSWORD}' \
+      | envsubst '${CONTAINER_IP} ${REDIS_PASSWORD} ${REDIS_CACHE_MAX_MEMORY}' \
         > "$REDIS_CONF_FILE"
 
 if [[ -z "$REDIS_PASSWORD" ]]; then
     sed -i 's/requirepass ""//g' "$REDIS_CONF_FILE"
+fi
+
+if [[ -z "$REDIS_CACHE_MAX_MEMORY" ]]; then
+    sed -i 's/maxmemory mb//g' "$REDIS_CONF_FILE"
+    sed -i 's/maxmemory-policy volatile-ttl//g' "$REDIS_CONF_FILE"
 fi
 
 # Make logs directory writable
