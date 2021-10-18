@@ -103,6 +103,7 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
 	
 	```
 	apt-cache policy postgresql-9.4-postgis-2.5
+	POSTGIS_VERSION=$(apt-cache policy postgresql-9.4-postgis-2.5|grep Candidate:|awk '{print $2}')
 	apt-get install -y --no-install-recommends postgresql-9.4-postgis-2.5=${POSTGIS_VERSION} postgresql-9.4-postgis-2.5-scripts=${POSTGIS_VERSION}
 	apt-get upgrade
 	```
@@ -124,12 +125,12 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
 	 ```
 	 \c postgres;
 	 CREATE EXTENSION IF NOT EXISTS postgis;
-	 ALTER EXTENSION postgis UPDATE TO '2.5.0';
+	 ALTER EXTENSION postgis UPDATE TO '2.5.3';
 	 CREATE EXTENSION IF NOT EXISTS postgis_topology;
-	 ALTER EXTENSION postgis_topology UPDATE TO '2.5.0';
+	 ALTER EXTENSION postgis_topology UPDATE TO '2.5.3';
 	 CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
 	 CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
-	 ALTER EXTENSION postgis_tiger_geocoder UPDATE TO '2.5.0';
+	 ALTER EXTENSION postgis_tiger_geocoder UPDATE TO '2.5.3';
 	
 	 CREATE DATABASE template_postgis;
 	 UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template_postgis';
@@ -141,8 +142,8 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
 	 CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
 	
 	 \c kobotoolbox;
-	 ALTER EXTENSION postgis UPDATE TO '2.5.0';
-	 ALTER EXTENSION postgis_topology UPDATE TO '2.5.0';
+	 ALTER EXTENSION postgis UPDATE TO '2.5.3';
+	 ALTER EXTENSION postgis_topology UPDATE TO '2.5.3';
 	 CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
 	 CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
 	 \q
@@ -209,11 +210,11 @@ This is a step-by-step procedure to upgrade `PostgreSQL` and `MongoDB` container
         image: kobotoolbox/postgres:latest
     ```
     
-    Change it to `mdillon/postgis:9.5` and comment `10_init_postgres.bash` script.
+    Change it to `postgis/postgis:9.5-2.5` and comment `10_init_postgres.bash` script.
     
     ```
     postgres:
-        image: mdillon/postgis:9.5
+        image: postgis/postgis:9.5-2.5
         ...
         volumes:
           ...

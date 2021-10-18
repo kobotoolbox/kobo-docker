@@ -3,7 +3,7 @@ version: '2.1'
 
 services:
   postgres:
-    image: mdillon/postgis:9.5
+    image: postgis/postgis:9.5-2.5
     hostname: postgres
     env_file:
       - ../kobo-deployments/envfile.txt
