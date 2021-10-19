@@ -1,4 +1,6 @@
-# For public, HTTPS servers.
+# Back-end containers template.
+# The primary and secondary compose files extend this file
+
 version: '2.2'
 
 services:
