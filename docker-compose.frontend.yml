@@ -34,7 +34,6 @@ services:
       - ./scripts/wait_for_mongo.bash:/srv/init/wait_for_mongo.bash:ro
       - ./scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash:ro
       - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
-      - ./uwsgi/kc_uwsgi.ini:/srv/src/kobocat/docker/kobocat.ini
     restart: always
     networks:
       kobo-fe-network:
@@ -70,7 +69,6 @@ services:
       - ./scripts/wait_for_mongo.bash:/srv/init/wait_for_mongo.bash:ro
       - ./scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash:ro
       - ./scripts/runtime_variables_kpi.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
-      - ./uwsgi/kpi_uwsgi.ini:/srv/src/kpi/uwsgi.ini
       # Persistent storage for FileFields when S3 not used (e.g. exports, uploaded map layers)
       - ./.vols/kpi_media:/srv/src/kpi/media
       # Allow access to KoBoCAT media uploads within KPI
