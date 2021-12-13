@@ -5,7 +5,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:2.021.47
+    image: kobotoolbox/kobocat:beta
     hostname: kobocat
     env_file:
       - ../kobo-env/envfile.txt
@@ -43,7 +43,7 @@ services:
           - kobocat.internal
 
   kpi:
-    image: kobotoolbox/kpi:2.021.47
+    image: kobotoolbox/kpi:beta
     hostname: kpi
     env_file:
       - ../kobo-env/envfile.txt
