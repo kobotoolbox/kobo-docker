@@ -274,7 +274,7 @@ free.
       volumes:
         - ./.vols/mongo:/data/db
     ```
-    Then start the container: `docker-compose start mongo`
+    Then start the container: `./run.py -cb up --force-recreate mongo`
 
 1. Upgrade to 3.2
 
@@ -288,7 +288,7 @@ free.
       image: mongo:3.2
       ...
     ```
-    Then start the container: `docker-compose start mongo`
+    Then start the container: `./run.py -cb up --force-recreate mongo`
 
 1. Upgrade to 3.4
 
@@ -302,7 +302,7 @@ free.
       image: mongo:3.4
       ...
     ```
-    Then start the container: `docker-compose start mongo`
+    Then start the container: `./run.py -cb up --force-recreate mongo`
 
     Done!
 
