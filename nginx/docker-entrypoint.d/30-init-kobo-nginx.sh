@@ -77,3 +77,4 @@ cat ${KOBO_DOCKER_SCRIPTS_DIR}/templates/nginx_site_default.conf.tmpl | envsubst
 # Copy includes files
 cat ${KOBO_DOCKER_SCRIPTS_DIR}/templates/include.https_redirection.conf.tmpl | envsubst "${templated_var_refs}" > /etc/nginx/includes/https_redirection.conf
 cp ${KOBO_DOCKER_SCRIPTS_DIR}/include.server_directive_common.conf /etc/nginx/includes/server_directive_common.conf
+cp ${KOBO_DOCKER_SCRIPTS_DIR}/include.protected_directive.conf /etc/nginx/includes/protected_directive.conf
