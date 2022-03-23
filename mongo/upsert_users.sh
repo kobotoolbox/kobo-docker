@@ -98,7 +98,10 @@ if [[ -d "${MONGO_DATA}/" ]] && [[ -n "$(ls -A ${MONGO_DATA})" ]]; then
     # credentials change during setup.
     if [[ -f "${BASE_DIR}/${UPSERT_DB_USERS_TRIGGER_FILE}" ]]; then
         mongod --quiet &
-        sleep 5  # wait for mongo to be ready
+        until (echo > /dev/tcp/127.0.0.1/27017) 2> /dev/null; do
+            echo "Waiting for local MongoDB deamon to start...";
+            sleep 5;
+        done
         delete_old_users
         upsert_users
         mongod --quiet --shutdown
