@@ -5,7 +5,7 @@ version: '3'
 
 services:
   kobocat:
-    image: kobotoolbox/kobocat:2.022.08b
+    image: kobotoolbox/kobocat:beta
     hostname: kobocat
     env_file:
       - ../kobo-env/envfile.txt
@@ -43,7 +43,7 @@ services:
           - kobocat.internal
 
   kpi:
-    image: kobotoolbox/kpi:2.022.08a
+    image: kobotoolbox/kpi:beta
     hostname: kpi
     env_file:
       - ../kobo-env/envfile.txt
@@ -108,7 +108,7 @@ services:
           - nginx.internal
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:2.8.1
+    image: kobotoolbox/enketo-express-extra-widgets:3.0.4
     env_file:
       - ../kobo-env/envfile.txt
     environment:
@@ -119,10 +119,6 @@ services:
       # Override Enketo Express icons.
       - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
       - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
-      - ./.vols/enketo_express/checksum:/srv/src/enketo_express/checksum
-      - ./.vols/enketo_express/build/css:/srv/src/enketo_express/public/css
-      - ./.vols/enketo_express/build/js:/srv/src/enketo_express/public/js/build
-      - ./.vols/enketo_express/build/locales:/srv/src/enketo_express/locales/build
     networks:
       kobo-fe-network:
         aliases:
