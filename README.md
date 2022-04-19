@@ -1,17 +1,18 @@
 # kobo-docker
 
 1. [Introduction](#introduction)
-1. [_Two PostgreSQL databases are now required_](#two-postgresql-databases-are-now-required)
-1. [Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier)
-1. [Architecture](#architecture)
-1. [Setup procedure](#setup-procedure)
-1. [Usage](#usage)
+2. [_Two PostgreSQL databases are now required_](#two-postgresql-databases-are-now-required)
+3. [Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier)
+4. [Important notice when upgrading from commit between `51aeccb` (March 11, 2019) and `TBC` (May XX, 2022)](#important-notice-when-upgrading-from-commit-between-51aeccb-march-11-2019-and-tbc-may-xx-2022)
+5. [Architecture](#architecture)
+6. [Setup procedure](#setup-procedure)
+7. [Usage](#usage)
     - Start/stop
     - Backups
     - Restore backups
     - Maintenance
-1. [Troubleshooting](#troubleshooting)
-1. [Redis performance](#redis-performance)
+8. [Troubleshooting](#troubleshooting)
+9. [Redis performance](#redis-performance)
 
 
 ## Introduction
@@ -37,6 +38,11 @@ Running current releases of KoBoToolbox requires you to upgrade your Postgres an
 
 If you do not, the application may not start or your data may not be visible.
 
+## Important notice when upgrading from commit between [`51aeccb` (March 11, 2019)](https://github.com/kobotoolbox/kobo-docker/commit/51aeccb91316d640f30e28190b936ae48d56c468) and [`TBC` (May XX, 2022)]()
+
+Running current releases of KoBoToolbox requires you to upgrade your Postgres and Mongo databases. Please follow [these instructions](./doc/May-2022-Upgrade.md).
+
+If you do not, the application may not start or your data may not be visible.
 
 ## Architecture
 
