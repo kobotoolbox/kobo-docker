@@ -63,7 +63,7 @@ else
     fi
 
     if [[ ${USE_S3} -eq "$TRUE" ]]; then
-        apt-get install -y curl python3-pip --quiet=2 > /dev/null
+        apt-get install -y curl python3-pip libffi-dev --quiet=2 > /dev/null
         # Update pip to latest version compatible with Python 3.5
         curl https://bootstrap.pypa.io/pip/3.5/get-pip.py -o /tmp/get-pip.py
         python3 /tmp/get-pip.py
