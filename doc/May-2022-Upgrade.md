@@ -98,13 +98,13 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 
 1. Stop the server
 
-	```
-	root@postgres:/# su - postgres -c '/usr/lib/postgresql/14/bin/pg_ctl -D /var/lib/postgresql/data14/ stop -m fast'
-	```
+    ```
+    root@postgres:/# su - postgres -c '/usr/lib/postgresql/14/bin/pg_ctl -D /var/lib/postgresql/data14/ stop -m fast'
+    ```
 
     > ```
-	> ...
-	> server stopped
+    > ...
+    > server stopped
     > ```
 
 
@@ -195,11 +195,11 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 1. Check everything is ok
 
     ```shell
-	 root@postgres:/# su - postgres -c "/usr/lib/postgresql/14/bin/pg_upgrade \
-	 --check --old-datadir=/var/lib/postgresql/data/ \
-	 --new-datadir=/var/lib/postgresql/data14/ \
-	 --old-bindir=/usr/lib/postgresql/9.5/bin \
-	 --new-bindir=/usr/lib/postgresql/14/bin -U $POSTGRES_USER"
+     root@postgres:/# su - postgres -c "/usr/lib/postgresql/14/bin/pg_upgrade \
+     --check --old-datadir=/var/lib/postgresql/data/ \
+     --new-datadir=/var/lib/postgresql/data14/ \
+     --old-bindir=/usr/lib/postgresql/9.5/bin \
+     --new-bindir=/usr/lib/postgresql/14/bin -U $POSTGRES_USER"
     ```
     Results should look like this:
 
@@ -234,9 +234,6 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     > ```
     > Upgrade Complete
     > ---------------
-    > Optimizer statistics are not transferred by pg_upgrade so,
-    > once you start the new server, consider running:
-    > ./analyze_new_cluster.sh
     > ```
 
 1. Edit composer file `docker-compose.backend.template.yml` again
@@ -278,7 +275,7 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     
     Once again, you may need to adapt the snippet below according your current configuration.
     
-	_Notes: You may need to copy lines below one by one because sometimes copying the whole block does not work as expected._
+    _Notes: You may need to copy lines below one by one because sometimes copying the whole block does not work as expected._
 
     ```
     \c postgres;
@@ -330,11 +327,212 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 
 ### MongoDB
 
-**Upgrading Mongo is easy and only implies a couple of stop/start.**
+**Upgrading Mongo is easy and only implies a couple of stop/start** if you are already using `WiredTiger` engine.
 
-1. Upgrade to WiredEngine 
-    Link to HackMD 
+Please note that MongoDB [recommends to use an XFS partition](https://www.mongodb.com/docs/manual/administration/production-notes/#kernel-and-file-systems) to store its data.
 
+> With the WiredTiger storage engine, using XFS is strongly recommended for data bearing nodes to avoid performance issues that may occur when using EXT4 with WiredTiger.
+
+
+
+1. Upgrade to `WiredTiger` engine if MongoDB is not already using it.
+
+    To validate if your MongoDB instance is using the correct engine, run this command.
+    
+    ```shell
+    user@computer:kobo-install$ python run.py --cb exec mongo bash
+    root@mongo:/# mongo -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" admin
+    > db.serverStatus().storageEngine
+    ```
+       
+    You should get something similar to: 
+       
+    ```
+    {
+       "name" : "wiredTiger" 
+       ...
+    }
+    ```
+       
+    If it is the case, you can go to next step **Update to 3.6**. Otherwise, please follow the steps below to upgrade to `WiredTiger`. 
+    
+    You can use mongodump and mongorestore, but in few case the engine is not updated to `WiredEngine`.
+       
+    In the steps below, we assume the XFS partition is mounted at `/mnt/data/` and kobo-install is installed in `/home/ubuntu`. Please adapt accordingly to your configuration. Moreover, ports 27017 and 28017 must open locally.
+       
+    1. Create a temporary folder to start docker-compose file
+    
+        ```shell
+        user@computer:~$ mkdir mongo-replica && cd mongo-replica 
+        ```
+    
+       1. Create a new docker compose file, i.e.: `docker-compose.yml`, to start a secondary MongoDB instance (i.e. a read replica)
+        
+        ```yml
+        version: '2.2'
+            
+        services:
+          mongo_secondary:
+            image: mongo:3.4
+            hostname: mongo_secondary
+            environment:
+              - MONGO_DATA=/data/db
+              - KEY_FILE_SECRET=<base64-characters-only>
+            env_file:
+              - /home/ubuntu/kobo-env/envfile.txt
+              - /home/ubuntu/kobo-env/envfiles/databases.txt
+              - /home/ubuntu/kobo-env/envfiles/aws.txt
+            volumes:
+              - /mnt/mongo:/data/db
+              - ./kobo:/kobo
+            ports:
+              - 28017:27017
+            command: "bash /kobo/entrypoint.sh"
+            extra_hosts:
+              - mongo:<instance-ip>
+        ```
+
+        Change:
+        
+        - `<instance-ip>` to the current local ip of the server
+        - `<base64-characters-only>` to random base64 characters long and secure string (see https://passwordsgenerator.net/)
+        - `/home/ubuntu` to match your current location
+        - `/mnt/mongo` to match your XFS mount
+
+    1. Within the same folder, create another folder `kobo` and save the following content as `entrypoint.sh`
+    
+        ```bash
+        #!/usr/bin/env bash
+        # set -e
+        
+        echo "$KEY_FILE_SECRET" > /keyFile
+        chmod 600 /keyFile
+        chown mongodb:mongodb /keyFile
+        exec docker-entrypoint.sh mongod --replSet replicaSet1 --keyFile /keyFile
+        ```
+    
+    1. Start the read-replica 
+    
+        ```bash 
+        user@computer:mongo-replica$ docker-compose up
+        ```
+    
+        _Notes: Do not forget to run the command within a tmux/byobu session to not lose the connection to the server. Otherwise, use `-d` option to start the container_
+    
+    
+    1. Modify current MongoDB settings
+    
+     - Edit `/home/ubuntu/kobo-docker/mongo/entrypoint.sh`
+        
+        ```bash
+        ...
+        #exec bash /entrypoint.sh mongod
+        
+        echo "$KEY_FILE_SECRET" > /keyFile
+        chmod 600 /keyFile
+        chown mongodb:mongodb /keyFile
+        exec docker-entrypoint.sh mongod --replSet replicaSet1 --keyFile /keyFile
+        ```
+    
+     - Edit `/home/ubuntu/kobo-docker/docker-compose.backend.primary.override.yml`
+        Add the section below to `mongo` service
+    
+        ```yml
+        environment:
+          - KEY_FILE_SECRET=<same_key_as_replica_read>
+        ```
+    
+    1. Restart primary MongoDB (without daemon mode to validate everything is running smoothly)
+        
+        ```bash
+        user@computer:kobo-install$ ./run.py -cb up --force-recreate mongo
+        ```
+            
+    1. Enter primary MongoDB container
+    
+        ```bash  
+        user@computer:kobo-install$ ./run.py -cb exec mongo bash
+        root@mongo:/$ mongo -u root -p "$MONGO_INITDB_ROOT_PASSWORD" admin
+        ...
+        > rs.initiate()
+        > rs.add({"host":"<secondary_node_ip>:28017", "priority": 0.5})
+        ```
+        
+        Change:
+        - `<secondary_node_ip>` to current local ip of the server
+        
+    **Replication should start at this moment**
+    
+    1. Test whether replication is successful
+    
+        ```bash
+        # Number of instances on primary node
+        replicaSet1:PRIMARY> db.instances.count()
+        10000
+        
+        # Number of instances on secondary node
+        # Might need to first run rs.slaveOk() or rs.secondaryOk()
+        replicaSet1:SECONDARY> db.instances.count()
+        10000
+        
+        # id of last document on primary node
+        replicaSet1:PRIMARY> db.instances.find().sort({"_id": -1}).limit(1)
+        { "_id" : 1234567 ...
+        
+        # id of last document on secondary node
+        replicaSet1:SECONDARY> db.instances.find().sort({"_id": -1}).limit(1)
+        { "_id" : 1234567 ...
+        
+        # id of the first document on primary node
+        replicaSet1:PRIMARY> db.instances.find().sort({"_id": 1}).limit(1)
+        { "_id" : 1, ...
+        
+        # id of the secondary document on primary node
+        replicaSet1:SECONDARY> db.instances.find().sort({"_id": 1}).limit(1)
+        { "_id" : 1, ...
+        
+        ```
+    
+    
+    1. Make MongoDB use new `/mnt/mongo`
+    
+        1. Stop MongoDB primary node
+        
+            ```
+            user@computer:kobo-install$ ./run.py -cb stop mongo
+            ```
+        
+        1. Stop read-replica 
+        
+            ```
+            user@computer:mongo-replica$ docker-compose down
+            ```
+        
+        1. Create a symlink of `/mnt/mongo` to `kobo-docker/.vols/mongo`
+        1. Restart MongoDB in standalone (remove `--replSet replicaSet1 --keyFile /keyFile` from the `entrypoint.sh` file)
+        1. Create an admin user on MongoDB `local` db (db used for replicaSets)
+        
+            ```bash  
+            user@computer:kobo-install$ ./run.py -cb exec mongo bash
+            root@mongo:/$ mongo -u root -p "$MONGO_INITDB_ROOT_PASSWORD" admin
+            > db.createUser(
+               {
+                  user: "localRoot",
+                  pwd: "<randomPassword>",
+                  roles: [ { role: "dbAdmin", db: "local" } ]
+               }
+            )
+            > exit
+            root@mongo:/$ mongo -u localRoot -p <randomPassword> admin
+            > use local;
+            > db.dropDatabase();
+            > exit
+            root@mongo:/$ mongo -u root -p "$MONGO_INITDB_ROOT_PASSWORD" admin
+            > db.dropUser('localRoot');
+            ```
+           
+    **You can now run the command described above to validate your MongoDB isntance is using `WiredTiger`.**      
+       
 1. Upgrade to 3.6
 
     1. Stop `mongo` container
@@ -345,49 +543,49 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
        
     1. Edit composer file `docker-compose.primary.backend.template.yml` and change image to `mongo:3.6`
 
-	    ```
-	    mongo:
-	      image: mongo:3.6
-	    ```
+        ```
+        mongo:
+          image: mongo:3.6
+        ```
    
     1. Start the container: 
-    	
-    	```shell
-    	user@computer:kobo-install$ python run.py --cb up --force-recreate mongo  
-   		```
-   		
+        
+        ```shell
+        user@computer:kobo-install$ python run.py --cb up --force-recreate mongo  
+           ```
+           
     1. Wait for MongoDB to be ready. You should see in the console the output below: 
 
-	    ```
-	    mongo_1        | {
-	    mongo_1        | 	"numIndexesBefore" : 3,
-	    mongo_1        | 	"numIndexesAfter" : 3,
-	    mongo_1        | 	"note" : "all indexes already exist",
-	    mongo_1        | 	"ok" : 1
-	    mongo_1        | }
-	    ```
+        ```
+        mongo_1        | {
+        mongo_1        |     "numIndexesBefore" : 3,
+        mongo_1        |     "numIndexesAfter" : 3,
+        mongo_1        |     "note" : "all indexes already exist",
+        mongo_1        |     "ok" : 1
+        mongo_1        | }
+        ```
 
     1. From another terminal, enter the container and update compatibility version.
 
-	    ```shell
-	    root@mongo:/# mongo -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" admin
-	    > db.adminCommand( { setFeatureCompatibilityVersion: "3.6" } )
-	    { "ok" : 1 }
-	    > exit
-	    bye
-	    root@mongo:/# exit
-	    ```
-	    
+        ```shell
+        root@mongo:/# mongo -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" admin
+        > db.adminCommand( { setFeatureCompatibilityVersion: "3.6" } )
+        { "ok" : 1 }
+        > exit
+        bye
+        root@mongo:/# exit
+        ```
+        
 1. Upgrade to 4.0, 4.2, 4.4 and 5.0
 
     Repeat step above for each version and replace the version accordingly.
     You **must** upgrade each version one by one.
     
     Then start the container:
-	 
-	```shell
-	 user@computer:kobo-install$ python run.py --cb up -d --force-recreate mongo     
-	```
+     
+    ```shell
+     user@computer:kobo-install$ python run.py --cb up -d --force-recreate mongo     
+    ```
 
     Done!
 
@@ -422,14 +620,14 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
         ```
    1. Update `docker-compose.backend.template.yml` to map correct volume
 
-	    ```
-	    postgres:
-	        image: postgis/postgis:14-3.2
-	        ...
-	        volumes:
-	          - ./.vols/db:/var/lib/postgresql/data
-	          ...
-	    ```
+        ```
+        postgres:
+            image: postgis/postgis:14-3.2
+            ...
+            volumes:
+              - ./.vols/db:/var/lib/postgresql/data
+              ...
+        ```
 
    
 
