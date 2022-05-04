@@ -29,7 +29,7 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     user@computer:kobo-install$ python run.py --stop  
     ```
 
-2. Edit composer file `docker-compose.primary.backend.template.yml`
+1. Edit composer file `docker-compose.primary.backend.template.yml`
 
    - Temporarily, comment `postgis:14.2-3` to use PostgreSQL 9.5 with PostGIS 2.5  
    - Add `- ./.vols/db14:/var/lib/postgresql/data14` below `- ./.vols/db:/var/lib/postgresql/data` 
@@ -37,7 +37,7 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
    It should look like this:
 
    ```
-   # image: postgis/postgis:14.2-3
+   # image: postgis/postgis:14-3.2
    image: postgis/postgis:9.5-2.5
     hostname: postgres
     env_file:
@@ -49,13 +49,13 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
       - ./.vols/db14:/var/lib/postgresql/data14
    ```
 
-4. Run a one-off `postgres` container
+1. Run a one-off `postgres` container
 
     ```shell
     user@computer:kobo-install$ python run.py -cb run --rm postgres bash  
     ```
     
-5. Install PostgreSQL 14
+1. Install PostgreSQL 14
 
     ```shell
     root@postgres:/# apt-get update
@@ -64,20 +64,18 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     ```
 
     _Store the PostGIS version in a variable to use later_
-    ```
-    POSTGIS_VERSION_14=$(apt-cache policy postgresql-14-postgis-3|grep Candidate:|awk '{print $2}')
-    ```
-
-    ```
-    apt-get install -y --no-install-recommends postgresql-14-postgis-3=${POSTGIS_VERSION_14} postgresql-14-postgis-3-scripts=${POSTGIS_VERSION_14} postgis postgresql-contrib-14
-    apt-get upgrade
+    
+    ```shell
+    root@postgres:/# POSTGIS_VERSION_14=$(apt-cache policy postgresql-14-postgis-3|grep Candidate:|awk '{print $2}')
+    root@postgres:/# apt-get install -y --no-install-recommends postgresql-14-postgis-3=${POSTGIS_VERSION_14} postgresql-14-postgis-3-scripts=${POSTGIS_VERSION_14} postgis postgresql-contrib-14
+    root@postgres:/# apt-get upgrade
     ```
 
-6. Init DB
+1. Init DB
 
-    ```
-    chown -R postgres:postgres /var/lib/postgresql/data14/
-    su - postgres -c "/usr/lib/postgresql/14/bin/initdb -U $POSTGRES_USER --encoding=utf8 --locale=en_US.utf-8 -D /var/lib/postgresql/data14/"
+    ```shell
+    root@postgres:/# chown -R postgres:postgres /var/lib/postgresql/data14/
+    root@postgres:/# su - postgres -c "/usr/lib/postgresql/14/bin/initdb -U $POSTGRES_USER --encoding=utf8 --locale=en_US.utf-8 -D /var/lib/postgresql/data14/"
     ```
     Results should look like this:
 
@@ -86,10 +84,10 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     >      /usr/lib/postgresql/14/bin/pg_ctl -D /var/lib/postgresql/data14/ -l logfile start
     > ```
 
-7. Start PostgreSQL 14 to ensure database has been initialized successfully
+1. Start PostgreSQL 14 to ensure database has been initialized successfully
 
-    ```
-    su - postgres -c '/usr/lib/postgresql/14/bin/pg_ctl -D /var/lib/postgresql/data14/ start'
+    ```shell
+    root@postgres:/# su - postgres -c '/usr/lib/postgresql/14/bin/pg_ctl -D /var/lib/postgresql/data14/ start'
     ```
     > ```
     > ...
@@ -98,11 +96,10 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 
     Press `enter` to go back to prompt.
 
-
-7. Stop the server
+1. Stop the server
 
 	```
-	su - postgres -c '/usr/lib/postgresql/14/bin/pg_ctl -D /var/lib/postgresql/data14/ stop -m fast'
+	root@postgres:/# su - postgres -c '/usr/lib/postgresql/14/bin/pg_ctl -D /var/lib/postgresql/data14/ stop -m fast'
 	```
 
     > ```
@@ -111,31 +108,35 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     > ```
 
 
-8. Upgrade Postgres 9.5
+1. Upgrade Postgres 9.5
 
-    ```
-    apt-cache policy postgresql-9.5-postgis-3
-    POSTGIS_VERSION_95=$(apt-cache policy postgresql-9.5-postgis-3|grep Candidate:|awk '{print $2}')
-    apt-get install -y --no-install-recommends postgresql-9.5-postgis-3=${POSTGIS_VERSION_95} postgresql-9.5-postgis-3-scripts=${POSTGIS_VERSION_95}
-    apt-get upgrade
+    ```shell
+    root@postgres:/# apt-cache policy postgresql-9.5-postgis-3
+    root@postgres:/# POSTGIS_VERSION_9_5=$(apt-cache policy postgresql-9.5-postgis-3|grep Candidate:|awk '{print $2}')
+    root@postgres:/# apt-get install -y --no-install-recommends postgresql-9.5-postgis-3=${POSTGIS_VERSION_9_5} postgresql-9.5-postgis-3-scripts=${POSTGIS_VERSION_9_5}
+    root@postgres:/# apt-get upgrade
     ```
  
-9. Start PostgreSQL 9.5
+1. Start PostgreSQL 9.5
 
+    ```shell
+    root@postgres:/# su - postgres -c '/usr/lib/postgresql/9.5/bin/pg_ctl -D /var/lib/postgresql/data/ start'
     ```
-    su - postgres -c '/usr/lib/postgresql/9.5/bin/pg_ctl -D /var/lib/postgresql/data/ start'
-    ```
-    Press `enter` to go back to prompt.
-    ```
-    /usr/lib/postgresql/9.5/bin/psql -U $POSTGRES_USER -d postgres
+    
+    Press `enter` to go back to prompt and enter `psql` cli client:
+    
+    ```shell
+    root@postgres:/# /usr/lib/postgresql/9.5/bin/psql -U $POSTGRES_USER -d postgres
     ```
 
-10. Upgrade PostGIS extension
+1. Upgrade PostGIS extension
 
     You may see some warnings `WARNING:  'postgis.backend' is already set and cannot be changed until you reconnect`. That's ok, you can keep going ahead.
 
     Depending on your kobo-docker environment, databases may have other names.  
     You may need to adapt the snippet below to your curren configuration.
+    
+    _Notes: You may need to copy lines below one by one because sometimes copying the whole block does not work as expected._
     
     ```
     \c postgres;
@@ -175,25 +176,30 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     \q
     ```
     
-11. Restore postgres role
+1. Restore `postgres` role
+
     For installations created after March 2019, `postgres` role may not exist but is needed for database clusters.
 
-    ```
-    /usr/lib/postgresql/9.5/bin/psql -U "$POSTGRES_USER" -d postgres -q -c "CREATE USER postgres WITH SUPERUSER CREATEDB CREATEROLE REPLICATION BYPASSRLS ENCRYPTED PASSWORD '$POSTGRES_PASSWORD';"
+    ```shell
+    root@postgres:/# /usr/lib/postgresql/9.5/bin/psql -U "$POSTGRES_USER" -d postgres -q -c "CREATE USER postgres WITH SUPERUSER CREATEDB CREATEROLE REPLICATION BYPASSRLS ENCRYPTED PASSWORD '$POSTGRES_PASSWORD';"
     ```
     
     _If user already exists, you should see `ERROR:  role "postgres" already exists`._
 
-12. Stop PostgreSQL 9.5 
+1. Stop PostgreSQL 9.5 
 
-    ```
-    su - postgres -c '/usr/lib/postgresql/9.5/bin/pg_ctl -D /var/lib/postgresql/data/ stop -m fast'
+    ```shell
+    root@postgres:/# su - postgres -c '/usr/lib/postgresql/9.5/bin/pg_ctl -D /var/lib/postgresql/data/ stop -m fast'
     ```
     
-13. Check everything is ok
+1. Check everything is ok
 
-    ```
-    su - postgres -c "/usr/lib/postgresql/14/bin/pg_upgrade --check --old-datadir=/var/lib/postgresql/data/ --new-datadir=/var/lib/postgresql/data14/ --old-bindir=/usr/lib/postgresql/9.5/bin --new-bindir=/usr/lib/postgresql/14/bin -U $POSTGRES_USER"
+    ```shell
+	 root@postgres:/# su - postgres -c "/usr/lib/postgresql/14/bin/pg_upgrade \
+	 --check --old-datadir=/var/lib/postgresql/data/ \
+	 --new-datadir=/var/lib/postgresql/data14/ \
+	 --old-bindir=/usr/lib/postgresql/9.5/bin \
+	 --new-bindir=/usr/lib/postgresql/14/bin -U $POSTGRES_USER"
     ```
     Results should look like this:
 
@@ -213,10 +219,14 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     > *Clusters are compatible*
     > ```
 
-14. Upgrade databases
+1. Upgrade databases
 
-    ```
-    su - postgres -c "/usr/lib/postgresql/14/bin/pg_upgrade --old-datadir=/var/lib/postgresql/data/ --new-datadir=/var/lib/postgresql/data14/ --old-bindir=/usr/lib/postgresql/9.5/bin --new-bindir=/usr/lib/postgresql/14/bin -U $POSTGRES_USER"
+    ```shell
+    root@postgres:/# su - postgres -c "/usr/lib/postgresql/14/bin/pg_upgrade \
+    --old-datadir=/var/lib/postgresql/data/ \
+    --new-datadir=/var/lib/postgresql/data14/ \
+    --old-bindir=/usr/lib/postgresql/9.5/bin \
+    --new-bindir=/usr/lib/postgresql/14/bin -U $POSTGRES_USER"
     ```
 
     Results should like this:
@@ -229,7 +239,7 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     > ./analyze_new_cluster.sh
     > ```
 
-15. Edit composer file `docker-compose.backend.template.yml` again
+1. Edit composer file `docker-compose.backend.template.yml` again
 
     Locate
 
@@ -250,15 +260,25 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
           ...
     ```
 
-16. Update PosGIS extensions once again
+1. Update PosGIS extensions once again
 
     Start again a one-off  `postgres` container (see Point 3 for commands)
 
     Start the server
+    
+    ```shell
+    root@postgres:/# su - postgres -c '/usr/lib/postgresql/14/bin/pg_ctl -D /var/lib/postgresql/data/ start'
     ```
-    su - postgres -c '/usr/lib/postgresql/14/bin/pg_ctl -D /var/lib/postgresql/data/ start'
+    
+    Press `enter` to go back to prompt and enter `psql` cli client:
+    
+    ```shell
+    root@postgres:/# /usr/lib/postgresql/14/bin/psql -U $POSTGRES_USER -d postgres
     ```
+    
     Once again, you may need to adapt the snippet below according your current configuration.
+    
+	_Notes: You may need to copy lines below one by one because sometimes copying the whole block does not work as expected._
 
     ```
     \c postgres;
@@ -294,7 +314,7 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     \q
     ```
     
-17. Prepare container to new version
+1. Prepare container to new version
 
     New version of `kobo-docker` creates `kobotoolbox` database with PostGIS extension at first run.
     To avoid trying to this at each subsequent start, a file is created with date of first run.
@@ -315,7 +335,7 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 1. Upgrade to WiredEngine 
     Link to HackMD 
 
-2. Upgrade to 3.6
+1. Upgrade to 3.6
 
     1. Stop `mongo` container
 
@@ -323,44 +343,51 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
         user@computer:kobo-install$ python run.py --cb stop mongo  
         ```
        
-    2. Edit composer file `docker-compose.primary.backend.template.yml`
+    1. Edit composer file `docker-compose.primary.backend.template.yml` and change image to `mongo:3.6`
 
-    - Change image to `mongo:3.6`
-
-    ```
-    mongo:
-      image: mongo:3.6
-    ```
+	    ```
+	    mongo:
+	      image: mongo:3.6
+	    ```
    
-    Then start the container: `docker-compose up --force-recreate mongo`
+    1. Start the container: 
+    	
+    	```shell
+    	user@computer:kobo-install$ python run.py --cb up --force-recreate mongo  
+   		```
+   		
+    1. Wait for MongoDB to be ready. You should see in the console the output below: 
 
-    Wait for MongoDB to be ready. You should see in the console the output below: 
+	    ```
+	    mongo_1        | {
+	    mongo_1        | 	"numIndexesBefore" : 3,
+	    mongo_1        | 	"numIndexesAfter" : 3,
+	    mongo_1        | 	"note" : "all indexes already exist",
+	    mongo_1        | 	"ok" : 1
+	    mongo_1        | }
+	    ```
 
-    ```
-    mongo_1        | {
-    mongo_1        | 	"numIndexesBefore" : 3,
-    mongo_1        | 	"numIndexesAfter" : 3,
-    mongo_1        | 	"note" : "all indexes already exist",
-    mongo_1        | 	"ok" : 1
-    mongo_1        | }
-    ```
+    1. From another terminal, enter the container and update compatibility version.
 
-    From another terminal, enter the container and update compatibility version.
-
-    ```shell
-    root@mongo:/# mongo -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" admin
-    > db.adminCommand( { setFeatureCompatibilityVersion: "3.6" } )
-    { "ok" : 1 }
-    > exit
-    bye
-    root@mongo:/# exit
-    ```
-3. Upgrade to 4.0, 4.2, 4.4 and 5.0
+	    ```shell
+	    root@mongo:/# mongo -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" admin
+	    > db.adminCommand( { setFeatureCompatibilityVersion: "3.6" } )
+	    { "ok" : 1 }
+	    > exit
+	    bye
+	    root@mongo:/# exit
+	    ```
+	    
+1. Upgrade to 4.0, 4.2, 4.4 and 5.0
 
     Repeat step above for each version and replace the version accordingly.
     You **must** upgrade each version one by one.
     
-    Then start the container: `docker-compose up --force-recreate mongo`
+    Then start the container:
+	 
+	```shell
+	 user@computer:kobo-install$ python run.py --cb up -d --force-recreate mongo     
+	```
 
     Done!
 
@@ -377,7 +404,7 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 
     Log into one of your user accounts and validate everything is working as expected.         
 
-2. Clean up
+1. Clean up
 
    If everything is ok, you can now delete data from `PostgreSQL 9.5`
 
@@ -387,11 +414,23 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
        user@computer:kobo-install$ python run.py --stop  
        ```
     
-   2. Rename folder
+   1. Rename folder
     
         ```shell
         user@computer:kobo-docker$ sudo rm -rf .vols/db
         user@computer:kobo-docker$ sudo mv .vols/db14 .vols/db
         ```
+   1. Update `docker-compose.backend.template.yml` to map correct volume
+
+	    ```
+	    postgres:
+	        image: postgis/postgis:14-3.2
+	        ...
+	        volumes:
+	          - ./.vols/db:/var/lib/postgresql/data
+	          ...
+	    ```
+
+   
 
    Done!
