@@ -5,7 +5,7 @@ Current versions of kobo-docker require PostgreSQL 14, MongoDB 5 and Redis 6
 
 If you are running a version of kobo-docker that was last updated prior to
 May 2022 (i.e. commit TBC or older),
-you need to upgrade your databases prior to using the current version of
+you need to upgrade your databases before using the current version of
 kobo-docker (this repository) or
 [kobo-install](https://github.com/kobotoolbox/kobo-install).
 
@@ -26,19 +26,38 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 1. Stop the containers
 
     ```shell
-    user@computer:kobo-install$ python run.py --stop  
+    user@computer:kobo-install$ python run.py --stop
     ```
 
 1. Edit composer file `docker-compose.primary.backend.template.yml`
 
-   - Temporarily, comment `postgis:14.2-3` to use PostgreSQL 9.5 with PostGIS 2.5  
-   - Add `- ./.vols/db14:/var/lib/postgresql/data14` below `- ./.vols/db:/var/lib/postgresql/data` 
+   - Temporarily, comment `postgis/postgis:14-3.2` to use PostgreSQL 9.5 with PostGIS 2.5  
+   - Add `- ./.vols/db14:/var/lib/postgresql/data14` below `- ./.vols/db:/var/lib/postgresql/data` as in this diff below:
+
+    ```diff
+    @@ -5,7 +5,8 @@ version: '2.2'
+    
+     services:
+       postgres:
+    -    image: postgis/postgis:14.2-3
+    +    # image: postgis/postgis:14.2-3
+    +    image: postgis/postgis:9.5-2.5
+         hostname: postgres
+         env_file:
+           - ../kobo-env/envfile.txt
+    @@ -13,6 +14,7 @@ services:
+           - ../kobo-env/envfiles/aws.txt
+         volumes:
+           - ./.vols/db:/var/lib/postgresql/data
+    +      - ./.vols/db14:/var/lib/postgresql/data14
+    ```
+   
 
    It should look like this:
 
-   ```
-   # image: postgis/postgis:14-3.2
-   image: postgis/postgis:9.5-2.5
+    ```
+    # image: postgis/postgis:14-3.2
+    image: postgis/postgis:9.5-2.5
     hostname: postgres
     env_file:
       - ../kobo-env/envfile.txt
@@ -47,9 +66,9 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     volumes:
       - ./.vols/db:/var/lib/postgresql/data
       - ./.vols/db14:/var/lib/postgresql/data14
-   ```
+    ```
 
-1. Run a one-off `postgres` container
+1. Run a one-off `PostgreSQL` container
 
     ```shell
     user@computer:kobo-install$ python run.py -cb run --rm postgres bash  
@@ -58,24 +77,24 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 1. Install PostgreSQL 14
 
     ```shell
-    root@postgres:/# apt-get update
-    root@postgres:/# apt-cache policy postgresql-14-postgis-3
-    root@postgres:/# apt-cache policy postgis
+    root@postgres:/# apt-get update && \
+        apt-cache policy postgresql-14-postgis-3 && \
+        apt-cache policy postgis
     ```
 
     _Store the PostGIS version in a variable to use later_
     
     ```shell
-    root@postgres:/# POSTGIS_VERSION_14=$(apt-cache policy postgresql-14-postgis-3|grep Candidate:|awk '{print $2}')
-    root@postgres:/# apt-get install -y --no-install-recommends postgresql-14-postgis-3=${POSTGIS_VERSION_14} postgresql-14-postgis-3-scripts=${POSTGIS_VERSION_14} postgis postgresql-contrib-14
-    root@postgres:/# apt-get upgrade
+    root@postgres:/# POSTGIS_VERSION_14=$(apt-cache policy postgresql-14-postgis-3|grep Candidate:|awk '{print $2}') && \
+        apt-get install -y --no-install-recommends postgresql-14-postgis-3=${POSTGIS_VERSION_14} postgresql-14-postgis-3-scripts=${POSTGIS_VERSION_14} postgis postgresql-contrib-14 && \
+        apt-get upgrade
     ```
 
-1. Init DB
+1. Initialize the database
 
     ```shell
-    root@postgres:/# chown -R postgres:postgres /var/lib/postgresql/data14/
-    root@postgres:/# su - postgres -c "/usr/lib/postgresql/14/bin/initdb -U $POSTGRES_USER --encoding=utf8 --locale=en_US.utf-8 -D /var/lib/postgresql/data14/"
+    root@postgres:/# chown -R postgres:postgres /var/lib/postgresql/data14/ && \
+        su - postgres -c "/usr/lib/postgresql/14/bin/initdb -U $POSTGRES_USER --encoding=utf8 --locale=en_US.utf-8 -D /var/lib/postgresql/data14/"
     ```
     Results should look like this:
 
@@ -108,13 +127,13 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     > ```
 
 
-1. Upgrade Postgres 9.5
+1. Upgrade PostgreSQL 9.5
 
     ```shell
-    root@postgres:/# apt-cache policy postgresql-9.5-postgis-3
-    root@postgres:/# POSTGIS_VERSION_9_5=$(apt-cache policy postgresql-9.5-postgis-3|grep Candidate:|awk '{print $2}')
-    root@postgres:/# apt-get install -y --no-install-recommends postgresql-9.5-postgis-3=${POSTGIS_VERSION_9_5} postgresql-9.5-postgis-3-scripts=${POSTGIS_VERSION_9_5}
-    root@postgres:/# apt-get upgrade
+    root@postgres:/# apt-cache policy postgresql-9.5-postgis-3 && \
+        POSTGIS_VERSION_9_5=$(apt-cache policy postgresql-9.5-postgis-3|grep Candidate:|awk '{print $2}') && \
+        apt-get install -y --no-install-recommends postgresql-9.5-postgis-3=${POSTGIS_VERSION_9_5} postgresql-9.5-postgis-3-scripts=${POSTGIS_VERSION_9_5} && \
+        apt-get upgrade
     ```
  
 1. Start PostgreSQL 9.5
@@ -134,12 +153,11 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     You may see some warnings `WARNING:  'postgis.backend' is already set and cannot be changed until you reconnect`. That's ok, you can keep going ahead.
 
     Depending on your kobo-docker environment, databases may have other names.  
-    You may need to adapt the snippet below to your curren configuration.
+    You may need to adapt the snippet below to your current configuration.
     
     _Notes: You may need to copy lines below one by one because sometimes copying the whole block does not work as expected._
     
     ```
-    \c postgres;
     CREATE EXTENSION IF NOT EXISTS postgis;
     ALTER EXTENSION postgis UPDATE;
     CREATE EXTENSION IF NOT EXISTS postgis_topology;
@@ -195,11 +213,11 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 1. Check everything is ok
 
     ```shell
-     root@postgres:/# su - postgres -c "/usr/lib/postgresql/14/bin/pg_upgrade \
-     --check --old-datadir=/var/lib/postgresql/data/ \
-     --new-datadir=/var/lib/postgresql/data14/ \
-     --old-bindir=/usr/lib/postgresql/9.5/bin \
-     --new-bindir=/usr/lib/postgresql/14/bin -U $POSTGRES_USER"
+    root@postgres:/# su - postgres -c "/usr/lib/postgresql/14/bin/pg_upgrade \
+        --check --old-datadir=/var/lib/postgresql/data/ \
+        --new-datadir=/var/lib/postgresql/data14/ \
+        --old-bindir=/usr/lib/postgresql/9.5/bin \
+        --new-bindir=/usr/lib/postgresql/14/bin -U $POSTGRES_USER"
     ```
     Results should look like this:
 
@@ -223,13 +241,13 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 
     ```shell
     root@postgres:/# su - postgres -c "/usr/lib/postgresql/14/bin/pg_upgrade \
-    --old-datadir=/var/lib/postgresql/data/ \
-    --new-datadir=/var/lib/postgresql/data14/ \
-    --old-bindir=/usr/lib/postgresql/9.5/bin \
-    --new-bindir=/usr/lib/postgresql/14/bin -U $POSTGRES_USER"
+        --old-datadir=/var/lib/postgresql/data/ \
+        --new-datadir=/var/lib/postgresql/data14/ \
+        --old-bindir=/usr/lib/postgresql/9.5/bin \
+        --new-bindir=/usr/lib/postgresql/14/bin -U $POSTGRES_USER"
     ```
 
-    Results should like this:
+    Results should look like this:
 
     > ```
     > Upgrade Complete
@@ -257,9 +275,9 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
           ...
     ```
 
-1. Update PosGIS extensions once again
+1. Update PostGIS extensions once again
 
-    Start again a one-off  `postgres` container (see Point 3 for commands)
+    Start again a one-off `PostgreSQL` container (see Point 3 for commands)
 
     Start the server
     
@@ -278,7 +296,6 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     _Notes: You may need to copy lines below one by one because sometimes copying the whole block does not work as expected._
 
     ```
-    \c postgres;
     ALTER EXTENSION postgis UPDATE;
     ALTER EXTENSION postgis_topology UPDATE;
     ALTER EXTENSION postgis_tiger_geocoder UPDATE;
@@ -311,7 +328,7 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     \q
     ```
     
-1. Prepare container to new version
+1. Prepare container for new version
 
     New version of `kobo-docker` creates `kobotoolbox` database with PostGIS extension at first run.
     To avoid trying to this at each subsequent start, a file is created with date of first run.
@@ -327,9 +344,9 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 
 ### MongoDB
 
-**Upgrading Mongo is easy and only implies a couple of stop/start** if you are already using `WiredTiger` engine.
+**Upgrading Mongo is easy and only requires several stops and starts** — provided you are already using the `WiredTiger` engine.
 
-Please note that MongoDB [recommends to use an XFS partition](https://www.mongodb.com/docs/manual/administration/production-notes/#kernel-and-file-systems) to store its data.
+Please note that MongoDB [recommends using an XFS partition](https://www.mongodb.com/docs/manual/administration/production-notes/#kernel-and-file-systems) to store its data.
 
 > With the WiredTiger storage engine, using XFS is strongly recommended for data bearing nodes to avoid performance issues that may occur when using EXT4 with WiredTiger.
 
@@ -356,11 +373,11 @@ Please note that MongoDB [recommends to use an XFS partition](https://www.mongod
        
     If it is the case, you can go to next step **Update to 3.6**. Otherwise, please follow the steps below to upgrade to `WiredTiger`. 
     
-    You can use mongodump and mongorestore, but in few case the engine is not updated to `WiredEngine`.
+    You can use mongodump and mongorestore, but in some cases the engine is not updated to `WiredEngine`.
        
-    In the steps below, we assume the XFS partition is mounted at `/mnt/data/` and kobo-install is installed in `/home/ubuntu`. Please adapt accordingly to your configuration. Moreover, ports 27017 and 28017 must open locally.
+    In the steps below, we assume the XFS partition is mounted at `/mnt/data/` and kobo-install is installed in `/home/ubuntu`. Please adapt accordingly to your configuration. Moreover, ports `27017` and `28017` must be open locally.
        
-    1. Create a temporary folder to start docker-compose file
+    1. Create a temporary folder and docker-compose file
     
         ```shell
         user@computer:~$ mkdir mongo-replica && cd mongo-replica 
@@ -422,24 +439,44 @@ Please note that MongoDB [recommends to use an XFS partition](https://www.mongod
     
     1. Modify current MongoDB settings
     
-     - Edit `/home/ubuntu/kobo-docker/mongo/entrypoint.sh`
+     - Edit `/home/ubuntu/kobo-docker/mongo/entrypoint.sh` and apply the diff below
         
-        ```bash
-        ...
-        #exec bash /entrypoint.sh mongod
-        
-        echo "$KEY_FILE_SECRET" > /keyFile
-        chmod 600 /keyFile
-        chown mongodb:mongodb /keyFile
-        exec docker-entrypoint.sh mongod --replSet replicaSet1 --keyFile /keyFile
+        ```diff
+        diff --git a/mongo/entrypoint.sh b/mongo/entrypoint.sh
+        index 9d43502..b01d259 100644
+        --- a/mongo/entrypoint.sh
+        +++ b/mongo/entrypoint.sh
+        @@ -17,4 +17,10 @@ bash $KOBO_DOCKER_SCRIPTS_DIR/post_startup.sh &
+         echo "Launching official entrypoint..."
+         # `exec` here is important to pass signals to the database server process;
+         # without `exec`, the server will be terminated abruptly with SIGKILL (see #276)
+        -exec docker-entrypoint.sh mongod
+        +# exec docker-entrypoint.sh mongod
+        +
+        +
+        +echo "$KEY_FILE_SECRET" > /keyFile
+        +chmod 600 /keyFile
+        +chown mongodb:mongodb /keyFile
+        +exec docker-entrypoint.sh mongod --replSet replicaSet1 --keyFile /keyFile
         ```
     
      - Edit `/home/ubuntu/kobo-docker/docker-compose.backend.primary.override.yml`
         Add the section below to `mongo` service
     
         ```yml
-        environment:
-          - KEY_FILE_SECRET=<same_key_as_replica_read>
+        diff --git a/docker-compose.backend.primary.override.yml b/docker-compose.backend.primary.override.yml
+        index bbc72eb..1e25f73 100644
+        --- a/docker-compose.backend.primary.override.yml
+        +++ b/docker-compose.backend.primary.override.yml
+        @@ -18,6 +18,8 @@ services:
+           mongo:
+             ports:
+               - 27017:27017
+        +    environment:
+        +      - KEY_FILE_SECRET=<same_key_as_replica_read>
+             #networks:
+             #  kobo-be-network:
+             #    aliases:
         ```
     
     1. Restart primary MongoDB (without daemon mode to validate everything is running smoothly)
@@ -509,6 +546,11 @@ Please note that MongoDB [recommends to use an XFS partition](https://www.mongod
             ```
         
         1. Create a symlink of `/mnt/mongo` to `kobo-docker/.vols/mongo`
+            
+            ```
+            user@computer:mongo-replica$ ln -s /mnt/mongo /home/ubukobo-docker/.vols/mongo
+            ```
+            
         1. Restart MongoDB in standalone (remove `--replSet replicaSet1 --keyFile /keyFile` from the `entrypoint.sh` file)
         1. Create an admin user on MongoDB `local` db (db used for replicaSets)
         
@@ -578,7 +620,7 @@ Please note that MongoDB [recommends to use an XFS partition](https://www.mongod
         
 1. Upgrade to 4.0, 4.2, 4.4 and 5.0
 
-    Repeat step above for each version and replace the version accordingly.
+    Repeat the steps above for each version and replace the version accordingly.
     You **must** upgrade each version one by one.
     
     Then start the container:
@@ -590,7 +632,7 @@ Please note that MongoDB [recommends to use an XFS partition](https://www.mongod
     Done!
 
 
-## Tests
+### Tests
 
 1. Test if upgrade is successful
 
@@ -602,15 +644,15 @@ Please note that MongoDB [recommends to use an XFS partition](https://www.mongod
 
     Log into one of your user accounts and validate everything is working as expected.         
 
-1. Clean up
+### Cleaning up
 
    If everything is ok, you can now delete data from `PostgreSQL 9.5`
 
    1. Stop containers
     
-       ```shell
-       user@computer:kobo-install$ python run.py --stop  
-       ```
+        ```shell
+        user@computer:kobo-install$ python run.py --stop  
+        ```
     
    1. Rename folder
     

@@ -5,7 +5,7 @@ version: '2.2'
 
 services:
   postgres:
-    image: postgis/postgis:14.2-3
+    image: postgis/postgis:14-3.2
     hostname: postgres
     env_file:
       - ../kobo-env/envfile.txt
