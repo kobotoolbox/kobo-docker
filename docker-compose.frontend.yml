@@ -56,6 +56,9 @@ services:
     sysctls:
       - net.core.somaxconn=2048
     environment:
+      # TEMP we use this temporary keyfile for testing google automatic transcription and translation.
+      - GOOGLE_APPLICATION_CREDENTIALS=/srv/src/kpi/google_transcribe_keyfile.json
+      # ENDTEMP
       - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
       - KPI_UWSGI_MAX_REQUESTS=512
       - KPI_UWSGI_WORKERS_COUNT=2
