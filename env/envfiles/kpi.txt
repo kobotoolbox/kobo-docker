@@ -7,9 +7,6 @@ ENKETO_VERSION=Express
 KPI_PREFIX=/
 KPI_BROKER_URL=redis://:kobo@redis-main.domain.name:6379/1
 
-KPI_MONGO_HOST=mongo.domain.name
-
-
 DJANGO_LANGUAGE_CODES=en fr es ar zh-hans hi ku
 #DKOBO_PREFIX=False
 #KOBO_SURVEY_PREVIEW_EXPIRATION=24
@@ -20,6 +17,6 @@ DJANGO_LANGUAGE_CODES=en fr es ar zh-hans hi ku
 #KOBO_SUPPORT_URL=http://support.kobotoolbox.org/
 
 
-# Dev: One or more mappings from PyDev remote debugging machine file paths to `kpi` container file 
+# Dev: One or more mappings from PyDev remote debugging machine file paths to `kpi` container file
 #   paths (see https://github.com/kobotoolbox/kpi/blob/master/docker/setup_pydev.bash).
 #KPI_PATH_FROM_ECLIPSE_TO_PYTHON_PAIRS=~/devel/kpi -> /srv/src/kpi | ~/devel/formpack/src/formpack -> /usr/local/lib/python2.7/dist-packages/formpack

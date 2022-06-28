@@ -11,6 +11,8 @@ MONGO_INITDB_ROOT_PASSWORD=kobo
 MONGO_INITDB_DATABASE=formhub
 KOBO_MONGO_USERNAME=kobo
 KOBO_MONGO_PASSWORD=kobo
+MONGO_DB_NAME=formhub
+MONGO_DB_URL=mongodb://kobo:kobo@mongo.domain.name:27017/formhub
 
 # Default MongoDB backup schedule is weekly at 01:00 AM UTC on Sunday.
 #MONGO_BACKUP_SCHEDULE=0 1 * * 0
@@ -51,3 +53,6 @@ KOBO_POSTGRES_PRIMARY_ENDPOINT=primary.postgres.domain.name
 
 REDIS_SESSION_URL=redis://:kobo@redis-cache.kobo.private:6390/2
 REDIS_PASSWORD=kobo
+CACHE_URL=redis://:kobo@redis-cache.kobo.private:6390/5
+# In bytes, uncomment to cap Redis Cache memory
+# REDIS_CACHE_MAX_MEMORY=
