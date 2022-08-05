@@ -39,8 +39,8 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     
      services:
        postgres:
-    -    image: postgis/postgis:14.2-3
-    +    # image: postgis/postgis:14.2-3
+    -    image: postgis/postgis:14-3.2
+    +    # image: postgis/postgis:14-3.2
     +    image: postgis/postgis:9.5-2.5
          hostname: postgres
          env_file:
@@ -96,6 +96,9 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     root@postgres:/# chown -R postgres:postgres /var/lib/postgresql/data14/ && \
         su - postgres -c "/usr/lib/postgresql/14/bin/initdb -U $POSTGRES_USER --encoding=utf8 --locale=en_US.utf-8 -D /var/lib/postgresql/data14/"
     ```
+    **It is important to initialize the PostgreSQL 14 cluster with the same username used to initialize PostgreSQL 9.5.**
+    Ensure that `$POSTGRES_USER` equals that username. If it is not the case, replace `$POSTGRES_USER` with the correct username (in all following instructions).
+
     Results should look like this:
 
     > ```
