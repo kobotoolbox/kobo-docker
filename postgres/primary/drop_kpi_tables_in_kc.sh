@@ -181,4 +181,4 @@ psql -Xqt -h localhost \
 
 echo
 echo
-echo "The KoBoCAT database clean-up finished successfully! Thanks for using KoBoToolbox."
+echo "The KoBoCAT database clean-up finished successfully! Thanks for using KoboToolbox."

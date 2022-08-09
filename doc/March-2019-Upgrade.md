@@ -242,7 +242,7 @@ free.
 
 16. Clean up
 
-    If everything is ok, you can now deleted data from `PostgreSQL 9.4`
+    If everything is ok, you can now delete data from `PostgreSQL 9.4`
     Stop `postgres` container.
 
     ```

@@ -59,4 +59,4 @@ bash $KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh &
 echo "Launching official entrypoint..."
 # `exec` here is important to pass signals to the database server process;
 # without `exec`, the server will be terminated abruptly with SIGKILL (see #276)
-exec bash /docker-entrypoint.sh postgres
+exec bash /usr/local/bin/docker-entrypoint.sh postgres

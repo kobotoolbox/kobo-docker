@@ -6,7 +6,7 @@ services:
     environment:
       # change `ENKETO_PROTOCOL` to http if HTTPS is not used
       - ENKETO_PROTOCOL=https
-      # `NGINX_PUBLIC_PORT` is the port used to access KoBoToolbox (e.g. `https://kc.kobotoolbox.org:<NGINX_PUBLIC_PORT>`)
+      # `NGINX_PUBLIC_PORT` is the port used to access KoboToolbox (e.g. `https://kc.kobotoolbox.org:<NGINX_PUBLIC_PORT>`)
       - NGINX_PUBLIC_PORT=80
       # Uncomment the lines below to tweak uWSGI
       #- KC_UWSGI_WORKERS_COUNT=2
@@ -23,7 +23,7 @@ services:
 
   kpi:
     environment:
-      # `NGINX_PUBLIC_PORT` is the port used to access KoBoToolbox (e.g. `https://kf.kobotoolbox.org:<NGINX_PUBLIC_PORT>`)
+      # `NGINX_PUBLIC_PORT` is the port used to access KoboToolbox (e.g. `https://kf.kobotoolbox.org:<NGINX_PUBLIC_PORT>`)
       - NGINX_PUBLIC_PORT=80
       # Uncomment the lines below to tweak uWSGI
       #- KPI_UWSGI_WORKERS_COUNT=2
@@ -42,7 +42,7 @@ services:
 
   nginx:
     environment:
-      # `NGINX_PUBLIC_PORT` is the port used to access KoBoToolbox (e.g. `https://kf.kobotoolbox.org:<NGINX_PUBLIC_PORT>`)
+      # `NGINX_PUBLIC_PORT` is the port used to access KoboToolbox (e.g. `https://kf.kobotoolbox.org:<NGINX_PUBLIC_PORT>`)
       - NGINX_PUBLIC_PORT=80
       #- UWSGI_PASS_TIMEOUT=130
     ports:
