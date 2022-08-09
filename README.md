@@ -3,6 +3,7 @@
 1. [Introduction](#introduction)
 1. [_Two PostgreSQL databases are now required_](#two-postgresql-databases-are-now-required)
 1. [Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier)
+1. [Important notice when upgrading from commit between `51aeccb` (March 11, 2019) and `TBC` (May XX, 2022)](#important-notice-when-upgrading-from-commit-between-51aeccb-march-11-2019-and-tbc-may-xx-2022)
 1. [Architecture](#architecture)
 1. [Setup procedure](#setup-procedure)
 1. [Usage](#usage)
@@ -16,14 +17,14 @@
 
 ## Introduction
 
-kobo-docker is used to run a copy of the [KoBoToolbox](http://www.kobotoolbox.org) survey data collection platform on a machine of your choosing. It relies on [Docker](https://docker.com) to separate the different parts of KoBo into different containers (which can be thought of as lighter-weight virtual machines) and [Docker Compose](https://docs.docker.com/compose/) to configure, run, and connect those containers.
+kobo-docker is used to run a copy of the [KoboToolbox](http://www.kobotoolbox.org) survey data collection platform on a machine of your choosing. It relies on [Docker](https://docker.com) to separate the different parts of KoBo into different containers (which can be thought of as lighter-weight virtual machines) and [Docker Compose](https://docs.docker.com/compose/) to configure, run, and connect those containers.
 
 
 ## _Two PostgreSQL databases are now required_
 
 Prior to release [`2.020.18`](https://github.com/kobotoolbox/kobo-docker/releases/tag/2.020.18),
 [KPI](https://github.com/kobotoolbox/kpi) and
-[KoBoCAT](https://github.com/kobotoolbox/kobocat) both shared a common Postgres
+[KoBoCAT](https://github.com/kobotoolbox/kobocat) both shared a common PostgreSQL
 database. They now each have their own, separate databases.
 **If you are upgrading an existing single-database installation, you must follow [these instructions](https://community.kobotoolbox.org/t/upgrading-to-separate-databases-for-kpi-and-kobocat/7202)** to migrate the KPI tables to a new database and adjust your configuration appropriately.
 This assumes your last upgrade was **more recent** than March 4, 2019. If not, you must [upgrade your databases](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier) before proceeding.
@@ -33,10 +34,15 @@ If you do not want to upgrade at this time, please use the [`shared-database-obs
 
 ## Important notice when upgrading from commit [`5c2ef02` (March 4, 2019)](https://github.com/kobotoolbox/kobo-docker/commit/5c2ef0273339bee5c374830f72e52945947042a8) or earlier
 
-Running current releases of KoBoToolbox requires you to upgrade your Postgres and Mongo databases. Please follow [these instructions](./doc/March-2019-Upgrade.md).
+Running current releases of KoboToolbox requires you to upgrade your PostgreSQL and MongoDB databases. Please follow [these instructions](./doc/March-2019-Upgrade.md).
 
 If you do not, the application may not start or your data may not be visible.
 
+## Important notice when upgrading from commit between [`51aeccb` (March 11, 2019)](https://github.com/kobotoolbox/kobo-docker/commit/51aeccb91316d640f30e28190b936ae48d56c468) and [`TBC` (May XX, 2022)]()
+
+Running current releases of KoboToolbox requires you to upgrade your PostgreSQL and MongoDB databases. Please follow [these instructions](./doc/May-2022-Upgrade.md).
+
+If you do not, the application may not start or your data may not be visible.
 
 ## Architecture
 
@@ -74,7 +80,7 @@ Already have an existing installation? Please see below.
         + KOBOCAT_BROKER_URL=redis://redis-main.[internal domain name]:6389/2
         ```
 
-2. **Load balancing and redundancy**
+1. **Load balancing and redundancy**
 
     1. Load balancing
         kobo-docker has two different composer files. One for `frontend` and one for `backend`.
@@ -85,7 +91,7 @@ Already have an existing installation? Please see below.
             - [KPI](https://github.com/kobotoolbox/kpi)
             - [Enketo Express](https://github.com/enketo/enketo-express)
 
-        2. `backend`:
+        1. `backend`:
             - PostgreSQL
             - MongoDB
             - Redis
@@ -94,7 +100,7 @@ Already have an existing installation? Please see below.
         kobo-docker uses (private) domain names between `frontend` and `backend`.
         It's fully customizable in configuration files. Once again, [kobo-install](https://github.com/kobotoolbox/kobo-install) does simplify the job by creating the configuration files for you.
 
-    2. Redundancy
+    1. Redundancy
         `Backend` containers not redundant yet. Only `PostgreSQL` can be configured in `Primary/Secondary` mode where `Secondary` is a real-time read-only replica.
 
     This is a diagram that shows how kobo-docker can be used for a load-balanced/(almost) redundant solution.
@@ -109,7 +115,7 @@ Samples are provided. Remove `.sample` extension and update them to match your e
 
 - `docker-compose.frontend.override.yml`
 - `docker-compose.backend.primary.override.yml`
-- `docker-compose.backend.secondary.override.yml` (if a postgres replica is used)
+- `docker-compose.backend.secondary.override.yml` (if a PostgreSQL replica is used)
 
 1. **Start/start containers** 
 
@@ -123,7 +129,7 @@ Samples are provided. Remove `.sample` extension and update them to match your e
     $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml stop
     ```
 
-2. **Backups**
+1. **Backups**
 
     Automatic, periodic backups of KoBoCAT media, MongoDB, PostgreSQL and Redis can be individually enabled by uncommenting (and optionally customizing) the `*_BACKUP_SCHEDULE` variables in your envfiles.
 
@@ -143,7 +149,7 @@ Samples are provided. Remove `.sample` extension and update them to match your e
     $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml exec redis_main bash /kobo-docker-scripts/backup-to-disk.bash
     ```
 
-2. **Restore backups**
+1. **Restore backups**
 
     Commands should be run within containers.
 
@@ -151,9 +157,9 @@ Samples are provided. Remove `.sample` extension and update them to match your e
      - PostgreSQL: `pg_restore -U kobo -d kobotoolbox -c "<path/to/postgres.pg_dump>"`
      - Redis: `gunzip <path/to/redis.rdb.gz> && mv <path/to/extracted_redis.rdb> /data/enketo-main.rdb`
 
-3. **Maintenance mode**
+1. **Maintenance mode**
 
-    There is one composer file `docker-compose.maintenance.yml` can be used to put `KoBoToolbox` in maintenance mode.  
+    There is one composer file `docker-compose.maintenance.yml` can be used to put `KoboToolbox` in maintenance mode.  
     Like front-end or back-end containers, a `docker-compose.maintenance.yml.sample` file is provided to help you to customize your settings.
     First, copy `docker-compose.maintenance.yml.sample` to `docker-compose.maintenance.yml`.
 
@@ -198,10 +204,10 @@ Samples are provided. Remove `.sample` extension and update them to match your e
     Developers can use [PyDev](http://www.pydev.org/)'s [remote, graphical Python debugger](http://www.pydev.org/manual_adv_remote_debugger.html) to debug Python/Django code. To enable for the `kpi` container:
 
     1. Specify the mapping(s) between target Python source/library paths on the debugging machine to the locations of those files/directories inside the container by customizing and uncommenting the `KPI_PATH_FROM_ECLIPSE_TO_PYTHON_PAIRS` variable in [`envfiles/kpi.txt`](./envfiles/kpi.txt).
-    2. Share the source directory of the PyDev remote debugger plugin into the container by customizing (taking care to note the actual location of the version-numbered directory) and uncommenting the relevant `volumes` entry in your `docker-compose.yml`.
-    3. To ensure PyDev shows you the same version of the code as is being run in the container, share your live version of any target Python source/library files/directories into the container by customizing and uncommenting the relevant `volumes` entry in your `docker-compose.yml`.
-    4. Start the PyDev remote debugger server and ensure that no firewall or other settings will prevent the containers from connecting to your debugging machine at the reported port.
-    5. Breakpoints can be inserted with e.g. `import pydevd; pydevd.settrace('${DEBUGGING_MACHINE_IP}')`.
+    1. Share the source directory of the PyDev remote debugger plugin into the container by customizing (taking care to note the actual location of the version-numbered directory) and uncommenting the relevant `volumes` entry in your `docker-compose.yml`.
+    1. To ensure PyDev shows you the same version of the code as is being run in the container, share your live version of any target Python source/library files/directories into the container by customizing and uncommenting the relevant `volumes` entry in your `docker-compose.yml`.
+    1. Start the PyDev remote debugger server and ensure that no firewall or other settings will prevent the containers from connecting to your debugging machine at the reported port.
+    1. Breakpoints can be inserted with: `import pydevd; pydevd.settrace('${DEBUGGING_MACHINE_IP}')`.
 
     Remote debugging in the `kobocat` container can be accomplished in a similar manner.
 
