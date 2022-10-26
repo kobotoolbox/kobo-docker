@@ -108,7 +108,7 @@ services:
           - nginx.internal
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:4.1.1__memory-leak-hotfix
+    image: kobotoolbox/enketo-express-extra-widgets:4.1.2
     env_file:
       - ../kobo-env/envfile.txt
     environment:
