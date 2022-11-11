@@ -116,9 +116,6 @@ services:
     restart: always
     volumes:
       - ../kobo-env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
-      # Override Enketo Express icons.
-      - ./enketo_express/favicon.ico:/srv/src/enketo_express/public/images/favicon.ico:ro
-      - ./enketo_express/icon_180x180.png:/srv/src/enketo_express/public/images/icon_180x180.png:ro
     networks:
       kobo-fe-network:
         aliases:
