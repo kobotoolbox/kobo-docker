@@ -1,4 +1,4 @@
-## Upgrading from an old version of kobo-docker (before May 2022)
+## Upgrading from an old version of kobo-docker (before November 2022)
 
 Current versions of kobo-docker require PostgreSQL 14, MongoDB 5 and Redis 6
 
@@ -21,12 +21,12 @@ Check the size of the PostgreSQL database in  `.vols/db`, e.g. with
 free.
 
 For this tutorial, we are using kobo-install to run docker-compose commands.
-If you do not use kobo-install, please replace `python run.py -cb` with `docker-compose -f docker-compose.primary.backend.template.yml -f docker-compose.primary.backend.yml [-f docker-compose.primary.backend.override.yml] [-f docker-compose.primary.backend.custom.yml]`
+If you do not use kobo-install, please replace `python3 run.py -cb` with `docker-compose -f docker-compose.primary.backend.template.yml -f docker-compose.primary.backend.yml [-f docker-compose.primary.backend.override.yml] [-f docker-compose.primary.backend.custom.yml]`
 
 1. Stop the containers
 
     ```shell
-    user@computer:kobo-install$ python run.py --stop
+    user@computer:kobo-install$ python3 run.py --stop
     ```
 
 1. Edit composer file `docker-compose.primary.backend.template.yml`
@@ -71,10 +71,20 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
 1. Run a one-off `PostgreSQL` container
 
     ```shell
-    user@computer:kobo-install$ python run.py -cb run --rm postgres bash  
+    user@computer:kobo-install$ python3 run.py -cb run --rm postgres bash  
     ```
     
 1. Install PostgreSQL 14
+
+    ```shell
+    root@postgres:/# apt-get install apt-transport-https ca-certificates
+    ```    
+    
+    ```shell
+    root@postgres:/# rm -rf /etc/apt/sources.list.d/pgdg.list && \
+        echo "deb https://apt-archive.postgresql.org/pub/repos/apt stretch-pgdg-archive main" >> /etc/apt/sources.list && \
+        echo "deb-src https://apt-archive.postgresql.org/pub/repos/apt stretch-pgdg-archive main" >> /etc/apt/sources.list
+    ```
 
     ```shell
     root@postgres:/# apt-get update && \
@@ -89,6 +99,8 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
         apt-get install -y --no-install-recommends postgresql-14-postgis-3=${POSTGIS_VERSION_14} postgresql-14-postgis-3-scripts=${POSTGIS_VERSION_14} postgis postgresql-contrib-14 && \
         apt-get upgrade
     ```
+
+    _Notes: You may receive a (long) warning that PostgreSQL 9.5 is obsolete, ignore it, continue and use new version config files when asked for._
 
 1. Initialize the database
 
@@ -158,7 +170,8 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     Depending on your kobo-docker environment, databases may have other names.  
     You may need to adapt the snippet below to your current configuration.
     
-    _Notes: You may need to copy lines below one by one because sometimes copying the whole block does not work as expected._
+    _Notes: You may need to copy lines below one by one because sometimes copying the whole block does not work as expected (e.g.: error like **invalid integer value "postgis" for connection option "port"
+Previous connection kept**)._
     
     ```
     CREATE EXTENSION IF NOT EXISTS postgis;
@@ -256,6 +269,12 @@ If you do not use kobo-install, please replace `python run.py -cb` with `docker-
     > Upgrade Complete
     > ---------------
     > ```
+    
+    You can exit the one-off container
+    
+    ```shell
+    root@postgres:/# exit
+    ```
 
 1. Edit composer file `docker-compose.backend.template.yml` again
 
@@ -360,7 +379,7 @@ Please note that MongoDB [recommends using an XFS partition](https://www.mongodb
     To validate if your MongoDB instance is using the correct engine, run this command.
     
     ```shell
-    user@computer:kobo-install$ python run.py --cb exec mongo bash
+    user@computer:kobo-install$ python3 run.py -cb exec mongo bash
     root@mongo:/# mongo -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" admin
     > db.serverStatus().storageEngine
     ```
@@ -583,7 +602,7 @@ Please note that MongoDB [recommends using an XFS partition](https://www.mongodb
     1. Stop `mongo` container
 
         ```shell
-        user@computer:kobo-install$ python run.py --cb stop mongo  
+        user@computer:kobo-install$ python3 run.py -cb stop mongo  
         ```
        
     1. Edit composer file `docker-compose.primary.backend.template.yml` and change image to `mongo:3.6`
@@ -596,7 +615,7 @@ Please note that MongoDB [recommends using an XFS partition](https://www.mongodb
     1. Start the container: 
         
         ```shell
-        user@computer:kobo-install$ python run.py --cb up --force-recreate mongo  
+        user@computer:kobo-install$ python3 run.py -cb up --force-recreate mongo  
            ```
            
     1. Wait for MongoDB to be ready. You should see in the console the output below: 
@@ -629,7 +648,7 @@ Please note that MongoDB [recommends using an XFS partition](https://www.mongodb
     Then start the container:
      
     ```shell
-     user@computer:kobo-install$ python run.py --cb up -d --force-recreate mongo     
+     user@computer:kobo-install$ python3 run.py -cb up -d --force-recreate mongo     
     ```
 
     Done!
@@ -642,7 +661,7 @@ Please note that MongoDB [recommends using an XFS partition](https://www.mongodb
     Start your containers as usual.
 
     ```shell
-    user@computer:kobo-install$ python run.py  
+    user@computer:kobo-install$ python3 run.py  
     ```
 
     Log into one of your user accounts and validate everything is working as expected.         
@@ -654,7 +673,7 @@ Please note that MongoDB [recommends using an XFS partition](https://www.mongodb
    1. Stop containers
     
         ```shell
-        user@computer:kobo-install$ python run.py --stop  
+        user@computer:kobo-install$ python3 run.py --stop  
         ```
     
    1. Rename folder
