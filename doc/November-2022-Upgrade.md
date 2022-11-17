@@ -100,7 +100,7 @@ If you do not use kobo-install, please replace `python3 run.py -cb` with `docker
         apt-get upgrade
     ```
 
-    _Notes: You may receive a (long) warning that PostgreSQL 9.5 is obsolete, ignore it, continue and use new version config files when asked for._
+    _Notes: You may receive a (long) warning that PostgreSQL 9.5 is obsolete: ignore it and continue. When asked about configuration files, choose `install the package maintainer's version`._
 
 1. Initialize the database
 
@@ -170,8 +170,7 @@ If you do not use kobo-install, please replace `python3 run.py -cb` with `docker
     Depending on your kobo-docker environment, databases may have other names.  
     You may need to adapt the snippet below to your current configuration.
     
-    _Notes: You may need to copy lines below one by one because sometimes copying the whole block does not work as expected (e.g.: error like **invalid integer value "postgis" for connection option "port"
-Previous connection kept**)._
+    _Notes: You may need to copy lines below one by one because sometimes copying the whole block does not work as expected (e.g.: error like `invalid integer value "postgis" for connection option "port"`)._
     
     ```
     CREATE EXTENSION IF NOT EXISTS postgis;
