@@ -1,10 +1,10 @@
-## Upgrading from an old version of kobo-docker (before November 2022)
+## Upgrading from an old version of kobo-docker (before November 17, 2022)
 
-Current versions of kobo-docker require PostgreSQL 14, MongoDB 5 and Redis 6
+Current versions of kobo-docker (release [`2.022.44`](https://github.com/kobotoolbox/kobo-docker/releases/tag/2.022.44) and later) require PostgreSQL 14, MongoDB 5, and Redis 6.
 
 
 If you are running a version of kobo-docker that was last updated prior to
-May 2022 (i.e. commit TBC or older),
+November 17, 2022 (i.e. older than release [`2.022.44`](https://github.com/kobotoolbox/kobo-docker/releases/tag/2.022.44)),
 you need to upgrade your databases before using the current version of
 kobo-docker (this repository) or
 [kobo-install](https://github.com/kobotoolbox/kobo-install).
