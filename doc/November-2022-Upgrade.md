@@ -77,12 +77,13 @@ If you do not use kobo-install, please replace `python3 run.py -cb` with `docker
 1. Install PostgreSQL 14
 
     ```shell
-    root@postgres:/# apt-get install apt-transport-https ca-certificates
+    root@postgres:/# rm -rf /etc/apt/sources.list.d/pgdg.list && \
+        apt-get update && \
+        apt-get install apt-transport-https ca-certificates
     ```    
     
     ```shell
-    root@postgres:/# rm -rf /etc/apt/sources.list.d/pgdg.list && \
-        echo "deb https://apt-archive.postgresql.org/pub/repos/apt stretch-pgdg-archive main" >> /etc/apt/sources.list && \
+    root@postgres:/# echo "deb https://apt-archive.postgresql.org/pub/repos/apt stretch-pgdg-archive main" >> /etc/apt/sources.list && \
         echo "deb-src https://apt-archive.postgresql.org/pub/repos/apt stretch-pgdg-archive main" >> /etc/apt/sources.list
     ```
 
