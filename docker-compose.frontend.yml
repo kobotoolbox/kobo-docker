@@ -108,7 +108,7 @@ services:
           - nginx.internal
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:4.1.5
+    image: kobotoolbox/enketo-express-extra-widgets:5.0.0-nested-repeat-count-fix
     env_file:
       - ../kobo-env/envfile.txt
     restart: always
