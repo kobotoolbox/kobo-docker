@@ -26,9 +26,9 @@ services:
     environment:
       - MONGO_DATA=/data/db
     env_file:
-      - ../env/envfile.txt
-      - ../env/envfiles/databases.txt
-      - ../env/envfiles/aws.txt
+      - env/envfile.txt
+      - env/envfiles/databases.txt
+      - env/envfiles/aws.txt
     volumes:
       - ./.vols/mongo:/data/db
       - ./backups/mongo:/srv/backups
@@ -41,9 +41,9 @@ services:
   redis_main:
     image: redis:6.2
     env_file:
-      - ../env/envfile.txt
-      - ../env/envfiles/databases.txt
-      - ../env/envfiles/aws.txt
+      - env/envfile.txt
+      - env/envfiles/databases.txt
+      - env/envfiles/aws.txt
     environment:
       - KOBO_REDIS_SERVER_ROLE=main
     volumes:
