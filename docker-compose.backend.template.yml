@@ -8,9 +8,9 @@ services:
     image: postgis/postgis:14-3.2
     hostname: postgres
     env_file:
-      - ../env/envfile.txt
-      - ../env/envfiles/databases.txt
-      - ../env/envfiles/aws.txt
+      - env/envfile.txt
+      - env/envfiles/databases.txt
+      - env/envfiles/aws.txt
     volumes:
       - ./.vols/db:/var/lib/postgresql/data
       - ./backups/postgres:/srv/backups
