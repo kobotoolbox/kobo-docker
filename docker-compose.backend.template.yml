@@ -62,7 +62,7 @@ services:
   redis_cache:
     image: redis:6.2
     env_file:
-      - ../kobo-env/envfiles/databases.txt
+      - env/envfiles/databases.txt
     environment:
       - KOBO_REDIS_SERVER_ROLE=cache
     volumes:
