@@ -8,13 +8,13 @@ services:
     image: kobotoolbox/kobocat:2.022.44b
     hostname: kobocat
     env_file:
-      - ../kobo-env/envfile.txt
-      - ../kobo-env/envfiles/databases.txt
-      - ../kobo-env/envfiles/aws.txt
-      - ../kobo-env/envfiles/external_services.txt
-      - ../kobo-env/envfiles/kobocat.txt
-      - ../kobo-env/envfiles/nginx.txt
-      - ../kobo-env/envfiles/smtp.txt
+      - env/envfile.txt
+      - env/envfiles/databases.txt
+      - env/envfiles/aws.txt
+      - env/envfiles/external_services.txt
+      - env/envfiles/kobocat.txt
+      - env/envfiles/nginx.txt
+      - env/envfiles/smtp.txt
     sysctls:
       - net.core.somaxconn=2048
     environment:
@@ -46,13 +46,13 @@ services:
     image: kobotoolbox/kpi:2.022.44c
     hostname: kpi
     env_file:
-      - ../kobo-env/envfile.txt
-      - ../kobo-env/envfiles/databases.txt
-      - ../kobo-env/envfiles/aws.txt
-      - ../kobo-env/envfiles/external_services.txt
-      - ../kobo-env/envfiles/kpi.txt
-      - ../kobo-env/envfiles/nginx.txt
-      - ../kobo-env/envfiles/smtp.txt
+      - env/envfile.txt
+      - env/envfiles/databases.txt
+      - env/envfiles/aws.txt
+      - env/envfiles/external_services.txt
+      - env/envfiles/kpi.txt
+      - env/envfiles/nginx.txt
+      - env/envfiles/smtp.txt
     sysctls:
       - net.core.somaxconn=2048
     environment:
@@ -85,11 +85,11 @@ services:
     image: nginx:1.21
     hostname: nginx
     env_file:
-      - ../kobo-env/envfile.txt
-      - ../kobo-env/envfiles/databases.txt
-      - ../kobo-env/envfiles/nginx.txt
-      - ../kobo-env/envfiles/kobocat.txt
-      - ../kobo-env/envfiles/kpi.txt
+      - env/envfile.txt
+      - env/envfiles/databases.txt
+      - env/envfiles/nginx.txt
+      - env/envfiles/kobocat.txt
+      - env/envfiles/kpi.txt
     environment:
       - UWSGI_PASS_TIMEOUT=130
       - TEMPLATED_VAR_REFS=$${PUBLIC_REQUEST_SCHEME} $${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
@@ -110,10 +110,10 @@ services:
   enketo_express:
     image: kobotoolbox/enketo-express-extra-widgets:5.0.0-nested-repeat-count-fix-retry-with-old-numeric-widgets
     env_file:
-      - ../kobo-env/envfile.txt
+      - env/envfile.txt
     restart: always
     volumes:
-      - ../kobo-env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
+      - env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
     networks:
       kobo-fe-network:
         aliases:
