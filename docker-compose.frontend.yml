@@ -113,7 +113,7 @@ services:
       - env/envfile.txt
     restart: always
     volumes:
-      - env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
+      - ./env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
     networks:
       kobo-fe-network:
         aliases:
