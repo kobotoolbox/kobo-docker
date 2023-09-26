@@ -108,7 +108,7 @@ services:
           - nginx.internal
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:6.0.0_plus_pm2-runtime_and_exponential-backoff_jnm
+    image: kobotoolbox/enketo-express-extra-widgets:6.2.2
     env_file:
       - ../kobo-env/envfile.txt
     restart: always
