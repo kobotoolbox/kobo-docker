@@ -29,7 +29,7 @@ server {
     }
 }
 
-# KoBoCAT HTTP.
+# KoboCAT HTTP.
 server {
     listen      80;
     server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOCAT_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
@@ -54,7 +54,7 @@ server {
     include /etc/nginx/includes/protected_directive.conf;
 }
 
-# KoBoForm public HTTP
+# KoboForm public HTTP
 server {
     listen      80;
     server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOFORM_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
@@ -77,14 +77,9 @@ server {
         alias /srv/kpi_media/__public;
     }
 
-    error_page 418 = /static/html/Offline.html;
-
     location / {
-        # Proxy through uWSGI.
-        ${kpi_include_uwsgi_pass}
-
-        # Debug proxying directly to container.
-        ${kpi_include_proxy_pass}
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
     }
 
     include /etc/nginx/includes/protected_directive.conf;
@@ -94,8 +89,7 @@ server {
     listen 80;
     server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
 
-    resolver 8.8.4.4 8.8.8.8 valid=300s;
-    resolver_timeout 10s;
+    resolver 127.0.0.11 ipv6=off valid=1s;
 
     include /etc/nginx/includes/server_directive_common.conf;
 
@@ -103,7 +97,7 @@ server {
     # add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
 
-    proxy_set_header Host $host${container_public_port};
+    proxy_set_header Host $host${NGINX_PUBLIC_PORT};
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto; # Needs ELB protocol
@@ -112,7 +106,7 @@ server {
     error_log   /var/log/nginx/enketo_express.error.log;
 
     location / {
-        proxy_pass  http://enketo_express:8005/;
+        proxy_pass  http://enketo_express:8005;
         proxy_redirect off;
     }
 }
