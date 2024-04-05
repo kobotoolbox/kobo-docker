@@ -4,8 +4,9 @@
 version: '3'
 
 services:
-  kpi:
+  kpi: &django
     image: kobotoolbox/kpi:2.024.09
+    init: true
     hostname: kpi
     env_file:
       - ../kobo-env/envfiles/aws.txt
@@ -30,7 +31,7 @@ services:
       - ./scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash:ro
       # Persistent storage for FileFields when S3 not used (e.g. exports, uploaded map layers)
       - ./.vols/kpi_media:/srv/src/kpi/media
-      # Allow access to KoBoCAT media uploads within KPI
+      # Allow access to KoboCAT media uploads within KPI
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
     restart: unless-stopped
     networks:
@@ -40,125 +41,23 @@ services:
           - kpi.internal
           - kobocat.docker.container
           - kobocat.internal
-    command: "bash -c exec /entrypoint.sh"
 
-#  worker:
-#    image: kobotoolbox/kpi:2.024.09
-#    hostname: worker
-#    env_file:
-#      - ../kobo-env/envfiles/aws.txt
-#      - ../kobo-env/envfiles/databases.txt
-#      - ../kobo-env/envfiles/django.txt
-#      - ../kobo-env/envfiles/external_services.txt
-#      - ../kobo-env/envfiles/domains.txt
-#      - ../kobo-env/envfiles/smtp.txt
-#    volumes:
-#      - ./.vols/static/kpi:/srv/static
-#      - ./log/kpi:/srv/logs
-#      - ./scripts/wait_for_mongo.bash:/srv/init/wait_for_mongo.bash:ro
-#      - ./scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash:ro
-#      # Persistent storage for FileFields when S3 not used (e.g. exports, uploaded map layers)
-#      - ./.vols/kpi_media:/srv/src/kpi/media
-#      # Allow access to KoBoCAT media uploads within KPI
-#      - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
-#    restart: unless-stopped
-#    command: celery -A kobo worker --loglevel=info \
-#      --hostname=kpi_main_worker@%h \
-#      --logfile=/srv/logs/celery_kpi.log \
-#      --pidfile=/tmp/celery_kpi.pid \
-#      --queues=kpi_queue \
-#      --exclude-queues=kpi_low_priority_queue,kobocat_queue \
-#      --uid=$${UWSGI_USER} \
-#      --gid=$${UWSGI_GROUP} \
-#      --autoscale $${CELERY_AUTOSCALE_MIN},$${CELERY_AUTOSCALE_MAX}
-#
-#  worker_low_priority:
-#    image: kobotoolbox/kpi:2.024.09
-#    hostname: worker_low_priority
-#    env_file:
-#      - ../kobo-env/envfiles/aws.txt
-#      - ../kobo-env/envfiles/databases.txt
-#      - ../kobo-env/envfiles/django.txt
-#      - ../kobo-env/envfiles/external_services.txt
-#      - ../kobo-env/envfiles/domains.txt
-#      - ../kobo-env/envfiles/smtp.txt
-#    volumes:
-#      - ./.vols/static/kpi:/srv/static
-#      - ./log/kpi:/srv/logs
-#      - ./scripts/wait_for_mongo.bash:/srv/init/wait_for_mongo.bash:ro
-#      - ./scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash:ro
-#      # Persistent storage for FileFields when S3 not used (e.g. exports, uploaded map layers)
-#      - ./.vols/kpi_media:/srv/src/kpi/media
-#      # Allow access to KoBoCAT media uploads within KPI
-#      - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
-#    restart: unless-stopped
-#    command: celery -A kobo worker --loglevel=info \
-#      --hostname=kpi_main_worker@%h \
-#      --logfile=/srv/logs/celery_kpi.log \
-#      --pidfile=/tmp/celery_kpi.pid \
-#      --queues=kpi_queue \
-#      --exclude-queues=kpi_low_priority_queue,kobocat_queue \
-#      --uid=$${UWSGI_USER} \
-#      --gid=$${UWSGI_GROUP} \
-#      --autoscale $${CELERY_AUTOSCALE_MIN},$${CELERY_AUTOSCALE_MAX}
-#
-#  worker_kobocat:
-#    image: kobotoolbox/kpi:2.024.09
-#    hostname: worker_kobocat
-#    env_file:
-#      - ../kobo-env/envfiles/aws.txt
-#      - ../kobo-env/envfiles/databases.txt
-#      - ../kobo-env/envfiles/django.txt
-#      - ../kobo-env/envfiles/external_services.txt
-#      - ../kobo-env/envfiles/domains.txt
-#      - ../kobo-env/envfiles/smtp.txt
-#    volumes:
-#      - ./.vols/static/kpi:/srv/static
-#      - ./log/kpi:/srv/logs
-#      - ./scripts/wait_for_mongo.bash:/srv/init/wait_for_mongo.bash:ro
-#      - ./scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash:ro
-#      # Persistent storage for FileFields when S3 not used (e.g. exports, uploaded map layers)
-#      - ./.vols/kpi_media:/srv/src/kpi/media
-#      # Allow access to KoBoCAT media uploads within KPI
-#      - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
-#    restart: unless-stopped
-#    command: celery -A kobo worker --loglevel=info \
-#      --hostname=kobocat_main_worker@%h \
-#      --logfile=/srv/logs/celery_kobocat.log \
-#      --pidfile=/tmp/celery_kobocat.pid \
-#      --queues=kobocat_queue \
-#      --exclude-queues=kpi_low_priority_queue,kpi_queue \
-#      --uid=$${UWSGI_USER} \
-#      --gid=$${UWSGI_GROUP} \
-#      --autoscale $${CELERY_AUTOSCALE_MIN},$${CELERY_AUTOSCALE_MAX}
-#
-#  beat:
-#    image: kobotoolbox/kpi:2.024.09
-#    hostname: beat
-#    env_file:
-#      - ../kobo-env/envfiles/aws.txt
-#      - ../kobo-env/envfiles/databases.txt
-#      - ../kobo-env/envfiles/django.txt
-#      - ../kobo-env/envfiles/external_services.txt
-#      - ../kobo-env/envfiles/domains.txt
-#      - ../kobo-env/envfiles/smtp.txt
-#    volumes:
-#      - ./.vols/static/kpi:/srv/static
-#      - ./log/django:/srv/logs
-#      - ./scripts/wait_for_mongo.bash:/srv/init/wait_for_mongo.bash:ro
-#      - ./scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash:ro
-#      # Persistent storage for FileFields when S3 not used (e.g. exports, uploaded map layers)
-#      - ./.vols/kpi_media:/srv/src/kpi/media
-#      # Allow access to KoBoCAT media uploads within KPI
-#      - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
-#    restart: unless-stopped
-#    command: celery -A kobo beat --loglevel=info \
-#      --logfile=/srv/logs/celery_beat.log \
-#      --pidfile=/tmp/celery_beat.pid \
-#      --scheduler django_celery_beat.schedulers:DatabaseScheduler \
-#      --uid=$${UWSGI_USER} \
-#      --gid=$${UWSGI_GROUP}
-#
+  worker:
+    <<: *django
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_worker.bash']
+
+  worker_low_priority:
+    <<: *django
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_low_priority_worker.bash']
+
+  worker_kobocat:
+    <<: *django
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kobocat_worker.bash']
+
+  beat:
+    <<: *django
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kobocat_worker.bash']
+
   nginx:
     image: nginx:1.23
     hostname: nginx
