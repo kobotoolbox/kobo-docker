@@ -38,8 +38,6 @@ fi
 # Do environment variable substitutions and activate the resulting config. file.
 cat ${KOBO_DOCKER_SCRIPTS_DIR}/templates/nginx_site_default.conf.tmpl | envsubst "${TEMPLATED_VAR_REFS} \${KOBOCAT_HEADER_FOR_DEV}" > /etc/nginx/conf.d/default.conf
 
-cat /etc/nginx/conf.d/default.conf
-
 # Copy includes files
 cat ${KOBO_DOCKER_SCRIPTS_DIR}/templates/include.https_redirection.conf.tmpl | envsubst "${TEMPLATED_VAR_REFS}" > /etc/nginx/includes/https_redirection.conf
 cp ${KOBO_DOCKER_SCRIPTS_DIR}/include.server_directive_common.conf /etc/nginx/includes/server_directive_common.conf
