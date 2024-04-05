@@ -16,13 +16,34 @@ services:
     networks:
       kobo-be-network:
         aliases:
-          - kpi
           - kpi.docker.container
+
+  worker_kobocat:
+    networks:
+      kobo-be-network:
+        aliases:
+          - worker_kobocat
+          - worker_kobocat.docker.container
+
+  worker_low_priority:
+    networks:
+      kobo-be-network:
+        aliases:
+          - worker_kobocat
+          - worker_kobocat.docker.container
+
+  beat:
+    networks:
+      kobo-be-network:
+        aliases:
+          - beat
+          - beat.docker.container
 
   nginx:
     environment:
       # `NGINX_PUBLIC_PORT` is the port used to access KoboToolbox (e.g. `https://kf.kobotoolbox.org:<NGINX_PUBLIC_PORT>`)
-      - NGINX_PUBLIC_PORT=80
+      # Include the colons with the port
+      - NGINX_PUBLIC_PORT=:8080
       #- UWSGI_PASS_TIMEOUT=130
     ports:
       # <proxy_port>:80 . If no proxies, `proxy_port` should be the same as `NGINX_PUBLIC_PORT`
@@ -49,3 +70,4 @@ networks:
       # name: <prefix>_kobo-be-network`, where `prefix` is usually the parent
       # folder name
       name: kobodocker_kobo-be-network
+      external: true
