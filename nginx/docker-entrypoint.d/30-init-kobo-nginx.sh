@@ -16,7 +16,7 @@ rm -rf /etc/nginx/conf.d/*
 export TEMPLATED_VAR_REFS="${TEMPLATED_VAR_REFS} \${NGINX_PUBLIC_PORT}"
 export KOBOCAT_HEADER_FOR_DEV=''
 
-if [[ "${WSGI}" != 'UWSGI' ]] ; then
+if [[ "${WSGI}" != 'uWSGI' ]] ; then
     echo "Proxying directly (debug) to Django without uWSGI."
 
     # Create a `proxy_pass` configuration for this container.
