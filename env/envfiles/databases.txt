@@ -45,8 +45,14 @@ KPI_DATABASE_URL=postgis://kobo:kobo@postgres.domain.name:5432/kobotoolbox
 
 #REDIS_BACKUP_SCHEDULE=0 3 * * 0
 
-REDIS_SESSION_URL=redis://:kobo@redis-cache.kobo.private:6390/2
+REDIS_SESSION_URL=redis://:kobo@redis-cache.kobo.private:6380/2
 REDIS_PASSWORD=kobo
-CACHE_URL=redis://:kobo@redis-cache.kobo.private:6390/5
+CACHE_URL=redis://:kobo@redis-cache.kobo.private:6380/5
 # In bytes, uncomment to cap Redis Cache memory
 # REDIS_CACHE_MAX_MEMORY=
+
+REDIS_PASSWORD=${REDIS_PASSWORD}
+CACHE_URL=redis://:kobo@redis-cache.kobo.private:6380/5
+REDIS_CACHE_MAX_MEMORY=
+SERVICE_ACCOUNT_BACKEND_URL=redis://:kobo@redis-cache.kobo.private:6380/6
+ENKETO_REDIS_MAIN_URL=redis://:kobo@redis-main.kobo.private:6379/0
