@@ -29,7 +29,7 @@ server {
     }
 }
 
-# KoboCAT HTTP.
+# KoboCAT
 server {
     listen      80;
     server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOCAT_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
@@ -39,21 +39,18 @@ server {
 
     include /etc/nginx/includes/server_directive_common.conf;
 
+    location /static {
+        alias /srv/www/kpi;
+    }
+
     location / {
-        proxy_pass         http://kpi:8000/;
-        proxy_http_version 1.1;
-        proxy_set_header   Upgrade $http_upgrade;
-        proxy_set_header   Connection keep-alive;
-        proxy_set_header   Host $host;
-        proxy_cache_bypass $http_upgrade;
-        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header   X-Forwarded-Proto $scheme;
-        proxy_hide_header  X-Frame-Options;
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
         ${KOBOCAT_HEADER_FOR_DEV}
     }
 }
 
-# KoboForm public HTTP
+# KPI
 server {
     listen      80;
     server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOFORM_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
@@ -84,6 +81,7 @@ server {
     include /etc/nginx/includes/protected_directive.conf;
 }
 
+# Enketo Express
 server {
     listen 80;
     server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
