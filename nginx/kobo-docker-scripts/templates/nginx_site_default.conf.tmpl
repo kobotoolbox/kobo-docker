@@ -46,7 +46,6 @@ server {
     location / {
         # Proxy through uWSGI or Django webserver
         include /etc/nginx/includes/proxy_pass.conf;
-        ${KOBOCAT_HEADER_FOR_DEV}
     }
 }
 
