@@ -59,7 +59,7 @@ services:
     command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kobocat_worker.bash']
 
   nginx:
-    image: nginx:1.23
+    image: nginx:1.26
     hostname: nginx
     env_file:
       - ../kobo-env/envfiles/domains.txt
