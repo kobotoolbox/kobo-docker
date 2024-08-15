@@ -18,12 +18,12 @@ services:
     sysctls:
       - net.core.somaxconn=2048
     environment:
-      - KPI_UWSGI_MAX_REQUESTS=512
-      - KPI_UWSGI_WORKERS_COUNT=2
-      - KPI_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
-      - KPI_UWSGI_CHEAPER_WORKERS_COUNT=1
-      - KPI_UWSGI_HARAKIRI=120
-      - KPI_UWSGI_WORKER_RELOAD_MERCY=120
+      - UWSGI_MAX_REQUESTS=512
+      - UWSGI_WORKERS_COUNT=2
+      - UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
+      - UWSGI_CHEAPER_WORKERS_COUNT=1
+      - UWSGI_HARAKIRI=120
+      - UWSGI_WORKER_RELOAD_MERCY=120
     volumes:
       - ./.vols/static/kpi:/srv/static
       - ./log/kpi:/srv/logs
