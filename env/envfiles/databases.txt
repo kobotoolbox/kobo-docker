@@ -36,12 +36,6 @@ KPI_POSTGRES_DB=koboform
 KC_DATABASE_URL=postgis://kobo:kobo@postgres.domain.name:5432/kobotoolbox
 KPI_DATABASE_URL=postgis://kobo:kobo@postgres.domain.name:5432/kobotoolbox
 
-# Replication. Password is mandatory
-KOBO_POSTGRES_REPLICATION_USER=kobo_replication
-KOBO_POSTGRES_REPLICATION_PASSWORD=
-
-KOBO_POSTGRES_PRIMARY_ENDPOINT=primary.postgres.domain.name
-
 # Default Postgres backup schedule is weekly at 02:00 AM UTC on Sunday.
 #POSTGRES_BACKUP_SCHEDULE=0 2 * * 0
 
@@ -51,8 +45,14 @@ KOBO_POSTGRES_PRIMARY_ENDPOINT=primary.postgres.domain.name
 
 #REDIS_BACKUP_SCHEDULE=0 3 * * 0
 
-REDIS_SESSION_URL=redis://:kobo@redis-cache.kobo.private:6390/2
+REDIS_SESSION_URL=redis://:kobo@redis-cache.kobo.private:6380/2
 REDIS_PASSWORD=kobo
-CACHE_URL=redis://:kobo@redis-cache.kobo.private:6390/5
+CACHE_URL=redis://:kobo@redis-cache.kobo.private:6380/5
 # In bytes, uncomment to cap Redis Cache memory
 # REDIS_CACHE_MAX_MEMORY=
+
+REDIS_PASSWORD=${REDIS_PASSWORD}
+CACHE_URL=redis://:kobo@redis-cache.kobo.private:6380/5
+REDIS_CACHE_MAX_MEMORY=
+SERVICE_ACCOUNT_BACKEND_URL=redis://:kobo@redis-cache.kobo.private:6380/6
+ENKETO_REDIS_MAIN_URL=redis://:kobo@redis-main.kobo.private:6379/0

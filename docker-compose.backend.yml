@@ -1,14 +1,12 @@
-# Back-end containers template.
-# The primary and secondary compose files extend this file
-
-version: '2.2'
+# Back-end containers
+version: '3'
 
 services:
   postgres:
     image: postgis/postgis:14-3.2
     hostname: postgres
     env_file:
-      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/domains.txt
       - ../kobo-env/envfiles/databases.txt
       - ../kobo-env/envfiles/aws.txt
     volumes:
@@ -26,7 +24,7 @@ services:
     environment:
       - MONGO_DATA=/data/db
     env_file:
-      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/domains.txt
       - ../kobo-env/envfiles/databases.txt
       - ../kobo-env/envfiles/aws.txt
     volumes:
@@ -39,9 +37,9 @@ services:
     stop_grace_period: 5m
 
   redis_main:
-    image: redis:6.2
+    image: redis:7.2
     env_file:
-      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/domains.txt
       - ../kobo-env/envfiles/databases.txt
       - ../kobo-env/envfiles/aws.txt
     environment:
@@ -60,7 +58,7 @@ services:
     command: "bash /tmp/redis/entrypoint.sh"
 
   redis_cache:
-    image: redis:6.2
+    image: redis:7.2
     env_file:
       - ../kobo-env/envfiles/databases.txt
     environment:

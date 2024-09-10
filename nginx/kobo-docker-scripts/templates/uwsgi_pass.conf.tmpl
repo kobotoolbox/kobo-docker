@@ -8,7 +8,7 @@ uwsgi_send_timeout ${UWSGI_PASS_TIMEOUT};
 # See https://www.jethrocarr.com/2013/11/02/nginx-reverse-proxies-and-dns-resolution/
 # 127.0.0.11 is internal docker DNS server (see `cat /etc/resolv.conf`)
 resolver 127.0.0.11 ipv6=off valid=1s;
-set $upstream "${container_name}:${container_port}";
+set $upstream "kpi:8000";
 uwsgi_pass $upstream;
 # For setting HTTP headers, see http://stackoverflow.com/a/14133533/1877326.
 uwsgi_param HTTP_X_REAL_IP $remote_addr;

@@ -3,6 +3,5 @@
 ############################################################################
 GOOGLE_ANALYTICS_TOKEN=
 
-KOBOCAT_RAVEN_DSN=
-KPI_RAVEN_DSN=
-KPI_RAVEN_JS_DSN=
+SENTRY_DSN=
+SENTRY_JS_DSN=

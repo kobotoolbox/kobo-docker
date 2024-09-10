@@ -1,0 +1,33 @@
+DJANGO_DEBUG=False
+TEMPLATE_DEBUG=False
+USE_X_FORWARDED_HOST=False
+
+CELERY_BROKER_URL=redis://:kobo@redis-main.domain.name:6379/1
+CELERY_AUTOSCALE_MIN=2
+CELERY_AUTOSCALE_MAX=6
+
+DJANGO_SECRET_KEY=changeme!!
+DJANGO_SESSION_COOKIE_AGE=604800
+DJANGO_ALLOWED_HOSTS=.domain.name .domain.internal
+
+SESSION_COOKIE_DOMAIN=".domain.name"
+
+# Comma separated domains
+SERVICE_ACCOUNT_WHITELISTED_HOSTS=kf.kobo.internal
+
+# See "api key" here: https://github.com/kobotoolbox/enketo-express/tree/master/config#linked-form-and-data-server.
+ENKETO_API_KEY=changeme!!
+
+# The initial superuser's username.
+KOBO_SUPERUSER_USERNAME=super_admin
+# The initial superuser's password.
+KOBO_SUPERUSER_PASSWORD=changeme!!
+# The e-mail address where your users can contact you.
+KOBO_SUPPORT_EMAIL=support@domain.name
+
+KOBOFORM_URL=https://kf.domain.name
+KOBOFORM_INTERNAL_URL=http://kf.kobo.internal # Always use HTTP internally.
+ENKETO_URL=https://ee.domain.name
+ENKETO_INTERNAL_URL=http://ee.kobo.internal # Always use HTTP internally.
+KOBOCAT_URL=https://kc.domain.name
+KOBOCAT_INTERNAL_URL=http://kc.kobo.internal # Always use HTTP internally.

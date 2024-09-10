@@ -2,29 +2,8 @@
 version: '3'
 
 services:
-  kobocat:
-    environment:
-      # change `ENKETO_PROTOCOL` to http if HTTPS is not used
-      - ENKETO_PROTOCOL=https
-      # `NGINX_PUBLIC_PORT` is the port used to access KoboToolbox (e.g. `https://kc.kobotoolbox.org:<NGINX_PUBLIC_PORT>`)
-      - NGINX_PUBLIC_PORT=80
-      # Uncomment the lines below to tweak uWSGI
-      #- KC_UWSGI_WORKERS_COUNT=2
-      #- KC_UWSGI_CHEAPER_WORKERS_COUNT=1
-      #- KC_UWSGI_MAX_REQUESTS=512
-      #- KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
-      #- KC_UWSGI_HARAKIRI=120
-      #- KC_UWSGI_WORKER_RELOAD_MERCY=120
-    networks:
-      kobo-be-network:
-        aliases:
-          - kobocat
-          - kobocat.docker.container
-
   kpi:
     environment:
-      # `NGINX_PUBLIC_PORT` is the port used to access KoboToolbox (e.g. `https://kf.kobotoolbox.org:<NGINX_PUBLIC_PORT>`)
-      - NGINX_PUBLIC_PORT=80
       # Uncomment the lines below to tweak uWSGI
       #- KPI_UWSGI_WORKERS_COUNT=2
       #- KPI_UWSGI_CHEAPER_WORKERS_COUNT=1
@@ -37,13 +16,34 @@ services:
     networks:
       kobo-be-network:
         aliases:
-          - kpi
           - kpi.docker.container
+
+  worker_kobocat:
+    networks:
+      kobo-be-network:
+        aliases:
+          - worker_kobocat
+          - worker_kobocat.docker.container
+
+  worker_low_priority:
+    networks:
+      kobo-be-network:
+        aliases:
+          - worker_kobocat
+          - worker_kobocat.docker.container
+
+  beat:
+    networks:
+      kobo-be-network:
+        aliases:
+          - beat
+          - beat.docker.container
 
   nginx:
     environment:
       # `NGINX_PUBLIC_PORT` is the port used to access KoboToolbox (e.g. `https://kf.kobotoolbox.org:<NGINX_PUBLIC_PORT>`)
-      - NGINX_PUBLIC_PORT=80
+      # Include the colons with the port
+      - NGINX_PUBLIC_PORT=:8080
       #- UWSGI_PASS_TIMEOUT=130
     ports:
       # <proxy_port>:80 . If no proxies, `proxy_port` should be the same as `NGINX_PUBLIC_PORT`
@@ -70,3 +70,4 @@ networks:
       # name: <prefix>_kobo-be-network`, where `prefix` is usually the parent
       # folder name
       name: kobodocker_kobo-be-network
+      external: true

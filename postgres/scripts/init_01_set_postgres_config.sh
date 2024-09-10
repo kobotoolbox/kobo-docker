@@ -6,11 +6,11 @@ if [ ! -f "$POSTGRES_CONFIG_FILE.orig" ]; then
 fi
 
 echo "Applying new configuration..."
-cp $KOBO_DOCKER_SCRIPTS_DIR/shared/postgres.conf $POSTGRES_CONFIG_FILE
+cp $KOBO_DOCKER_SCRIPTS_DIR/conf/postgres.conf $POSTGRES_CONFIG_FILE
 
-if [ -f "$KOBO_DOCKER_SCRIPTS_DIR/$KOBO_POSTGRES_DB_SERVER_ROLE/postgres.conf" ]; then
+if [ -f "$KOBO_DOCKER_SCRIPTS_DIR/conf/postgres.conf" ]; then
     echo "Appending role specific configuration..."
-    cat $KOBO_DOCKER_SCRIPTS_DIR/$KOBO_POSTGRES_DB_SERVER_ROLE/postgres.conf >> $POSTGRES_CONFIG_FILE
+    cat $KOBO_DOCKER_SCRIPTS_DIR/conf/postgres.conf >> $POSTGRES_CONFIG_FILE
 
     if grep -q "\$PGDATA" "$POSTGRES_CONFIG_FILE"; then
         sed -i "s#\$PGDATA#"$PGDATA"#g" $POSTGRES_CONFIG_FILE
@@ -23,7 +23,4 @@ if [ ! -f "$POSTGRES_CLIENT_AUTH_FILE.orig" ]; then
 fi
 
 echo "Applying new client authentication configuration file..."
-cp $KOBO_DOCKER_SCRIPTS_DIR/shared/pg_hba.conf "$POSTGRES_CLIENT_AUTH_FILE"
-
-echo "Creating hg_hba config file..."
-sed -i "s/KOBO_POSTGRES_REPLICATION_USER/${KOBO_POSTGRES_REPLICATION_USER//\"/}/g" "$POSTGRES_CLIENT_AUTH_FILE"
+cp $KOBO_DOCKER_SCRIPTS_DIR/config/pg_hba.conf "$POSTGRES_CLIENT_AUTH_FILE"

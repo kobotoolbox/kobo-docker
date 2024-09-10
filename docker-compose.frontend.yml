@@ -4,92 +4,67 @@
 version: '3'
 
 services:
-  kobocat:
-    image: kobotoolbox/kobocat:2.024.19e
-    hostname: kobocat
-    env_file:
-      - ../kobo-env/envfile.txt
-      - ../kobo-env/envfiles/databases.txt
-      - ../kobo-env/envfiles/aws.txt
-      - ../kobo-env/envfiles/external_services.txt
-      - ../kobo-env/envfiles/kobocat.txt
-      - ../kobo-env/envfiles/nginx.txt
-      - ../kobo-env/envfiles/smtp.txt
-    sysctls:
-      - net.core.somaxconn=2048
-    environment:
-      - ENKETO_PROTOCOL=https
-      - KPI_PORT=8000
-      - KC_UWSGI_MAX_REQUESTS=512
-      - KC_UWSGI_WORKERS_COUNT=2
-      - KC_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
-      - KC_UWSGI_CHEAPER_WORKERS_COUNT=1
-      - KC_UWSGI_HARAKIRI=120
-      - KC_UWSGI_WORKER_RELOAD_MERCY=120
-    volumes:
-      - ./.vols/static/kobocat:/srv/static
-      - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
-      - ./backups/kobocat:/srv/backups
-      - ./log/kobocat:/srv/logs
-      - ./scripts/wait_for_mongo.bash:/srv/init/wait_for_mongo.bash:ro
-      - ./scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash:ro
-      - ./scripts/runtime_variables_kobocat.source.bash:/etc/profile.d/runtime_variables_kobocat.source.bash.sh:ro
-    restart: always
-    networks:
-      kobo-fe-network:
-        aliases:
-          - kobocat
-          - kobocat.docker.container
-          - kobocat.internal
-
-  kpi:
-    image: kobotoolbox/kpi:2.024.19e
+  kpi: &django
+    image: kobotoolbox/kpi:2.024.25a
+    init: true
     hostname: kpi
     env_file:
-      - ../kobo-env/envfile.txt
-      - ../kobo-env/envfiles/databases.txt
       - ../kobo-env/envfiles/aws.txt
+      - ../kobo-env/envfiles/databases.txt
+      - ../kobo-env/envfiles/django.txt
       - ../kobo-env/envfiles/external_services.txt
-      - ../kobo-env/envfiles/kpi.txt
-      - ../kobo-env/envfiles/nginx.txt
+      - ../kobo-env/envfiles/domains.txt
       - ../kobo-env/envfiles/smtp.txt
     sysctls:
       - net.core.somaxconn=2048
     environment:
-      - SYNC_KOBOCAT_XFORMS=False # Should be True on at least one frontend environment
-      - KPI_UWSGI_MAX_REQUESTS=512
-      - KPI_UWSGI_WORKERS_COUNT=2
-      - KPI_UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
-      - KPI_UWSGI_CHEAPER_WORKERS_COUNT=1
-      - KPI_UWSGI_HARAKIRI=120
-      - KPI_UWSGI_WORKER_RELOAD_MERCY=120
+      - UWSGI_MAX_REQUESTS=512
+      - UWSGI_WORKERS_COUNT=2
+      - UWSGI_CHEAPER_RSS_LIMIT_SOFT=134217728
+      - UWSGI_CHEAPER_WORKERS_COUNT=1
+      - UWSGI_HARAKIRI=120
+      - UWSGI_WORKER_RELOAD_MERCY=120
     volumes:
       - ./.vols/static/kpi:/srv/static
       - ./log/kpi:/srv/logs
       - ./scripts/wait_for_mongo.bash:/srv/init/wait_for_mongo.bash:ro
       - ./scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash:ro
-      - ./scripts/runtime_variables_kpi.source.bash:/etc/profile.d/runtime_variables_kpi.source.bash.sh:ro
       # Persistent storage for FileFields when S3 not used (e.g. exports, uploaded map layers)
       - ./.vols/kpi_media:/srv/src/kpi/media
-      # Allow access to KoBoCAT media uploads within KPI
+      # Allow access to KoboCAT media uploads within KPI
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
-    restart: always
+    restart: unless-stopped
     networks:
       kobo-fe-network:
         aliases:
-          - kpi
           - kpi.docker.container
           - kpi.internal
+          - kobocat.docker.container
+          - kobocat.internal
+
+  worker:
+    <<: *django
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_worker.bash']
+
+  worker_low_priority:
+    <<: *django
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_low_priority_worker.bash']
+
+  worker_kobocat:
+    <<: *django
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kobocat_worker.bash']
+
+  beat:
+    <<: *django
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kobocat_worker.bash']
 
   nginx:
-    image: nginx:1.21
+    image: nginx:1.26
     hostname: nginx
     env_file:
-      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/domains.txt
       - ../kobo-env/envfiles/databases.txt
-      - ../kobo-env/envfiles/nginx.txt
-      - ../kobo-env/envfiles/kobocat.txt
-      - ../kobo-env/envfiles/kpi.txt
+      - ../kobo-env/envfiles/django.txt
     environment:
       - UWSGI_PASS_TIMEOUT=130
       - TEMPLATED_VAR_REFS=$${PUBLIC_REQUEST_SCHEME} $${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
@@ -100,25 +75,27 @@ services:
         - ./.vols/kpi_media/__public:/srv/kpi_media/__public:ro
         - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
         - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
-    restart: always
+    restart: unless-stopped
     networks:
       kobo-fe-network:
         aliases:
-          - nginx
           - nginx.internal
+          - nginx.docker.container
 
   enketo_express:
     image: kobotoolbox/enketo-express-extra-widgets:6.2.2
+    init: true
+    hostname: enketo_express
     env_file:
-      - ../kobo-env/envfile.txt
-    restart: always
+      - ../kobo-env/envfiles/domains.txt
+    restart: unless-stopped
     volumes:
       - ../kobo-env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
     networks:
       kobo-fe-network:
         aliases:
-          - enketo_express
           - enketo_express.internal
+          - enketo_express.docker.container
 
 networks:
   kobo-fe-network:

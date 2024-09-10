@@ -29,7 +29,7 @@ server {
     }
 }
 
-# KoBoCAT HTTP.
+# KoboCAT
 server {
     listen      80;
     server_name ${KOBOCAT_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOCAT_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
@@ -39,22 +39,95 @@ server {
 
     include /etc/nginx/includes/server_directive_common.conf;
 
-    location / {
-        # Proxy through uWSGI.
-        ${kobocat_include_uwsgi_pass}
-
-        # Debug proxying directly to container.
-        ${kobocat_include_proxy_pass}
+    location /static {
+        alias /srv/www/kpi;
     }
 
-    location /static {
-        alias /srv/www/kobocat;
+    # /<username>/bulk-submission
+    # /<username>/bulk-submission-form
+    location ~ ^/.+/bulk-submission(-form)?$ {
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
+    }
+
+    # /<username>/exports/<id_string>/<export_type>/
+    # /<username>/exports/<id_string>/<export_type>/<filename>
+    # /<username>/exports/<id_string>/<export_type>/delete
+    # /<username>/exports/<id_string>/<export_type>/new
+    # /<username>/exports/<id_string>/<export_type>/progress
+    # /<username>/forms/<id_string>/form\.json
+    # /<username>/forms/<id_string>/form\.xls
+    # /<username>/forms/<pk>/form\.xml
+    location ~ ^/.+/(exports|forms)/.+/ {
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
+    }
+
+    # /<username>/formList
+    # /<username>/submission
+    # /<username>/xformsManifest/<pk>
+    # /<username>/xformsMedia/<pk>/<metadata>
+    # /<username>/xformsMedia/<pk>/<metadata>\.<format>
+    location ~ ^/.+/(formList|submission|xformsManifest|xformsMedia) {
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
+    }
+
+    # /attachment/
+    # /attachment/<size>
+    # /media/
+    # /media/<size>
+    location ~ ^/(attachment|media)/(.*)$ {
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
+    }
+
+    # /formList
+    # /formUpload
+    # /submission
+    # /upload
+    location ~ ^/(formList|formUpload|submission|upload)$ {
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
+    }
+
+    # /view/downloadSubmission
+    # /view/submissionList
+    location ~ ^/view/(downloadSubmission|submissionList)$ {
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
+    }
+
+    # /forms/<pk>/form\.xml
+    # /xformsManifest/<pk>
+    # /xformsMedia/<pk>/<metadata>
+    # /xformsMedia/<pk>/<metadata>\.<format>
+    location ~ ^/(forms|xformsManifest|xformsMedia|xformsMedia)/([0-9]+) {
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
+    }
+
+    # Anything that starts with `/api/v1`
+    location /api/v1 {
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
+    }
+
+    # /legacy/service_health/
+    # /legacy/service_health/minimal/
+    location /legacy/ {
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
     }
 
     include /etc/nginx/includes/protected_directive.conf;
+
+    location / {
+        return 404;
+    }
 }
 
-# KoBoForm public HTTP
+# KPI
 server {
     listen      80;
     server_name ${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${KOBOFORM_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
@@ -63,6 +136,11 @@ server {
 
     location ~ ^/forms/(.*) {
         return 301 /$1;
+    }
+
+    # Block KoboCAT api if the domain is wrong
+    location /api/v1 {
+        return 404;
     }
 
     access_log  /var/log/nginx/kpi.access.log with_host;
@@ -77,25 +155,20 @@ server {
         alias /srv/kpi_media/__public;
     }
 
-    error_page 418 = /static/html/Offline.html;
-
     location / {
-        # Proxy through uWSGI.
-        ${kpi_include_uwsgi_pass}
-
-        # Debug proxying directly to container.
-        ${kpi_include_proxy_pass}
+        # Proxy through uWSGI or Django webserver
+        include /etc/nginx/includes/proxy_pass.conf;
     }
 
     include /etc/nginx/includes/protected_directive.conf;
 }
 
+# Enketo Express
 server {
     listen 80;
     server_name ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
 
-    resolver 8.8.4.4 8.8.8.8 valid=300s;
-    resolver_timeout 10s;
+    resolver 127.0.0.11 ipv6=off valid=1s;
 
     include /etc/nginx/includes/server_directive_common.conf;
 
@@ -103,7 +176,7 @@ server {
     # add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
 
-    proxy_set_header Host $host${container_public_port};
+    proxy_set_header Host $host${NGINX_PUBLIC_PORT};
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto; # Needs ELB protocol
@@ -112,7 +185,7 @@ server {
     error_log   /var/log/nginx/enketo_express.error.log;
 
     location / {
-        proxy_pass  http://enketo_express:8005/;
+        proxy_pass  http://enketo_express:8005;
         proxy_redirect off;
     }
 }

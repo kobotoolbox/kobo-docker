@@ -1,11 +1,9 @@
-# Override for primary back-end server
-version: '2.2'
+# Override for back-end server
+version: '3'
 
 services:
 
   postgres:
-    #environment:
-    #  - POSTGRES_BACKUP_FROM_SECONDARY=True
     # Uncomment `ports` section if you want to expose ports (e.g. use as separated servers)
     # Before uncommenting, be sure you have a firewall configured to prevent these ports
     # from being publicly accessible
@@ -32,9 +30,6 @@ services:
   # Comment out section (`redis_main` and `redis_cache`) below if you want to
   # start redis containers from the secondary back-end server
   redis_main:
-    extends:
-      file: docker-compose.backend.template.yml
-      service: redis_main
     # Uncomment `ports` section if you want to expose ports (e.g. use as separated servers)
     # Before uncommenting, be sure you have a firewall configured to prevent these ports
     # from being publicly accessible
@@ -47,9 +42,6 @@ services:
           - redis-main.kobo.private
 
   redis_cache:
-    extends:
-      file: docker-compose.backend.template.yml
-      service: redis_cache
     # Uncomment `ports` section if you want to expose ports (e.g. use as separated servers)
     # Before uncommenting, be sure you have a firewall configured to prevent these ports
     # from being publicly accessible
