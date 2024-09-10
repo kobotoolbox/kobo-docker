@@ -9,7 +9,6 @@ proxy_pass http://kpi:8000;
 proxy_set_header Host $host:$proxy_port;
 proxy_set_header X-Real-IP $remote_addr;
 proxy_set_header X-Forwarded-For $remote_addr;
-proxy_set_header X-Forwarded-Proto $scheme;
 proxy_set_header X-Forwarded-Host $host${NGINX_PUBLIC_PORT};
 proxy_redirect off;
 
