@@ -1,8 +1,6 @@
 # NOTE: Generate `../kobo-env/` environment files using
 # https://github.com/kobotoolbox/kobo-install. You may manually customize the
 # files afterwards and stop using kobo-install if necessary.
-version: '3'
-
 services:
   kpi: &django
     image: kobotoolbox/kpi:2.024.25c

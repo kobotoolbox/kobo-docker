@@ -1,6 +1,4 @@
 # Back-end containers
-version: '3'
-
 services:
   postgres:
     image: postgis/postgis:14-3.2

@@ -1,6 +1,4 @@
 # Override for front-end servers
-version: '3'
-
 services:
   kpi:
     environment:
