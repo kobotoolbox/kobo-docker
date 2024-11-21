@@ -1,0 +1,102 @@
+x-environment: &default-environment
+  PUBLIC_REQUEST_SCHEME: http
+  INTERNAL_DOMAIN_NAME: kobo.local
+  PUBLIC_DOMAIN_NAME: kobo.local
+  KOBOFORM_URL: http://kf.kobo.local
+  KOBOCAT_URL: http://kf.kobo.local
+  KOBOFORM_PUBLIC_SUBDOMAIN: kf
+  KOBOCAT_PUBLIC_SUBDOMAIN: kc
+  ENKETO_EXPRESS_PUBLIC_SUBDOMAIN: ee
+  ENKETO_REDIS_MAIN_URL: redis://redis:6379
+services:
+  postgres:
+    image: postgis/postgis
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    networks:
+      kobo-be-network:
+        aliases:
+          - postgres.kobo.private
+  mongo:
+    image: mongo
+    networks:
+      kobo-be-network:
+        aliases:
+          - mongo.kobo.private
+  redis:
+    image: redis
+    networks:
+      kobo-be-network:
+        aliases:
+          - redis.kobo.private
+  kpi: &django
+    image: kobotoolbox/kpi:2.024.33c
+    environment:
+      <<: *default-environment
+      DJANGO_DEBUG: "true"
+      USE_X_FORWARDED_HOST: "true"
+      PYTHONUNBUFFERED: 1
+      DATABASE_URL: postgis://postgres:postgres@postgres:5432/postgres
+      KC_DATABASE_URL: postgis://postgres:postgres@postgres:5432/kobocat
+      SESSION_COOKIE_DOMAIN: .kobo.local
+      REDIS_SESSION_URL: redis://redis:6379
+      CELERY_BROKER_URL: redis://redis:6379
+      CACHE_URL: redis://redis:6379
+      SERVICE_ACCOUNT_BACKEND_URL: redis://redis:6379
+    command: ./manage.py runserver 0:8000
+    volumes:
+      - ./.vols/static/kpi:/srv/src/kpi/staticfiles
+    networks:
+      kobo-fe-network:
+        aliases:
+          - kpi.docker.container
+          - kpi.internal
+          - kobocat.docker.container
+          - kobocat.internal
+      kobo-be-network:
+        aliases:
+          - kpi.docker.container
+  worker:
+    <<: *django
+    command: celery -A kobo worker -l info -s /tmp/celerybeat-schedule --pool threads -Q kpi_low_priority_queue,kpi_queue,kobocat_queue
+  nginx:
+    image: nginx
+    environment:
+      <<: *default-environment
+      TEMPLATED_VAR_REFS: "$${PUBLIC_REQUEST_SCHEME} $${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}"
+    networks:
+      kobo-fe-network:
+        aliases:
+          - nginx.internal
+          - nginx.docker.container
+    ports:
+      - 80:80
+    volumes:
+        - ./.vols/static:/srv/www:ro
+        - ./.vols/kobocat_media_uploads:/media
+        - ./.vols/kpi_media/__public:/srv/kpi_media/__public:ro
+        - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
+        - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
+  enketo_express:
+    image: kobotoolbox/enketo-express-extra-widgets:6.2.2
+    environment:
+      <<: *default-environment
+      ENKETO_REDIS_CACHE_URL: "redis://redis:6379"
+      ENKETO_MAX_PROCESSES: 1
+      ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL: kf.kobo.local:8080
+      ENKETO_LINKED_FORM_AND_DATA_SERVER_AUTHENTICATION_ALLOW_INSECURE_TRANSPORT: "true"
+    command: node app.js
+    networks:
+      kobo-fe-network:
+        aliases:
+          - enketo_express.internal
+          - enketo_express.docker.container
+      kobo-be-network:
+        aliases:
+          - enketo_express
+
+networks:
+  kobo-fe-network:
+    driver: bridge
+  kobo-be-network:
+    driver: bridge
