@@ -26,9 +26,9 @@ services:
     image: kobotoolbox/kpi:2.024.33c
     environment:
       <<: *default-environment
-      DJANGO_DEBUG: "true"
+      DJANGO_DEBUG: "true" # Remove?
       USE_X_FORWARDED_HOST: "true"
-      PYTHONUNBUFFERED: 1
+      PYTHONUNBUFFERED: 1  # Move to Dockerfile?
       DATABASE_URL: postgis://postgres:postgres@postgres:5432/postgres
       KC_DATABASE_URL: postgis://postgres:postgres@postgres:5432/kobocat
       SESSION_COOKIE_DOMAIN: .kobo.local
@@ -37,22 +37,14 @@ services:
       CACHE_URL: redis://redis:6379
       SERVICE_ACCOUNT_BACKEND_URL: redis://redis:6379
       ENKETO_URL: http://ee.kobo.local
-      ENKETO_INTERNAL_URL: http://ee.kobo.internal
-      ENKETO_API_KEY: "abc123"
     command: ./manage.py runserver 0:8000
     volumes:
       - ./.vols/static/kpi:/srv/src/kpi/staticfiles
     networks:
       kobo-fe-network:
         aliases:
-          - kpi.docker.container
-          - kpi.internal
-          - kobocat.docker.container
-          - kobocat.internal
           - kobocat
-      kobo-be-network:
-        aliases:
-          - kpi.docker.container
+      kobo-be-network: {}
   worker:
     <<: *django
     command: celery -A kobo worker -l info -s /tmp/celerybeat-schedule --pool threads -Q kpi_low_priority_queue,kpi_queue,kobocat_queue
@@ -64,14 +56,9 @@ services:
     networks:
       kobo-fe-network:
         aliases:
-          - nginx.internal
-          - nginx.docker.container
           - kf.kobo.local
           - kc.kobo.local
           - ee.kobo.local
-          - kf.kobo.internal
-          - kc.kobo.internal
-          - ee.kobo.internal
     ports:
       - 80:80
     volumes:
@@ -87,21 +74,12 @@ services:
       <<: *default-environment
       ENKETO_REDIS_CACHE_URL: "redis://redis:6379"
       ENKETO_MAX_PROCESSES: 1
-      #ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL: kc.kobo.local
-      #ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL: kpi:8000
-      #ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL: kc.kobo.local
       ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL: ""
       ENKETO_LINKED_FORM_AND_DATA_SERVER_AUTHENTICATION_ALLOW_INSECURE_TRANSPORT: "true"
-      ENKETO_LINKED_FORM_AND_DATA_SERVER_API_KEY: "abc123"
     command: node app.js
     networks:
-      kobo-fe-network:
-        aliases:
-          - enketo_express.internal
-          - enketo_express.docker.container
-      kobo-be-network:
-        aliases:
-          - enketo_express
+      - kobo-fe-network
+      - kobo-be-network
 
 networks:
   kobo-fe-network:
