@@ -2,11 +2,10 @@ x-environment: &default-environment
   PUBLIC_REQUEST_SCHEME: http
   INTERNAL_DOMAIN_NAME: kobo.local
   PUBLIC_DOMAIN_NAME: kobo.local
-  KOBOFORM_URL: http://kf.kobo.local
-  KOBOCAT_URL: http://kf.kobo.local
+  KOBOCAT_URL: http://kc.kobo.local
+  KOBOCAT_INTERNAL_URL: http://kobocat:8000
   KOBOFORM_PUBLIC_SUBDOMAIN: kf
   KOBOCAT_PUBLIC_SUBDOMAIN: kc
-  ENKETO_EXPRESS_PUBLIC_SUBDOMAIN: ee
   ENKETO_REDIS_MAIN_URL: redis://redis:6379
 services:
   postgres:
@@ -14,21 +13,15 @@ services:
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
     networks:
-      kobo-be-network:
-        aliases:
-          - postgres.kobo.private
+      - kobo-be-network
   mongo:
     image: mongo
     networks:
-      kobo-be-network:
-        aliases:
-          - mongo.kobo.private
+      - kobo-be-network
   redis:
     image: redis
     networks:
-      kobo-be-network:
-        aliases:
-          - redis.kobo.private
+      - kobo-be-network
   kpi: &django
     image: kobotoolbox/kpi:2.024.33c
     environment:
@@ -43,6 +36,9 @@ services:
       CELERY_BROKER_URL: redis://redis:6379
       CACHE_URL: redis://redis:6379
       SERVICE_ACCOUNT_BACKEND_URL: redis://redis:6379
+      ENKETO_URL: http://ee.kobo.local
+      ENKETO_INTERNAL_URL: http://ee.kobo.internal
+      ENKETO_API_KEY: "abc123"
     command: ./manage.py runserver 0:8000
     volumes:
       - ./.vols/static/kpi:/srv/src/kpi/staticfiles
@@ -53,6 +49,7 @@ services:
           - kpi.internal
           - kobocat.docker.container
           - kobocat.internal
+          - kobocat
       kobo-be-network:
         aliases:
           - kpi.docker.container
@@ -69,6 +66,12 @@ services:
         aliases:
           - nginx.internal
           - nginx.docker.container
+          - kf.kobo.local
+          - kc.kobo.local
+          - ee.kobo.local
+          - kf.kobo.internal
+          - kc.kobo.internal
+          - ee.kobo.internal
     ports:
       - 80:80
     volumes:
@@ -79,12 +82,17 @@ services:
         - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
   enketo_express:
     image: kobotoolbox/enketo-express-extra-widgets:6.2.2
+    init: true
     environment:
       <<: *default-environment
       ENKETO_REDIS_CACHE_URL: "redis://redis:6379"
       ENKETO_MAX_PROCESSES: 1
-      ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL: kf.kobo.local:8080
+      #ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL: kc.kobo.local
+      #ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL: kpi:8000
+      #ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL: kc.kobo.local
+      ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL: ""
       ENKETO_LINKED_FORM_AND_DATA_SERVER_AUTHENTICATION_ALLOW_INSECURE_TRANSPORT: "true"
+      ENKETO_LINKED_FORM_AND_DATA_SERVER_API_KEY: "abc123"
     command: node app.js
     networks:
       kobo-fe-network:
