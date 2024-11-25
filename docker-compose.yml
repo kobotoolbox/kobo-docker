@@ -19,7 +19,7 @@ services:
     networks:
       - kobo-be-network
   redis:
-    image: redis
+    image: valkey/valkey
     networks:
       - kobo-be-network
   kpi: &django
@@ -28,7 +28,7 @@ services:
       <<: *default-environment
       DJANGO_DEBUG: "true" # Remove?
       USE_X_FORWARDED_HOST: "true"
-      PYTHONUNBUFFERED: 1  # Move to Dockerfile?
+      PYTHONUNBUFFERED: 1 # Move to Dockerfile?
       DATABASE_URL: postgis://postgres:postgres@postgres:5432/postgres
       KC_DATABASE_URL: postgis://postgres:postgres@postgres:5432/kobocat
       SESSION_COOKIE_DOMAIN: .kobo.local
@@ -62,11 +62,11 @@ services:
     ports:
       - 80:80
     volumes:
-        - ./.vols/static:/srv/www:ro
-        - ./.vols/kobocat_media_uploads:/media
-        - ./.vols/kpi_media/__public:/srv/kpi_media/__public:ro
-        - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
-        - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
+      - ./.vols/static:/srv/www:ro
+      - ./.vols/kobocat_media_uploads:/media
+      - ./.vols/kpi_media/__public:/srv/kpi_media/__public:ro
+      - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
+      - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
   enketo_express:
     image: kobotoolbox/enketo-express-extra-widgets:6.2.2
     init: true
