@@ -1,0 +1,23 @@
+services:
+  kpi:
+    extends:
+      file: docker-compose.yml
+      service: kpi
+  worker:
+    extends:
+      file: docker-compose.yml
+      service: worker
+  nginx:
+    extends:
+      file: docker-compose.yml
+      service: nginx
+  enketo_express:
+    extends:
+      file: docker-compose.yml
+      service: enketo_express
+
+networks:
+  kobo-fe-network:
+    driver: bridge
+  kobo-be-network:
+    driver: bridge

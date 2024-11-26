@@ -1,11 +1,11 @@
 # NOTE: Generate `../kobo-env/` environment files using
 # https://github.com/kobotoolbox/kobo-install. You may manually customize the
 # files afterwards and stop using kobo-install if necessary.
-version: '3'
-
 services:
   kpi: &django
-    image: kobotoolbox/kpi:2.024.33c
+    extends:
+      file: docker-compose.yml
+      service: kpi
     init: true
     hostname: kpi
     env_file:
@@ -44,19 +44,25 @@ services:
 
   worker:
     <<: *django
-    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_worker.bash']
+    command: ["bash", "/srv/src/kpi/docker/entrypoint_celery_kpi_worker.bash"]
 
   worker_low_priority:
     <<: *django
-    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_low_priority_worker.bash']
+    command:
+      [
+        "bash",
+        "/srv/src/kpi/docker/entrypoint_celery_kpi_low_priority_worker.bash",
+      ]
 
   worker_kobocat:
     <<: *django
-    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kobocat_worker.bash']
+    command:
+      ["bash", "/srv/src/kpi/docker/entrypoint_celery_kobocat_worker.bash"]
 
   beat:
     <<: *django
-    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kobocat_worker.bash']
+    command:
+      ["bash", "/srv/src/kpi/docker/entrypoint_celery_kobocat_worker.bash"]
 
   nginx:
     image: nginx:1.26
@@ -69,12 +75,12 @@ services:
       - UWSGI_PASS_TIMEOUT=130
       - TEMPLATED_VAR_REFS=$${PUBLIC_REQUEST_SCHEME} $${INTERNAL_DOMAIN_NAME} $${PUBLIC_DOMAIN_NAME} $${KOBOFORM_PUBLIC_SUBDOMAIN} $${KOBOCAT_PUBLIC_SUBDOMAIN} $${ENKETO_EXPRESS_PUBLIC_SUBDOMAIN}
     volumes:
-        - ./.vols/static:/srv/www:ro
-        - ./log/nginx:/var/log/nginx
-        - ./.vols/kobocat_media_uploads:/media
-        - ./.vols/kpi_media/__public:/srv/kpi_media/__public:ro
-        - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
-        - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
+      - ./.vols/static:/srv/www:ro
+      - ./log/nginx:/var/log/nginx
+      - ./.vols/kobocat_media_uploads:/media
+      - ./.vols/kpi_media/__public:/srv/kpi_media/__public:ro
+      - ./nginx/docker-entrypoint.d/30-init-kobo-nginx.sh:/docker-entrypoint.d/30-init-kobo-nginx.sh
+      - ./nginx/kobo-docker-scripts/:/kobo-docker-scripts
     restart: unless-stopped
     networks:
       kobo-fe-network:
@@ -83,14 +89,16 @@ services:
           - nginx.docker.container
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:6.2.2
-    init: true
+    extends:
+      file: docker-compose.yml
+      service: enketo_express
     hostname: enketo_express
     env_file:
       - ../kobo-env/envfiles/domains.txt
     restart: unless-stopped
     volumes:
       - ../kobo-env/enketo_express/config.json:/srv/src/enketo_express/config/config.json
+    command: "${ENKETO_SRC_DIR}/setup/docker/start.sh"
     networks:
       kobo-fe-network:
         aliases:
@@ -99,4 +107,6 @@ services:
 
 networks:
   kobo-fe-network:
+    driver: bridge
+  kobo-be-network:
     driver: bridge
