@@ -56,7 +56,7 @@ services:
 
   beat:
     <<: *django
-    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kobocat_worker.bash']
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_beat.bash']
 
   nginx:
     image: nginx:1.26
