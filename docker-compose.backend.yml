@@ -1,5 +1,4 @@
 # Back-end containers
-version: '3'
 
 services:
   postgres:

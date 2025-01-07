@@ -1,11 +1,10 @@
 # For public, HTTPS servers.
-version: '3'
 
 services:
 
   maintenance:
     # set to match `docker-compose.frontend.yml` and avoid pulling different image
-    image: nginx:1.23
+    image: nginx:1.27
     hostname: maintenance
     env_file:
       - ../kobo-env/envfiles/domains.txt
