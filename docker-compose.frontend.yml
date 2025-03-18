@@ -82,7 +82,7 @@ services:
           - nginx.docker.container
 
   enketo_express:
-    image: kobotoolbox/enketo-express-extra-widgets:7.3.1
+    image: kobotoolbox/enketo-express-extra-widgets:7.5.1
     init: true
     hostname: enketo_express
     env_file:
