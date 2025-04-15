@@ -4,7 +4,7 @@
 
 services:
   kpi: &django
-    image: kobotoolbox/kpi:2.025.02
+    image: kobotoolbox/kpi:2.025.02a
     init: true
     hostname: kpi
     env_file:
