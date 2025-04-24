@@ -19,7 +19,7 @@ done
 #	"note" : "all indexes already exist",
 #	"ok" : 1
 # }
-create_compound_index() {
+create_userform_id_and_id_index() {
     "${MONGO_CMD[@]}" "$MONGO_INITDB_DATABASE" <<-EOJS
         db.$COLLECTION.createIndex({
             _userform_id: 1,
@@ -30,5 +30,40 @@ create_compound_index() {
 EOJS
 }
 
-echo "Creating compound index for ${MONGO_INITDB_DATABASE} in background..."
-create_compound_index
+create_formhub_uuid_index() {
+  "${MONGO_CMD[@]}" "$MONGO_INITDB_DATABASE" <<-EOJS
+        db.$COLLECTION.createIndex({
+            'formhub/uuid': 1,
+        }, {
+            background: true
+        })
+EOJS
+}
+
+
+create_userform_id_and_submission_time_index() {
+    "${MONGO_CMD[@]}" "$MONGO_INITDB_DATABASE" <<-EOJS
+        db.$COLLECTION.createIndex({
+            _userform_id: 1,
+            _submission_time: -1,
+        }, {
+            background: true
+        })
+EOJS
+}
+
+create_xform_id_string_index() {
+    "${MONGO_CMD[@]}" "$MONGO_INITDB_DATABASE" <<-EOJS
+        db.$COLLECTION.createIndex({
+            _xform_id_string: 1,
+        }, {
+            background: true
+        })
+EOJS
+}
+
+echo "Creating new indexes for ${MONGO_INITDB_DATABASE} in background..."
+create_userform_id_and_id_index
+create_formhub_uuid_index
+create_userform_id_and_submission_time_index
+create_xform_id_string_index
