@@ -122,6 +122,12 @@ server {
 
     include /etc/nginx/includes/protected_directive.conf;
 
+    # Redirect root (only) to KPI
+    location = / {
+        return 301 $scheme://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}/;
+    }
+
+    # Return 404 for everything else
     location / {
         return 404;
     }
