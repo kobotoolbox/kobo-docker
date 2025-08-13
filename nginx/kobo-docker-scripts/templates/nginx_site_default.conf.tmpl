@@ -127,6 +127,21 @@ server {
     }
 }
 
+map $arg_format $schema_v2_file {
+    default /schema_v2.yaml;
+    json    /schema_v2.json;
+}
+
+map $arg_format $schema_openrosa_file {
+    default /schema_openrosa.yaml;
+    json    /schema_openrosa.json;
+}
+
+map $arg_format $schema_type {
+    default application/yaml;
+    json    application/json;
+}
+
 # KPI
 server {
     listen      80;
@@ -161,6 +176,7 @@ server {
     }
 
     include /etc/nginx/includes/protected_directive.conf;
+    ${SCHEMAS_DIRECTIVE_INCLUDE}
 }
 
 # Enketo Express
