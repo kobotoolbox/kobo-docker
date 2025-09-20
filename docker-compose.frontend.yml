@@ -32,15 +32,12 @@ x-anchors:
       # Allow access to KoboCAT media uploads within KPI
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
     restart: unless-stopped
-    # NOTE: DO WE NEED THIS ATTRIBUTE IN THE ANCHOR FOR ALL WORKER CONTAINERS? 
-    # PROPABLY, ONLY KPI SERVICE NEEDS TO CONNECT TO kobo-fe-network!!
     networks:
       kobo-fe-network:
 
 services:
   kpi:
     <<: *django
-    hostname: kpi
     networks:
       kobo-fe-network:
         aliases:
