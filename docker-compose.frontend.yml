@@ -2,11 +2,10 @@
 # https://github.com/kobotoolbox/kobo-install. You may manually customize the
 # files afterwards and stop using kobo-install if necessary.
 
-services:
-  kpi: &django
+x-anchors:
+  x-kpi-anchor: &django
     image: kobotoolbox/kpi:2.025.34c
     init: true
-    hostname: kpi
     env_file:
       - ../kobo-env/envfiles/aws.txt
       - ../kobo-env/envfiles/databases.txt
@@ -33,6 +32,12 @@ services:
       # Allow access to KoboCAT media uploads within KPI
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
     restart: unless-stopped
+    networks:
+      kobo-fe-network:
+
+services:
+  kpi:
+    <<: *django
     networks:
       kobo-fe-network:
         aliases:
