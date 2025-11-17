@@ -4,7 +4,7 @@
 
 x-anchors:
   x-kpi-anchor: &django
-    image: kobotoolbox/kpi:2.025.37g
+    image: kobotoolbox/kpi:2.025.43b
     init: true
     env_file:
       - ../kobo-env/envfiles/aws.txt
@@ -52,7 +52,11 @@ services:
 
   worker_low_priority:
     <<: *django
-    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_low_priority_worker.bash']
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_worker_low_priority.bash']
+
+  worker_long_running_tasks:
+    <<: *django
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_worker_long_running_tasks.bash']
 
   worker_kobocat:
     <<: *django
