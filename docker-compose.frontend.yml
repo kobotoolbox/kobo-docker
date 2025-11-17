@@ -52,11 +52,7 @@ services:
 
   worker_low_priority:
     <<: *django
-    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_worker_low_priority.bash']
-
-  worker_long_running_tasks:
-    <<: *django
-    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_worker_long_running_tasks.bash']
+    command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_kpi_low_priority_worker.bash']
 
   worker_kobocat:
     <<: *django
