@@ -23,4 +23,4 @@ if [ ! -f "$POSTGRES_CLIENT_AUTH_FILE.orig" ]; then
 fi
 
 echo "Applying new client authentication configuration file..."
-cp $KOBO_DOCKER_SCRIPTS_DIR/config/pg_hba.conf "$POSTGRES_CLIENT_AUTH_FILE"
+cp $KOBO_DOCKER_SCRIPTS_DIR/conf/pg_hba.conf "$POSTGRES_CLIENT_AUTH_FILE"
