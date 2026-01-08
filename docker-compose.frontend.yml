@@ -31,6 +31,8 @@ x-anchors:
       - ./.vols/kpi_media:/srv/src/kpi/media
       # Allow access to KoboCAT media uploads within KPI
       - ./.vols/kobocat_media_uploads:/srv/src/kobocat/media
+      # Mount AWS credentials so they can be used
+      - $HOME/.aws/:/root/.aws/:ro
     restart: unless-stopped
     networks:
       kobo-fe-network:
