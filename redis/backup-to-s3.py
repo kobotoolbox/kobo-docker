@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+# pip install boto3
 import datetime
 import os
+import subprocess
 import sys
 
-from boto.s3.connection import S3Connection
-from boto.utils import parse_ts
+import boto3
+from boto3.s3.transfer import TransferConfig
 
 DBDATESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
@@ -39,26 +41,25 @@ MINIMUM_SIZE = int(os.environ.get("AWS_REDIS_BACKUP_MINIMUM_SIZE", 100)) * 1024 
 CHUNK_SIZE = int(os.environ.get("AWS_BACKUP_CHUNK_SIZE", 250))
 
 # Data will be written directly to S3
-# `s3cmd` is used to push data to s3, but `boto` is used to find the final
-# destination
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+# `boto3` is used for both finding the final destination and uploading data
 AWS_BUCKET = os.environ.get('BACKUP_AWS_STORAGE_BUCKET_NAME')
 
-s3connection = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
-s3bucket = s3connection.get_bucket(AWS_BUCKET)
+s3_client = boto3.client(
+    's3'
+)
 ###############################################################################
 
 # Determine where to put this backup
-now = datetime.datetime.now()
+now = datetime.datetime.now(datetime.timezone.utc)
 for directory in DIRECTORIES:
     prefix = directory['name'] + '/'
     earliest_current_date = now - datetime.timedelta(days=directory['days'])
-    s3keys = s3bucket.list(prefix=prefix)
-    large_enough_backups = filter(lambda x: x.size >= MINIMUM_SIZE, s3keys)
+    response = s3_client.list_objects_v2(Bucket=AWS_BUCKET, Prefix=prefix)
+    s3keys = response.get('Contents', [])
+    large_enough_backups = [obj for obj in s3keys if obj['Size'] >= MINIMUM_SIZE]
     young_enough_backup_found = False
     for backup in large_enough_backups:
-        if parse_ts(backup.last_modified) >= earliest_current_date:
+        if backup['LastModified'] >= earliest_current_date:
             young_enough_backup_found = True
     if not young_enough_backup_found:
         # This directory doesn't have any current backups; stop here and use it
@@ -69,19 +70,36 @@ for directory in DIRECTORIES:
 filename = ''.join((prefix, DUMPFILE))
 print('Backing up to "{}"...'.format(filename))
 
-s3cmd = os.path.join(os.path.dirname(sys.executable), 's3cmd')
-os.system("{backup_command} && {s3cmd} put --multipart-chunk-size-mb={chunk_size}"
-          " /srv/backups/{source} s3://{bucket}/{filename}"
-          " && rm -rf /srv/backups/{source}".format(
-    s3cmd=s3cmd,
-    backup_command=BACKUP_COMMAND,
-    bucket=AWS_BUCKET,
-    chunk_size=CHUNK_SIZE,
-    filename=filename,
-    source=DUMPFILE
-))
+# Run the backup command
+backup_result = subprocess.run(BACKUP_COMMAND, shell=True, capture_output=True, text=True)
+if backup_result.returncode != 0:
+    print(f"Backup command failed: {backup_result.stderr}")
+    sys.exit(1)
 
-print('Backup `{}` successfully sent to S3.'.format(filename))
+# Upload to S3 using boto3
+local_file_path = f"/srv/backups/{DUMPFILE}"
+config = TransferConfig(
+    multipart_threshold=8 * 1024 * 1024,  # 8MB
+    max_concurrency=10,
+    multipart_chunksize=CHUNK_SIZE * 1024 * 1024,  # Convert MB to bytes
+    use_threads=True
+)
+
+try:
+    s3_client.upload_file(
+        local_file_path,
+        AWS_BUCKET,
+        filename,
+        Config=config
+    )
+    print('Backup `{}` successfully sent to S3.'.format(filename))
+except Exception as e:
+    print(f"Failed to upload backup to S3: {e}")
+    sys.exit(1)
+finally:
+    # Clean up local file
+    if os.path.exists(local_file_path):
+        os.remove(local_file_path)
 
 
 aws_lifecycle = os.environ.get("AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED", "False") == "True"
@@ -90,12 +108,13 @@ if not aws_lifecycle:
     for directory in DIRECTORIES:
         prefix = directory['name'] + '/'
         keeps = directory['keeps']
-        s3keys = s3bucket.list(prefix=prefix)
-        large_enough_backups = filter(lambda x: x.size >= MINIMUM_SIZE, s3keys)
-        large_enough_backups = sorted(large_enough_backups, key=lambda x: x.last_modified, reverse=True)
+        response = s3_client.list_objects_v2(Bucket=AWS_BUCKET, Prefix=prefix)
+        s3keys = response.get('Contents', [])
+        large_enough_backups = [obj for obj in s3keys if obj['Size'] >= MINIMUM_SIZE]
+        large_enough_backups = sorted(large_enough_backups, key=lambda x: x['LastModified'], reverse=True)
 
-        for l in large_enough_backups[keeps:]:
-            print('Deleting old backup "{}"...'.format(l.name))
-            l.delete()
+        for backup in large_enough_backups[keeps:]:
+            print('Deleting old backup "{}"...'.format(backup['Key']))
+            s3_client.delete_object(Bucket=AWS_BUCKET, Key=backup['Key'])
 
 print('Done!')
