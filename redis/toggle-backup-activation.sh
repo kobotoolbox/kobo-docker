@@ -14,28 +14,17 @@ else
     echo "REDIS_VERSION=${REDIS_VERSION}" >> /etc/cron.d/backup_redis_crontab
     echo "PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}" >> /etc/cron.d/backup_redis_crontab
 
-    # To use S3 as storage, AWS access key, secret key and bucket name must filled up
-    USE_S3=1
-    TRUE=1
-    FALSE=0
-
     # Add only non-empty variable to cron tasks
     if [ -n "${AWS_ACCESS_KEY_ID}" ]; then
         echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> /etc/cron.d/backup_redis_crontab
-    else
-        USE_S3=$FALSE
     fi
 
     if [ -n "${AWS_SECRET_ACCESS_KEY}" ]; then
         echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> /etc/cron.d/backup_redis_crontab
-    else
-        USE_S3=$FALSE
     fi
 
     if [ -n "${BACKUP_AWS_STORAGE_BUCKET_NAME}" ]; then
         echo "BACKUP_AWS_STORAGE_BUCKET_NAME=${BACKUP_AWS_STORAGE_BUCKET_NAME}" >> /etc/cron.d/backup_redis_crontab
-    else
-        USE_S3=$FALSE
     fi
 
     if [ -n "${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" ]; then
@@ -57,27 +46,27 @@ else
         echo "AWS_REDIS_BACKUP_MINIMUM_SIZE=${AWS_REDIS_BACKUP_MINIMUM_SIZE}" >> /etc/cron.d/backup_redis_crontab
     fi
 
-    if [ "$USE_S3" -eq "$TRUE" ]; then
+    if [ -n "${BACKUP_AWS_STORAGE_BUCKET_NAME}" ]; then
         echo "Installing virtualenv for Redis backup on S3..."
-        apt-get install -y curl python3-pip --quiet=2 > /dev/null
+        apt-get update --quiet=2 > /dev/null
+        apt-get install -y curl python3-pip python3-venv --quiet=2 > /dev/null
 
-        # Update pip to latest version compatible with Python 3.5
-        curl https://bootstrap.pypa.io/pip/3.5/get-pip.py -o /tmp/get-pip.py
-        python3 /tmp/get-pip.py
-        python3 -m pip install --upgrade --quiet virtualenv
+        # # Update pip to latest version
+        # curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+        # python3 /tmp/get-pip.py
         counter=1
         max_retries=3
         # Under certain circumstances a race condition occurs. Virtualenv creation
         # fails because python cannot find `wheel` package folder
         # e.g. `FileNotFoundError: [Errno 2] No such file or directory: '/root/.local/share/virtualenv/wheel/3.5/embed/1/wheel.json'`
-        until $(virtualenv --quiet -p /usr/bin/python3 /tmp/backup-virtualenv > /dev/null)
+        until $(python3 -m venv /tmp/backup-virtualenv > /dev/null)
         do
             [[ "$counter" -eq "$max_retries" ]] && echo "Virtual environment creation failed!" && exit 1
             ((counter++))
         done
         . /tmp/backup-virtualenv/bin/activate
-        pip install --quiet s3cmd
-        pip install --quiet boto
+        pip install --quiet humanize smart-open
+        pip install --quiet boto3
         deactivate
 
         INTERPRETER=/tmp/backup-virtualenv/bin/python

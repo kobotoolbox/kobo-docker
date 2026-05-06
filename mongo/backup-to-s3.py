@@ -61,7 +61,7 @@ def run():
         BACKUP_COMMAND = "mongodump --archive --gzip"
 
     # Determine where to put this backup
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(datetime.timezone.utc)
 
     for directory in DIRECTORIES:
         prefix = directory["name"] + "/"
@@ -124,7 +124,7 @@ def cleanup():
             )
 
             for l in large_enough_backups:
-                now = datetime.datetime.now()
+                now = datetime.datetime.now(datetime.timezone.utc)
                 delta = now - l.last_modified
                 if delta.days > keeps:
                     print('Deleting old backup "{}"...'.format(l.key))
