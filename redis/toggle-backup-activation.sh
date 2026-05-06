@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 rm -f /etc/cron.d/backup_redis_crontab
 if [[ -z "${REDIS_BACKUP_SCHEDULE}" ]]; then
     echo "Redis automatic backups disabled."
@@ -18,15 +17,12 @@ else
     if [ -n "${AWS_ACCESS_KEY_ID}" ]; then
         echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> /etc/cron.d/backup_redis_crontab
     fi
-
     if [ -n "${AWS_SECRET_ACCESS_KEY}" ]; then
         echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> /etc/cron.d/backup_redis_crontab
     fi
-
     if [ -n "${BACKUP_AWS_STORAGE_BUCKET_NAME}" ]; then
         echo "BACKUP_AWS_STORAGE_BUCKET_NAME=${BACKUP_AWS_STORAGE_BUCKET_NAME}" >> /etc/cron.d/backup_redis_crontab
     fi
-
     if [ -n "${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" ]; then
         echo "AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED=${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" >> /etc/cron.d/backup_redis_crontab
     fi
@@ -48,12 +44,8 @@ else
 
     if [ -n "${BACKUP_AWS_STORAGE_BUCKET_NAME}" ]; then
         echo "Installing virtualenv for Redis backup on S3..."
-        apt-get update --quiet=2 > /dev/null
         apt-get install -y curl python3-pip python3-venv --quiet=2 > /dev/null
 
-        # # Update pip to latest version
-        # curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
-        # python3 /tmp/get-pip.py
         counter=1
         max_retries=3
         # Under certain circumstances a race condition occurs. Virtualenv creation
@@ -65,7 +57,7 @@ else
             ((counter++))
         done
         . /tmp/backup-virtualenv/bin/activate
-        pip install --quiet humanize smart-open
+        pip install --quiet humanize smart-open[s3]
         pip install --quiet boto3
         deactivate
 
@@ -77,7 +69,7 @@ else
     fi
 
     # Should we first validate the schedule e.g. with `chkcrontab`?
-    echo "${REDIS_BACKUP_SCHEDULE}  root    /usr/bin/nice -n 19 /usr/bin/ionice -c2 -n7 ${INTERPRETER} ${BACKUP_SCRIPT} > /var/log/redis/backup.log 2>&1" >> /etc/cron.d/backup_redis_crontab
+    echo "${REDIS_BACKUP_SCHEDULE}  root    /usr/bin/nice -n 19 /usr/bin/ionice -c2 -n7 ${INTERPRETER} ${BACKUP_SCRIPT} > /srv/logs/backup.log 2>&1" >> /etc/cron.d/backup_redis_crontab
     echo "" >> /etc/cron.d/backup_redis_crontab
     service cron restart
     echo "Redis automatic backup schedule: ${REDIS_BACKUP_SCHEDULE}"

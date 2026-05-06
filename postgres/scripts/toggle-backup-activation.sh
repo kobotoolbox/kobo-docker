@@ -23,15 +23,12 @@ else
     if [[ -n "${AWS_ACCESS_KEY_ID}" ]]; then
         echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> /etc/cron.d/backup_postgres_crontab
     fi
-
     if [[ -n "${AWS_SECRET_ACCESS_KEY}" ]]; then
         echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> /etc/cron.d/backup_postgres_crontab
     fi
-
     if [[ -n "${BACKUP_AWS_STORAGE_BUCKET_NAME}" ]]; then
         echo "BACKUP_AWS_STORAGE_BUCKET_NAME=${BACKUP_AWS_STORAGE_BUCKET_NAME}" >> /etc/cron.d/backup_postgres_crontab
     fi
-
     if [[ -n "${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" ]]; then
         echo "AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED=${AWS_BACKUP_BUCKET_DELETION_RULE_ENABLED}" >> /etc/cron.d/backup_postgres_crontab
     fi
@@ -52,9 +49,9 @@ else
     fi
 
     if [[ -n "${BACKUP_AWS_STORAGE_BUCKET_NAME}" ]]; then
+        echo "Installing virtualenv for PostgreSQL backup on S3..."
         apt-get install -y curl python3-pip python3-venv libffi-dev --quiet=2 > /dev/null
 
-        echo "Installing virtualenv for PostgreSQL backup on S3..."
         counter=1
         max_retries=3
         # Under certain circumstances a race condition occurs. Virtualenv creation
