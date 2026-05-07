@@ -4,7 +4,7 @@
 
 x-anchors:
   x-kpi-anchor: &django
-    image: kobotoolbox/kpi:2.026.12d
+    image: kobotoolbox/kpi:2.026.12e
     init: true
     env_file:
       - ../kobo-env/envfiles/aws.txt
