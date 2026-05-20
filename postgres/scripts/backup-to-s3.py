@@ -78,7 +78,7 @@ class Backup(Thread):
         BACKUP_COMMAND = 'pg_dump --format=c --dbname="{}"'.format(DBURL)
 
         # Determine where to put this backup
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(datetime.timezone.utc)
         for directory in DIRECTORIES:
             prefix = directory["name"] + "/"
             earliest_current_date = now - datetime.timedelta(days=directory["days"])
@@ -98,10 +98,7 @@ class Backup(Thread):
         print('Backing up to "{}"...'.format(filename))
         upload = "s3://{}/{}".format(AWS_BUCKET, filename)
         chunks_done = 0
-        with smart_open.smart_open(
-            upload,
-            "wb"
-        ) as s3backup:
+        with smart_open.open(upload, "wb") as s3backup:
             process = subprocess.Popen(
                 BACKUP_COMMAND, shell=True, stdout=subprocess.PIPE
             )
@@ -147,7 +144,7 @@ def cleanup():
             )
 
             for l in large_enough_backups:
-                now = datetime.datetime.now()
+                now = datetime.datetime.now(datetime.timezone.utc)
                 delta = now - l.last_modified
                 if delta.days > keeps:
                     print('Deleting old backup "{}"...'.format(l.key))

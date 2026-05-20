@@ -81,7 +81,7 @@ def run():
     filename = "".join((prefix, DUMPFILE))
     print('Backing up to "{}"...'.format(filename))
     chunks_done = 0
-    with smart_open.smart_open('s3://{}/{}'.format(AWS_BUCKET, filename), "wb") as s3backup:
+    with smart_open.open("s3://{}/{}".format(AWS_BUCKET, filename), "wb") as s3backup:
         process = subprocess.Popen(BACKUP_COMMAND, shell=True, stdout=subprocess.PIPE)
         while True:
             chunk = process.stdout.read(CHUNK_SIZE)

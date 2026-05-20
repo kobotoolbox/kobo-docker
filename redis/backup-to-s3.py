@@ -72,26 +72,28 @@ def run():
     # Perform the backup
     filename = "".join((prefix, DUMPFILE))
     print('Backing up to "{}"...'.format(filename))
+    subprocess.check_call(BACKUP_COMMAND, shell=True)
+    local_path = os.path.join('/srv/backups', DUMPFILE)
     chunks_done = 0
-    with smart_open.smart_open('s3://{}/{}'.format(AWS_BUCKET, filename), "wb") as s3backup:
-        process = subprocess.Popen(BACKUP_COMMAND, shell=True, stdout=subprocess.PIPE)
-        while True:
-            chunk = process.stdout.read(CHUNK_SIZE)
-            if not len(chunk):
-                print(
-                    "Finished! Wrote {} chunks; {}".format(
-                        chunks_done, humanize.naturalsize(chunks_done * CHUNK_SIZE)
+    with open(local_path, 'rb') as local_file:
+        with smart_open.open('s3://{}/{}'.format(AWS_BUCKET, filename), "wb") as s3backup:
+            while True:
+                chunk = local_file.read(CHUNK_SIZE)
+                if not len(chunk):
+                    print(
+                        "Finished! Wrote {} chunks; {}".format(
+                            chunks_done, humanize.naturalsize(chunks_done * CHUNK_SIZE)
+                        )
                     )
-                )
-                break
-            s3backup.write(chunk)
-            chunks_done += 1
-            if "--hush" not in sys.argv:
-                print(
-                    "Wrote {} chunks; {}".format(
-                        chunks_done, humanize.naturalsize(chunks_done * CHUNK_SIZE)
+                    break
+                s3backup.write(chunk)
+                chunks_done += 1
+                if "--hush" not in sys.argv:
+                    print(
+                        "Wrote {} chunks; {}".format(
+                            chunks_done, humanize.naturalsize(chunks_done * CHUNK_SIZE)
+                        )
                     )
-                )
 
     print("Backup `{}` successfully sent to S3.".format(filename))
 
