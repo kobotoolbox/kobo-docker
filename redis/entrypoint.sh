@@ -42,7 +42,8 @@ if [[ "$KOBO_REDIS_SERVER_ROLE" == "main" ]]; then
     /bin/bash "$KOBO_DOCKER_SCRIPTS_DIR/toggle-backup-activation.sh" &
 fi
 
-# `exec` and `gosu` (vs. `su`) here are important to pass signals to the
-# database server process; without them, the server will be terminated abruptly
-# with SIGKILL (see #276)
-exec gosu redis redis-server /etc/redis/redis.conf
+# `exec` here is important to pass signals to the standard entrypoint script;
+# without it, the server will be terminated abruptly with SIGKILL (see #276)
+# For reference, the standard entrypoint script can be found at:
+# https://github.com/redis/docker-library-redis/blob/release/7.2/debian/docker-entrypoint.sh
+exec docker-entrypoint.sh /etc/redis/redis.conf
