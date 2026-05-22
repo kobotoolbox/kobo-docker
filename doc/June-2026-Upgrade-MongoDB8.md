@@ -40,7 +40,7 @@ While the MongoDB version change is within kobo-docker, the commands shown below
         root@mongo:/# mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" admin
         admin> db.adminCommand( { setFeatureCompatibilityVersion: "6.0" } )
         { "ok" : 1 }
-        > exit
+        admin> exit
         bye
         root@mongo:/# exit
         ```
@@ -50,7 +50,7 @@ While the MongoDB version change is within kobo-docker, the commands shown below
         root@mongo:/# mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" admin
         admin> db.adminCommand( { setFeatureCompatibilityVersion: "7.0", confirm: true } )
         { "ok" : 1 }
-        > exit
+        admin> exit
         bye
         root@mongo:/# exit
         ```
