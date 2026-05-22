@@ -44,6 +44,12 @@ Running current releases of KoboToolbox requires you to upgrade your PostgreSQL 
 
 If you do not, the application may not start or your data may not be visible.
 
+## Important notice when upgrading from commit `TBC` (June x, 2026) or earlier
+
+Running current releases of KoboToolbox requires you to upgrade your MongoDB database. Please follow [these instructions](./doc/June-2026-Upgrade-MongoDB8.md).
+
+If you do not, the application may not start or your data may not be visible.
+
 ## Architecture
 
 Below is a diagram (made with [Lucidchart](https://www.lucidchart.com)) of the containers that make up a running kobo-docker system and their connections.
