@@ -55,7 +55,6 @@ class Backup(Thread):
         """
 
         s3resource = boto3.resource('s3')
-        s3client = boto3.client('s3')
         s3bucket = s3resource.Bucket(AWS_BUCKET)
 
         DBDATESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
