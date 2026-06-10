@@ -97,6 +97,14 @@ def run():
 
     print("Backup `{}` successfully sent to S3.".format(filename))
 
+    # Remove the local backup file we created now that it's safely on S3
+    try:
+        if os.path.exists(local_path):
+            os.remove(local_path)
+            print('Local backup "{}" deleted.'.format(local_path))
+    except Exception as exc:
+        print('Failed to delete local backup "{}": {}'.format(local_path, exc))
+
 
 def cleanup():
     aws_lifecycle = (
