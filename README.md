@@ -46,9 +46,7 @@ If you do not, the application may not start or your data may not be visible.
 
 ## Architecture
 
-Below is a diagram (made with [Lucidchart](https://www.lucidchart.com)) of the containers that make up a running kobo-docker system and their connections.
-
-![Diagram of Docker Containers](./doc/container-diagram.svg)
+See [doc/container-diagram.md](./doc/container-diagram.md) for a diagram of the containers that make up a running kobo-docker system and their connections.
 
 ### Secure your installation
 This version of kobo-docker does **not** expose backend container ports, but [previous versions did](https://github.com/kobotoolbox/kobo-docker/pull/280), relying on a firewall to prevent unauthorized access. You should always verify that your database ports (by default 5432, 27017, 6379, 6380) are not accessible to the public.
