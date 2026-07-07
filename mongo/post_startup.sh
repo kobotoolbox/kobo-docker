@@ -2,7 +2,7 @@
 # Create `_userform_id_id_` compound index in existing databases.
 # Creation in new databases is handled by `init_01_add_index.sh`.
 
-MONGO_CMD=( mongo --host 127.0.0.1 --port 27017 --quiet -u "$KOBO_MONGO_USERNAME" -p "$KOBO_MONGO_PASSWORD")
+MONGO_CMD=( mongosh --host 127.0.0.1 --port 27017 --quiet -u "$KOBO_MONGO_USERNAME" -p "$KOBO_MONGO_PASSWORD")
 COLLECTION=instances
 
 until (echo > /dev/tcp/127.0.0.1/27017) 2> /dev/null; do

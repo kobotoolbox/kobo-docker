@@ -4,6 +4,7 @@
 1. [_Two PostgreSQL databases are now required_](#two-postgresql-databases-are-now-required)
 1. [Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier)
 1. [Important notice when upgrading from commit between `51aeccb` (March 11, 2019) and `2.022.44` (November 17, 2022)](#important-notice-when-upgrading-from-commit-between-51aeccb-march-11-2019-and-202244-november-17-2022)
+1. [Important notice when upgrading from commit `TBC` (June x, 2026) or earlier](#important-notice-when-upgrading-june-2026)
 1. [Architecture](#architecture)
 1. [Setup procedure](#setup-procedure)
 1. [Usage](#usage)
@@ -41,6 +42,12 @@ If you do not, the application may not start or your data may not be visible.
 ## Important notice when upgrading from commit between [`51aeccb` (March 11, 2019)](https://github.com/kobotoolbox/kobo-docker/commit/51aeccb91316d640f30e28190b936ae48d56c468) and [`2.022.44` (November 17, 2022)](https://github.com/kobotoolbox/kobo-docker/releases/tag/2.022.44)
 
 Running current releases of KoboToolbox requires you to upgrade your PostgreSQL and MongoDB databases. Please follow [these instructions](./doc/November-2022-Upgrade.md).
+
+If you do not, the application may not start or your data may not be visible.
+
+## Important notice when upgrading from commit `TBC` (June x, 2026) or earlier
+
+Running current releases of KoboToolbox requires you to upgrade your MongoDB database. Please follow [these instructions](./doc/June-2026-Upgrade-MongoDB8.md).
 
 If you do not, the application may not start or your data may not be visible.
 

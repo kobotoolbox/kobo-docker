@@ -2,7 +2,7 @@
 
 echo "Creating user for ${MONGO_INITDB_DATABASE}..."
 
-mongo=( mongo --host 127.0.0.1 --port 27017 --quiet )
+mongo=( mongosh --host 127.0.0.1 --port 27017 --quiet )
 
 _js_escape() {
 	jq --null-input --arg 'str' "$1" '$str'
