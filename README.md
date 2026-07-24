@@ -66,6 +66,8 @@ If you want to use kobo-docker with separate front-end and back-end servers, you
 This procedure has been simplified by using [kobo-install](https://github.com/kobotoolbox/kobo-install "").
 Please use it to install kobo-docker.
 
+**Requirements:** Install [Docker Compose V2](https://docs.docker.com/compose/install/) (the `docker compose` plugin). kobo-install and the commands in this README expect Compose V2 syntax (`docker compose …`, or the standalone `docker-compose` binary where noted).
+
 Already have an existing installation? Please see below.
 
 1. **Migrating from RabbitMQ to Redis as the Celery (asynchronous task) broker**
@@ -204,6 +206,19 @@ Samples are provided. Remove `.sample` extension and update them to match your e
     For a specific container use e.g. `docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml logs -f redis_main`.
     
     The documentation for Docker can be found at https://docs.docker.com.
+
+- ### kobo-install: `unknown shorthand flag: 'f' in -f`
+    This error usually means an old Docker CLI is interpreting `-f` as a
+    `docker` flag instead of a Compose file flag. Install Docker Compose V2
+    and confirm it works:
+
+    ```
+    docker compose version
+    ```
+
+    Then re-run [kobo-install](https://github.com/kobotoolbox/kobo-install).
+    If the error persists, check that kobo-install invokes `docker compose`
+    (with a space) rather than `docker -f`.
 
 - ### Django debugging
     Developers can use [PyDev](http://www.pydev.org/)'s [remote, graphical Python debugger](http://www.pydev.org/manual_adv_remote_debugger.html) to debug Python/Django code. To enable for the `kpi` container:
