@@ -23,7 +23,7 @@ KOBO_SUPERUSER_USERNAME=super_admin
 # The initial superuser's password.
 KOBO_SUPERUSER_PASSWORD=changeme!!
 # The e-mail address where your users can contact you.
-KOBO_SUPPORT_EMAIL=support@domain.name
+CONSTANCE_SUPPORT_EMAIL=support@domain.name
 
 KOBOFORM_URL=https://kf.domain.name
 KOBOFORM_INTERNAL_URL=http://kf.kobo.internal # Always use HTTP internally.
