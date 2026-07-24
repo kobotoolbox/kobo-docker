@@ -5,6 +5,25 @@ If you have not performed these steps, you must follow these one-time instructio
 
 While the MongoDB version change is within kobo-docker, the commands shown below are for [kobo-install](https://github.com/kobotoolbox/kobo-install) and expected to be run in the directory containing kobo-install.
 
+### Important note about Mongo 8 and linux incompatibility
+As of July 2026, there is an incompatibility with Mongo 8 and Linux kernel 6.19+. See [this](https://jira.mongodb.org/browse/SERVER-121912) and [this](https://jira.mongodb.org/browse/SERVER-125742) mongodb JIRA card for details.
+
+There is also a warning on the top of https://www.mongodb.com/docs/v8.0/release-notes/8.0/
+
+If you receive this error:
+```
+msg":"MongoDB cannot start: Linux kernel versions 6.19 and newer has a known incompatibility with this version of MongoDB. See https://jira.mongodb.org/browse/SERVER-121912 for more information."
+```
+You can resolve it by adding this in your `docker-compose.backend.custom.yml` file:
+```yaml
+services:
+  mongo:
+    environment:
+      GLIBC_TUNABLES: "glibc.pthread.rseq=1"
+```
+
+Once this issue is fixed, you can remove this environment variable.
+
 ### Upgrading MongoDB
 
 **Upgrading Mongo is easy and only requires several stops and starts**
