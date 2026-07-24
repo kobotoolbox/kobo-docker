@@ -16,6 +16,7 @@ msg":"MongoDB cannot start: Linux kernel versions 6.19 and newer has a known inc
 ```
 You can resolve it by adding this in your `docker-compose.backend.custom.yml` file:
 ```yaml
+services:
   mongo:
     environment:
       GLIBC_TUNABLES: "glibc.pthread.rseq=1"
