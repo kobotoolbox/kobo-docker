@@ -86,7 +86,7 @@ server {
     # /formUpload
     # /submission
     # /upload
-    location ~ ^/(formList|formUpload|submission|upload)$ {
+    location ~ ^/(formList|formUpload|submission|upload)/?$ {
         # Proxy through uWSGI or Django webserver
         include /etc/nginx/includes/proxy_pass.conf;
     }
