@@ -205,6 +205,18 @@ Samples are provided. Remove `.sample` extension and update them to match your e
     
     The documentation for Docker can be found at https://docs.docker.com.
 
+- ### Nginx `server_names_hash_bucket_size`
+    If nginx fails to start with:
+
+    ```
+    nginx: [emerg] could not build server_names_hash, you should increase server_names_hash_bucket_size: 64
+    ```
+
+    current kobo-docker sets `server_names_hash_bucket_size 128` in
+    [`nginx/kobo-docker-scripts/nginx.conf`](./nginx/kobo-docker-scripts/nginx.conf).
+    Pull a recent release or ensure your deployment uses that configuration.
+    After updating, rebuild/restart the nginx container.
+
 - ### Django debugging
     Developers can use [PyDev](http://www.pydev.org/)'s [remote, graphical Python debugger](http://www.pydev.org/manual_adv_remote_debugger.html) to debug Python/Django code. To enable for the `kpi` container:
 
