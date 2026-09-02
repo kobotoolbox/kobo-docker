@@ -6,7 +6,8 @@ If you have not performed these steps, you must follow these one-time instructio
 While the MongoDB version change is within kobo-docker, the commands shown below are for [kobo-install](https://github.com/kobotoolbox/kobo-install) and expected to be run in the directory containing kobo-install.
 
 ### Important note about Mongo 8 and linux incompatibility
-As of July 2026, there is an incompatibility with Mongo 8 and Linux kernel 6.19+. See [this](https://jira.mongodb.org/browse/SERVER-121912) and [this](https://jira.mongodb.org/browse/SERVER-125742) mongodb JIRA card for details.
+
+As of July 2026, there is an incompatibility between Mongo 8 and Linux kernels 6.19 through 7.0.13. Kernels 7.0.14 and newer fix it, but a Mongo 8 build that predates SERVER-125742 still refuses to start on them. See [this](https://jira.mongodb.org/browse/SERVER-121912) and [this](https://jira.mongodb.org/browse/SERVER-125742) mongodb JIRA card for details.
 
 There is also a warning on the top of https://www.mongodb.com/docs/v8.0/release-notes/8.0/
 
@@ -14,7 +15,7 @@ If you receive this error:
 ```
 msg":"MongoDB cannot start: Linux kernel versions 6.19 and newer has a known incompatibility with this version of MongoDB. See https://jira.mongodb.org/browse/SERVER-121912 for more information."
 ```
-You can resolve it by adding this in your `docker-compose.backend.custom.yml` file:
+On a checkout that predates the automatic workaround, you can resolve it by adding this in your `docker-compose.backend.custom.yml` file:
 ```yaml
 services:
   mongo:
@@ -23,6 +24,8 @@ services:
 ```
 
 Once this issue is fixed, you can remove this environment variable.
+
+**kobo-docker now applies this workaround on its own** on the kernels that are broken (6.19 through 7.0.13), and on 7.0.14 and newer only when the MongoDB image at hand still refuses to start. In every other case it leaves the image's own setting alone.
 
 ### Upgrading MongoDB
 
