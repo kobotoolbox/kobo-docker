@@ -5,6 +5,7 @@
 1. [Important notice when upgrading from commit `5c2ef02` (March 4, 2019) or earlier](#important-notice-when-upgrading-from-commit-5c2ef02-march-4-2019-or-earlier)
 1. [Important notice when upgrading from commit between `51aeccb` (March 11, 2019) and `2.022.44` (November 17, 2022)](#important-notice-when-upgrading-from-commit-between-51aeccb-march-11-2019-and-202244-november-17-2022)
 1. [Important notice when upgrading from commit `e2d3e82` (July 7, 2026) or earlier](#important-notice-when-upgrading-from-commit-e2d3e82-july-7-2026-or-earlier)
+1. [Important notice when upgrading from commit `056856f` (September 22, 2026) or earlier](#important-notice-when-upgrading-from-commit-056856f-september-22-2026-or-earlier)
 1. [Architecture](#architecture)
 1. [Setup procedure](#setup-procedure)
 1. [Usage](#usage)
@@ -50,6 +51,10 @@ If you do not, the application may not start or your data may not be visible.
 Running current releases of KoboToolbox requires you to upgrade your MongoDB database. Please follow [these instructions](./doc/June-2026-Upgrade-MongoDB8.md).
 
 If you do not, the application may not start or your data may not be visible.
+
+## Important notice when upgrading from commit `056856f` (September 22, 2026) or earlier
+
+Redis has been replaced by [Valkey](https://valkey.io), a drop-in replacement. Your existing data is kept and no configuration changes are needed, but **back up your Redis data before upgrading**: Valkey writes a newer file format that Redis cannot read, so the backup is your only way back. Please follow [these instructions](./doc/September-2026-Upgrade-Valkey.md).
 
 ## Architecture
 
