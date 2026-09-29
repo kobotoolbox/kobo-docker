@@ -12,6 +12,11 @@ While the change is within kobo-docker, the commands shown below are for [kobo-i
 - Data stays where it was, in `.vols/redis_main_data/` and `.vols/redis_cache_data/`. Valkey mounts the same folders and loads the same `enketo-main.rdb` / `enketo-cache.rdb` files.
 - Backup files are now named `valkey-<version>-<domain>-<date>.gz` instead of `redis-<version>-<domain>-<date>.gz`. S3 backups still go to the `redis/` folders, so retention keeps working.
 
+#### Logs and permissions
+
+- Log messages now say `Valkey` instead of `Redis` (file names and locations are unchanged). Update any alerts or scripts that match on `Redis`.
+- The container user is now `valkey` instead of `redis`. Both use UID 999, so file ownership on disk does not change.
+
 ### Before you start
 
 **Back up your Redis data first.** Once Valkey 9 has saved to disk, it writes a newer file format that Redis 7.2 cannot read, so the backup below is your only way back.
@@ -81,7 +86,7 @@ While the change is within kobo-docker, the commands shown below are for [kobo-i
 
 ### Troubleshooting
 
-- **The container exits right after starting.** Look at `log/redis_main/redis-enketo-main.log` (or the cache log) with `sudo`, since the log folders are owned by the container user. Valkey reports any configuration directive it rejects by name.
+- **The container exits right after starting.** Look at `log/redis_main/redis-enketo-main.log` (or the cache log). Valkey reports any configuration directive it rejects by name.
 - **Rolling back to Redis 7.2.** Stop the containers, restore the backup and switch the image back:
 
     ```shell
