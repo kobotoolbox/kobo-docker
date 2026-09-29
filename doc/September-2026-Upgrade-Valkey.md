@@ -96,4 +96,4 @@ While the change is within kobo-docker, the commands shown below are for [kobo-i
     user@computer:kobo-docker$ sudo mv .vols/redis_cache_data.bak-redis72 .vols/redis_cache_data
     ```
 
-    Then check out the previous kobo-docker version (or set both images back to `redis:7.2` in `docker-compose.backend.yml`) and run `python3 run.py -cb up --force-recreate -d redis_main redis_cache`. Anything written to Valkey after the upgrade is lost.
+    Then check out the previous kobo-docker version and run `python3 run.py -cb up --force-recreate -d redis_main redis_cache`. Anything written to Valkey after the upgrade is lost.
