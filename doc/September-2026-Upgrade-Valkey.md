@@ -1,7 +1,7 @@
 ## Upgrading from Redis 7.2 to Valkey 9.1
 
 In September 2026, kobo-docker replaced Redis 7.2 with [Valkey](https://valkey.io) 9.
-Valkey is a drop-in replacement for Redis: it speaks the same protocol and loads the data files Redis already wrote, so **your existing data is kept** and no dump/restore is needed. Downtime is usually under a minute.
+Valkey is a drop-in replacement for Redis: it speaks the same protocol and loads the data files Redis already wrote, so **your existing data is kept** and no dump/restore is needed. 
 
 While the change is within kobo-docker, the commands shown below are for [kobo-install](https://github.com/kobotoolbox/kobo-install) and expected to be run in the directory containing kobo-install, unless stated otherwise.
 
