@@ -60,8 +60,8 @@ While the change is within kobo-docker, the commands shown below are for [kobo-i
 1. Check that Valkey loaded your existing data. The logs are written to files in your kobo-docker directory:
 
     ```shell
-    user@computer:kobo-docker$ tail -n 30 log/redis_main/redis-enketo-main.log
-    user@computer:kobo-docker$ tail -n 30 log/redis_cache/redis-enketo-cache.log
+    user@computer:kobo-docker$ sudo tail -n 30 log/redis_main/redis-enketo-main.log
+    user@computer:kobo-docker$ sudo tail -n 30 log/redis_cache/redis-enketo-cache.log
     ```
 
     You should see a `Loading RDB produced by ... 7.2.x` line followed by `DB loaded from disk`.
@@ -75,17 +75,13 @@ While the change is within kobo-docker, the commands shown below are for [kobo-i
 
     The counts may differ slightly because keys with an expiry time may have expired in the meantime.
 
-1. Start your containers as usual, log into one of your user accounts and open an Enketo form to confirm everything works.
-
-    ```shell
-    user@computer:kobo-install$ python3 run.py
-    ```
+1. Log into one of your user accounts and open an Enketo form to confirm everything works. The other containers kept running during the upgrade, so there is nothing else to start. If you were logged in before the upgrade, you should still be logged in.
 
 1. Once you are satisfied, you can delete the `.bak-redis72` folders.
 
 ### Troubleshooting
 
-- **The container exits right after starting.** Look at `log/redis_main/redis-enketo-main.log` (or the cache log). Valkey reports any configuration directive it rejects by name.
+- **The container exits right after starting.** Look at `log/redis_main/redis-enketo-main.log` (or the cache log) with `sudo`, since the log folders are owned by the container user. Valkey reports any configuration directive it rejects by name.
 - **Rolling back to Redis 7.2.** Stop the containers, restore the backup and switch the image back:
 
     ```shell
