@@ -10,7 +10,7 @@ else
     apt-get install -y cron --quiet=2 > /dev/null
 
     # Pass env variables to cron task
-    echo "REDIS_VERSION=${REDIS_VERSION}" >> /etc/cron.d/backup_redis_crontab
+    echo "VALKEY_VERSION=${VALKEY_VERSION}" >> /etc/cron.d/backup_redis_crontab
     echo "PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}" >> /etc/cron.d/backup_redis_crontab
 
     # Add only non-empty variable to cron tasks

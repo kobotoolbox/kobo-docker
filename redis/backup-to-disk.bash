@@ -4,7 +4,7 @@ set -e
 DBDATESTAMP="$(date +%Y.%m.%d.%H_%M)"
 BACKUP_FILENAME="$1"
 if [ -z "$BACKUP_FILENAME" ]; then
-    BACKUP_FILENAME="redis-${REDIS_VERSION}-${PUBLIC_DOMAIN_NAME}-${DBDATESTAMP}.gz"
+    BACKUP_FILENAME="valkey-${VALKEY_VERSION}-${PUBLIC_DOMAIN_NAME}-${DBDATESTAMP}.gz"
 fi
 
 cd /srv/backups
