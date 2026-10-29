@@ -122,9 +122,10 @@ server {
 
     include /etc/nginx/includes/protected_directive.conf;
 
-    # Redirect root (only) to KPI
+    # Redirect root (only) to KPI. Use the public scheme, not `$scheme`, which
+    # is `http` when TLS is terminated by a proxy in front of this container.
     location = / {
-        return 301 $scheme://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}/;
+        return 301 ${PUBLIC_REQUEST_SCHEME}://${KOBOFORM_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME}${NGINX_PUBLIC_PORT}/;
     }
 
     # Return 404 for everything else
