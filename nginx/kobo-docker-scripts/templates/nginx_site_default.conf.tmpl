@@ -164,6 +164,13 @@ server {
         return 404;
     }
 
+    # Block OpenRosa endpoints: they only exist on the kobocat domain. `/api/`
+    # is excluded: KPI serves its own formList/manifest/submission under
+    # /api/v2/asset_snapshots/ (Enketo previews).
+    location ~ ^/(?!api/)(.+/)?(formList|submission|bulk-submission(-form)?|xformsManifest|xformsMedia)(/|$) {
+        return 404;
+    }
+
     access_log  /var/log/nginx/kpi.access.log with_host;
     error_log   /var/log/nginx/kpi.error.log;
 
