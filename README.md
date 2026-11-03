@@ -216,6 +216,25 @@ Samples are provided. Remove `.sample` extension and update them to match your e
 
     Remote debugging in the `kobocat` container can be accomplished in a similar manner.
 
+- ### Exception logging without Sentry
+    Sentry is optional. Leave `SENTRY_DSN` and `SENTRY_JS_DSN` empty in
+    `kobo-env/envfiles/external_services.txt` (these replaced the older
+    `RAVEN_DSN` variable).
+
+    To verify that exceptions are logged when Sentry is disabled:
+
+    1. Trigger a test error in KPI or KoBoCAT (for example, visit a URL that
+       raises a 500 in a development environment).
+    1. Check container output:
+       `docker compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml logs kpi`
+       (or `kobocat` instead of `kpi`).
+    1. Look for Python tracebacks in the uWSGI output.
+
+    If no traceback appears in either service's logs, the problem is likely in
+    [KPI](https://github.com/kobotoolbox/kpi) or
+    [KoBoCAT](https://github.com/kobotoolbox/kobocat) rather than kobo-docker
+    itself. File issues against the relevant application repository.
+
 
 ## Redis performance
 Please take a look at [https://www.techandme.se/performance-tips-for-redis-cache-server/](https://www.techandme.se/performance-tips-for-redis-cache-server/)
