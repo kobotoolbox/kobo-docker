@@ -15,8 +15,6 @@ This procedure:
 While the PostgreSQL version change is within kobo-docker, the commands shown below are for [kobo-install](https://github.com/kobotoolbox/kobo-install) and are expected to be run in the directory containing kobo-install (or kobo-docker, when stated).
 If you do not use kobo-install, replace `python3 run.py -cb` with `docker compose -f docker-compose.backend.yml -f docker-compose.backend.override.yml [-f docker-compose.backend.custom.yml]`.
 
-**This procedure has been tested on arm64 (Apple Silicon, `postgres:18` image) with a 6 GB database. The x86 path (`postgis/postgis:18-3.6` image) uses the same commands.**
-
 ### What changes in PostgreSQL 18 images (read this first)
 
 1. **New default `PGDATA`.** Official PostgreSQL 18+ images store data in `/var/lib/postgresql/18/docker` (it used to be `/var/lib/postgresql/data`).
@@ -104,8 +102,6 @@ If you do not use kobo-install, replace `python3 run.py -cb` with `docker compos
         -v "$PWD/.vols/db18:/var/lib/postgresql/18/data" \
         postgis/postgis:18-3.6 bash
     ```
-
-    _Notes: On arm64 (e.g. Apple Silicon), `postgis/postgis` images are not available. Use `postgres:18` instead; the next step installs PostGIS for you._
 
 1. Install PostgreSQL 14 binaries (and PostGIS for both versions)
 
