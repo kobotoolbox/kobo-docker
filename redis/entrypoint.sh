@@ -32,9 +32,9 @@ if [[ -z "$REDIS_CACHE_MAX_MEMORY" ]]; then
 fi
 
 # Make logs directory writable
-chown -R redis:redis "$REDIS_LOG_DIR"
-chown redis:redis "$REDIS_CONF_FILE"
-chown -R redis:redis "$REDIS_DATA_DIR"
+chown -R valkey:valkey "$REDIS_LOG_DIR"
+chown valkey:valkey "$REDIS_CONF_FILE"
+chown -R valkey:valkey "$REDIS_DATA_DIR"
 
 if [[ "$KOBO_REDIS_SERVER_ROLE" == "main" ]]; then
     # Send backup installation process in background to avoid blocking redis startup
@@ -45,5 +45,5 @@ fi
 # `exec` here is important to pass signals to the standard entrypoint script;
 # without it, the server will be terminated abruptly with SIGKILL (see #276)
 # For reference, the standard entrypoint script can be found at:
-# https://github.com/redis/docker-library-redis/blob/release/7.2/debian/docker-entrypoint.sh
+# https://github.com/valkey-io/valkey-container/blob/mainline/docker-entrypoint.sh
 exec docker-entrypoint.sh /etc/redis/redis.conf
