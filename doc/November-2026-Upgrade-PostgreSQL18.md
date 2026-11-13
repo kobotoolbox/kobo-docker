@@ -272,11 +272,6 @@ If you do not use kobo-install, replace `python3 run.py -cb` with `docker compos
 
     The application can be started while the second command runs.
 
-### PostgreSQL replica (`secondary` role)
-
-`pg_upgrade` only upgrades the primary. If you run a read-only replica (`KOBO_POSTGRES_DB_SERVER_ROLE=secondary`), do **not** start it on PostgreSQL 18 with its old data.
-Once the primary is upgraded and validated, empty the replica's data directory and re-create it from the primary as you did initially.
-
 ### Tests
 
 1. Test if upgrade is successful
