@@ -49,6 +49,12 @@ If you do not, the application may not start or your data may not be visible.
 
 Running current releases of KoboToolbox requires you to upgrade your MongoDB database. Please follow [these instructions](./doc/June-2026-Upgrade-MongoDB8.md).
 
+## Important notice when upgrading from a version using PostgreSQL 14 (before November 2026)
+
+PostgreSQL 14 reached its end of life on November 12, 2026. Running current releases of KoboToolbox requires you to upgrade your PostgreSQL database to version 18. Please follow [these instructions](./doc/November-2026-Upgrade-PostgreSQL18.md).
+
+If you do not, PostgreSQL will not start.
+
 If you do not, the application may not start or your data may not be visible.
 
 ## Architecture
@@ -150,7 +156,7 @@ Samples are provided. Remove `.sample` extension and update them to match your e
     ```
     $kobo-docker> docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml exec kobocat /srv/src/kobocat/docker/backup_media.bash
     $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml exec mongo bash /kobo-docker-scripts/backup-to-disk.bash
-    $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml exec -e PGUSER=kobo postgres bash /kobo-docker-scripts/backup-to-disk.bash
+    $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml exec -e PGUSER=kobo postgres bash /kobo-docker-scripts/scripts/backup-to-disk.bash
     $kobo-docker> docker-compose -f docker-compose.backend.primary.yml -f docker-compose.backend.primary.override.yml exec redis_main bash /kobo-docker-scripts/backup-to-disk.bash
     ```
 

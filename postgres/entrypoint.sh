@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # set -e
 
-export POSTGRES_BIN_DIRECTORY=/usr/lib/postgresql/9.5/bin/
+export POSTGRES_BIN_DIRECTORY=/usr/lib/postgresql/${PG_MAJOR}/bin/
 export POSTGRES_REPO=/var/lib/postgresql
 export POSTGRES_BIN=${POSTGRES_BIN_DIRECTORY}/postgres
 export POSTGRES_DATA_DIR=${POSTGRES_REPO}/data
@@ -34,7 +34,7 @@ if [ -f "$POSTGRES_DATA_DIR/kobo_first_run" ]; then
     if [ "$KOBO_POSTGRES_DB_SERVER_ROLE" == "primary" ]; then
         # Start server locally.
         su - postgres -c "$(command -v pg_ctl) -D \"$PGDATA\" -o \"-c listen_addresses='127.0.0.1'\" -w start"
-        until pg_isready -h 127.0.0.1 ; do
+        until pg_isready -h 127.0.0.1 -U "$POSTGRES_USER" ; do
             sleep 1
         done
         # Update users if needed
