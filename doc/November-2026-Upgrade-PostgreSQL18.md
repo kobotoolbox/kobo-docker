@@ -91,11 +91,20 @@ If you do not use kobo-install, replace `python3 run.py -cb` with `docker compos
 
     Make sure PostgreSQL was shut down cleanly: `kobo-docker/.vols/db/postmaster.pid` must **not** exist.
 
+    ```shell
+    user@computer:kobo-docker$ sudo ls .vols/db/postmaster.pid
+    ```
+
+    It should answer `No such file or directory`.
+
+    _Notes: On Linux, `.vols/db` belongs to the `postgres` user of the container and is not readable by your user, hence `sudo`._
+
 1. Run a one-off PostgreSQL 18 container
 
     The old data directory is mounted as `/var/lib/postgresql/14/data` and a new, empty folder `.vols/db18` as `/var/lib/postgresql/18/data`.
 
     ```shell
+    user@computer:kobo-docker$ docker pull postgis/postgis:18-3.6
     user@computer:kobo-docker$ docker run --rm -it \
         --env-file ../kobo-env/envfiles/databases.txt \
         -v "$PWD/.vols/db:/var/lib/postgresql/14/data" \
@@ -111,10 +120,15 @@ If you do not use kobo-install, replace `python3 run.py -cb` with `docker compos
     root@container:/# sed -i 's/ main 18$/ main 18 14/' /etc/apt/sources.list.d/pgdg.list && \
         apt-get update && \
         apt-get install -y --no-install-recommends \
-            postgresql-14 postgresql-14-postgis-3 postgresql-18-postgis-3
+            postgresql-14 \
+            postgresql-14-postgis-3="$POSTGIS_VERSION" \
+            postgresql-14-postgis-3-scripts="$POSTGIS_VERSION" \
+            postgresql-18-postgis-3="$POSTGIS_VERSION" \
+            postgresql-18-postgis-3-scripts="$POSTGIS_VERSION"
     ```
 
-    _Notes: On `postgis/postgis:18-3.6`, `postgresql-18-postgis-3` is already installed and apt may upgrade it. That is fine: only the `postgis-3` library has to exist in the new cluster._
+    _Notes: `$POSTGIS_VERSION` is set by the image (e.g. `3.6.4+dfsg-2.pgdg13+1`). **Keep the `="$POSTGIS_VERSION"` pins.**
+    Without them, apt installs the latest PostGIS of the repository (e.g. 3.7.0). It may be built for a newer PostgreSQL 18 minor version than the one in the image, and `pg_upgrade --check` then fails with `undefined symbol: heap_datum_check` (see [Troubleshooting](#troubleshooting))._
 
 1. Initialize the PostgreSQL 18 cluster
 
@@ -201,7 +215,7 @@ If you do not use kobo-install, replace `python3 run.py -cb` with `docker compos
     ```shell
     user@computer:kobo-docker$ sudo mv .vols/db .vols/db.pg14 && \
         sudo mv .vols/db18 .vols/db && \
-        cat .vols/db/PG_VERSION
+        sudo cat .vols/db/PG_VERSION
     ```
 
     It should print `18`.
@@ -308,7 +322,13 @@ Done!
 
 - **`old cluster does not use data checksums but the new one does`**: see step "Check that the clusters are compatible".
 
-- **`could not load library "$libdir/postgis-3"`** during `pg_upgrade --check`: `postgresql-18-postgis-3` is not installed in the one-off container.
+- **`could not load library "$libdir/postgis-3"`** during `pg_upgrade --check`:
+    - with `undefined symbol: heap_datum_check` (or another `undefined symbol`): apt installed a PostGIS build meant for a newer PostgreSQL 18 minor version than the one in the image.
+        Exit the one-off container, delete `.vols/db18` (`sudo rm -rf .vols/db18`), and start again from step "Run a one-off PostgreSQL 18 container", installing the packages exactly as shown, with the `="$POSTGIS_VERSION"` pins.
+    - with `No such file or directory`: `postgresql-18-postgis-3` is not installed in the one-off container.
+
+- **`Version '3.x.y+...' for 'postgresql-14-postgis-3' was not found`** during step "Install PostgreSQL 14 binaries": your local `postgis/postgis:18-3.6` image is too old and its PostGIS version is no longer in the repository.
+    Exit the container, run `docker pull postgis/postgis:18-3.6`, and start again from step "Run a one-off PostgreSQL 18 container".
 
 - **`FATAL: database "template_postgis" does not exist`** in the logs at startup: the image's `update-postgis.sh` expects a `template_postgis` database that older kobo-docker installations do not have. It does not prevent PostgreSQL from starting, and was already the case with PostgreSQL 14.
 
