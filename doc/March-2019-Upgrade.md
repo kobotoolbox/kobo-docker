@@ -203,8 +203,8 @@ free.
     echo $(date) > /var/lib/postgresql/data/kobo_first_run
     echo "listen_addresses = '*'" >> /var/lib/postgresql/data/postgresql.conf
     echo "host    all             all             10.0.0.0/8            trust" >> /var/lib/postgresql/data/pg_hba.conf
-    echo "host    all             all             172.0.0.0/8            trust" >> /var/lib/postgresql/data/pg_hba.conf
-    echo "host    all             all             192.0.0.0/8            trust" >> /var/lib/postgresql/data/pg_hba.conf
+    echo "host    all             all             172.16.0.0/12          trust" >> /var/lib/postgresql/data/pg_hba.conf
+    echo "host    all             all             192.168.0.0/16         trust" >> /var/lib/postgresql/data/pg_hba.conf
     ```
 
     You can now quit the container with command `exit` and run new version of `PostgreSQL` container.
