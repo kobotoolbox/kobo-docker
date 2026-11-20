@@ -191,6 +191,15 @@ Samples are provided. Remove `.sample` extension and update them to match your e
     docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml up -d nginx
     ```
 
+## Updating NGINX
+
+We recommend you pull the latest NGINX image to get security fixes. To do so, run:
+
+```
+$kobo-docker> docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml pull nginx
+$kobo-docker> docker-compose -f docker-compose.frontend.yml -f docker-compose.frontend.override.yml up -d nginx
+```
+
 ## Troubleshooting
 
 - ### Basic troubleshooting
