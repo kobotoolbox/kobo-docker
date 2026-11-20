@@ -4,7 +4,7 @@ services:
 
   maintenance:
     # set to match `docker-compose.frontend.yml` and avoid pulling different image
-    image: nginx:1.27
+    image: nginx:1.31
     hostname: maintenance
     env_file:
       - ../kobo-env/envfiles/domains.txt
