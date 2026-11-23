@@ -233,10 +233,16 @@ They therefore use a temporary PostgreSQL 14 container, which works whether kobo
 
 1. Carry over kobo-docker files and exit
 
-    kobo-docker marks its data directory with a `kobo_first_run` file. Without it, the init scripts would run again on an existing database.
+    kobo-docker marks its data directory with a `kobo_first_run` file. When it exists, kobo-docker applies its PostgreSQL configuration and updates users and PostGIS at each start.
+    Some older installations do not have it (e.g. upgraded from PostgreSQL 9.5 without creating it); it is then created here.
 
     ```shell
-    root@container:/# cp -p /var/lib/postgresql/14/data/kobo_first_run /var/lib/postgresql/18/data/ && \
+    root@container:/# if [ -f /var/lib/postgresql/14/data/kobo_first_run ]; then
+            cp -p /var/lib/postgresql/14/data/kobo_first_run /var/lib/postgresql/18/data/
+        else
+            date > /var/lib/postgresql/18/data/kobo_first_run
+        fi && \
+        chown postgres:postgres /var/lib/postgresql/18/data/kobo_first_run && \
         cp -p /var/lib/postgresql/14/data/pg_hba.conf /var/lib/postgresql/18/data/ && \
         exit
     ```
