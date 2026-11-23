@@ -10,8 +10,8 @@ import smart_open
 
 DBDATESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
-DUMPFILE = 'redis-{}-{}-{}.gz'.format(
-    os.environ.get('REDIS_VERSION'),
+DUMPFILE = 'valkey-{}-{}-{}.gz'.format(
+    os.environ.get('VALKEY_VERSION'),
     os.environ.get('PUBLIC_DOMAIN_NAME'),
     DBDATESTAMP,
 )
