@@ -67,7 +67,7 @@ services:
     command: ['bash', '/srv/src/kpi/docker/entrypoint_celery_beat.bash']
 
   nginx:
-    image: nginx:1.31
+    image: nginx:1.27
     hostname: nginx
     env_file:
       - ../kobo-env/envfiles/domains.txt
