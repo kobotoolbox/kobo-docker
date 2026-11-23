@@ -11,6 +11,27 @@ export POSTGRES_BACKUPS_DIR=/srv/backups
 export POSTGRES_LOGS_DIR=/srv/logs
 export KOBO_DOCKER_SCRIPTS_DIR=/kobo-docker-scripts
 
+# Refuse to start on a data directory created by another PostgreSQL major
+# version (e.g. PostgreSQL 14 data with the PostgreSQL 18 image). This must run
+# before anything else touches the data directory (config files, PostGIS, etc.).
+if [ -f "$POSTGRES_DATA_DIR/PG_VERSION" ] && [ -n "$PG_MAJOR" ]; then
+    DATA_PG_MAJOR=$(tr -d '[:space:]' < "$POSTGRES_DATA_DIR/PG_VERSION")
+    if [ "$DATA_PG_MAJOR" != "$PG_MAJOR" ]; then
+        echo "################################################################################" >&2
+        echo "ERROR: PostgreSQL version mismatch." >&2
+        echo "  The data directory was created by PostgreSQL ${DATA_PG_MAJOR}," >&2
+        echo "  but this container runs PostgreSQL ${PG_MAJOR}." >&2
+        echo "" >&2
+        echo "  PostgreSQL cannot use it until the database is upgraded." >&2
+        echo "  Please follow the upgrade instructions linked in the kobo-docker README:" >&2
+        echo "  https://github.com/kobotoolbox/kobo-docker/blob/master/doc/November-2026-Upgrade-PostgreSQL18.md" >&2
+        echo "" >&2
+        echo "  Nothing has been changed in the data directory." >&2
+        echo "################################################################################" >&2
+        exit 1
+    fi
+fi
+
 echo "Copying init scripts ..."
 cp $KOBO_DOCKER_SCRIPTS_DIR/scripts/init_* /docker-entrypoint-initdb.d/
 

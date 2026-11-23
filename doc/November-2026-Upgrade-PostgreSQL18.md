@@ -31,10 +31,36 @@ If you do not use kobo-install, replace `python3 run.py -cb` with `docker compos
 
 ### Before you start
 
+The steps below need a running PostgreSQL 14 server.
+Once kobo-docker is updated (e.g. with `python3 run.py --update`), the `postgres` service no longer starts on PostgreSQL 14 data (`ERROR: PostgreSQL version mismatch` in its logs).
+They therefore use a temporary PostgreSQL 14 container, which works whether kobo-docker is already updated or not.
+
+1. **Stop the containers**
+
+    ```shell
+    user@computer:kobo-install$ python3 run.py --stop
+    ```
+
+1. **Start a temporary PostgreSQL 14 container**
+
+    ```shell
+    user@computer:kobo-docker$ docker run --rm -d --name kobo-postgres14 \
+        --env-file ../kobo-env/envfiles/databases.txt \
+        --env-file ../kobo-env/envfiles/domains.txt \
+        -v "$PWD/.vols/db:/var/lib/postgresql/data" \
+        -v "$PWD/backups/postgres:/srv/backups" \
+        -v "$PWD/postgres:/kobo-docker-scripts" \
+        postgis/postgis:14-3.2
+    user@computer:kobo-docker$ docker exec kobo-postgres14 bash -c 'until pg_isready -q -U "$POSTGRES_USER"; do sleep 1; done; echo ready'
+    ```
+
+    _Notes: If you override the `postgres` image (e.g. in `docker-compose.backend.custom.yml`), use your PostgreSQL 14 image instead of `postgis/postgis:14-3.2`.
+    If it never prints `ready`, check `docker logs kobo-postgres14`._
+
 1. **Back up your database.** Even though this procedure does not touch your PostgreSQL 14 data, take a dump first:
 
     ```shell
-    user@computer:kobo-install$ python3 run.py -cb exec postgres bash -c 'PGUSER="$POSTGRES_USER" bash /kobo-docker-scripts/scripts/backup-to-disk.bash'
+    user@computer:kobo-docker$ docker exec kobo-postgres14 bash -c 'PGUSER="$POSTGRES_USER" bash /kobo-docker-scripts/scripts/backup-to-disk.bash'
     ```
 
     _Notes: Older versions of `backup-to-disk.bash` do not set `PGUSER` themselves when run by hand. Without it, `pg_dump` connects as `root` and fails with `FATAL: role "root" does not exist`._
@@ -67,7 +93,7 @@ If you do not use kobo-install, replace `python3 run.py -cb` with `docker compos
 1. **Write down the cluster settings**. The new cluster must be initialized with the same superuser and locale:
 
     ```shell
-    user@computer:kobo-install$ python3 run.py -cb exec postgres bash -c 'echo "user: $POSTGRES_USER"; psql -U "$POSTGRES_USER" -d postgres -Atc "SHOW lc_collate" -c "SHOW server_encoding" -c "SHOW data_checksums"'
+    user@computer:kobo-docker$ docker exec kobo-postgres14 bash -c 'echo "user: $POSTGRES_USER"; psql -U "$POSTGRES_USER" -d postgres -Atc "SHOW lc_collate" -c "SHOW server_encoding" -c "SHOW data_checksums"'
     ```
 
     Typical output:
@@ -81,12 +107,21 @@ If you do not use kobo-install, replace `python3 run.py -cb` with `docker compos
 
     If `data_checksums` is `on`, remove `--no-data-checksums` from the `initdb` command below.
 
+1. **Stop the temporary container**
+
+    ```shell
+    user@computer:kobo-docker$ docker stop -t 60 kobo-postgres14
+    ```
+
 ### Upgrading PostgreSQL
 
-1. Stop the containers
+1. Make sure PostgreSQL is stopped
+
+    The containers and the temporary `kobo-postgres14` container must be stopped (see [Before you start](#before-you-start)):
 
     ```shell
     user@computer:kobo-install$ python3 run.py --stop
+    user@computer:kobo-docker$ docker ps --filter name=kobo-postgres14
     ```
 
     Make sure PostgreSQL was shut down cleanly: `kobo-docker/.vols/db/postmaster.pid` must **not** exist.
@@ -319,6 +354,10 @@ user@computer:kobo-docker$ sudo rm -rf .vols/db.pg14
 Done!
 
 ### Troubleshooting
+
+- **`ERROR: PostgreSQL version mismatch`** in the logs, and the `postgres` container keeps restarting: kobo-docker refuses to start PostgreSQL on a data directory created by another major version, and leaves the directory unchanged.
+    - If the message mentions PostgreSQL 14 data with PostgreSQL 18, the upgrade has not been done yet: follow this document from the beginning.
+    - If it mentions PostgreSQL 18 data with PostgreSQL 14, an override (e.g. `docker-compose.backend.custom.yml`) still uses a PostgreSQL 14 image: see step "Update kobo-docker".
 
 - **`old cluster does not use data checksums but the new one does`**: see step "Check that the clusters are compatible".
 
