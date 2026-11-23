@@ -3,5 +3,7 @@
 ############################################################################
 GOOGLE_ANALYTICS_TOKEN=
 
+# Leave empty to disable Sentry. Exceptions should still appear in container
+# logs (see README Troubleshooting). Formerly configured as RAVEN_DSN.
 SENTRY_DSN=
 SENTRY_JS_DSN=
