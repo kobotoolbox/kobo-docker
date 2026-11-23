@@ -2,8 +2,12 @@
 
 services:
   postgres:
-    image: postgis/postgis:14-3.2
+    image: postgis/postgis:18-3.6
     hostname: postgres
+    environment:
+      # PostgreSQL 18+ images default to /var/lib/postgresql/18/docker.
+      # kobo-docker keeps the historical location.
+      - PGDATA=/var/lib/postgresql/data
     env_file:
       - ../kobo-env/envfiles/domains.txt
       - ../kobo-env/envfiles/databases.txt
